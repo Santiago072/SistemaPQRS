@@ -3,238 +3,438 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de PQRS</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --primary: #4F46E5;
-            --primary-hover: #4338CA;
-            --secondary: #10B981;
-            --secondary-hover: #059669;
-            --bg-color: #0f172a;
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --card-bg: rgba(30, 41, 59, 0.7);
-        }
+    <meta name="description" content="Sistema de Gestión de PQRS - Peticiones, Quejas, Reclamos y Sugerencias. Radique y consulte el estado de sus solicitudes de forma fácil y segura.">
+    <meta name="keywords" content="PQRS, peticiones, quejas, reclamos, sugerencias, denuncias, servicios públicos, Neiva">
+    <meta name="author" content="Sistema PQRS">
+    <title>Sistema PQRS - Gestión de Peticiones, Quejas, Reclamos y Sugerencias</title>
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Inter', sans-serif;
-        }
+    <!-- Bootstrap Icons CDN -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 
-        body {
-            background: var(--bg-color);
-            background-image: radial-gradient(at 0% 0%, hsla(253,16%,7%,1) 0, transparent 50%), radial-gradient(at 50% 0%, hsla(225,39%,30%,0.2) 0, transparent 50%), radial-gradient(at 100% 0%, hsla(339,49%,30%,0.2) 0, transparent 50%);
-            color: var(--text-main);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-        }
-
-        .container {
-            width: 100%;
-            max-width: 1200px;
-            padding: 2rem;
-            display: flex;
-            justify-content: center;
-        }
-
-        .card {
-            background: var(--card-bg);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 24px;
-            padding: 3rem;
-            width: 100%;
-            max-width: 500px;
-            text-align: center;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-            animation: slideUp 0.6s ease-out forwards;
-            opacity: 0;
-            transform: translateY(20px);
-        }
-
-        @keyframes slideUp {
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .icon-container {
-            width: 80px;
-            height: 80px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            border-radius: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 1.5rem auto;
-            box-shadow: 0 10px 25px -5px rgba(79, 70, 229, 0.5);
-        }
-
-        .icon-container svg {
-            width: 40px;
-            height: 40px;
-            color: white;
-        }
-
-        h1 {
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-            background: linear-gradient(to right, #fff, #94a3b8);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        p.subtitle {
-            color: var(--text-muted);
-            font-size: 1.1rem;
-            margin-bottom: 2.5rem;
-            line-height: 1.5;
-        }
-
-        .actions {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-        }
-
-        .btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            padding: 1rem 1.5rem;
-            font-size: 1.1rem;
-            font-weight: 600;
-            border-radius: 12px;
-            text-decoration: none;
-            transition: all 0.3s ease;
-            cursor: pointer;
-            border: none;
-            gap: 0.5rem;
-        }
-
-        .btn-primary {
-            background: var(--primary);
-            color: white;
-            box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.2);
-        }
-
-        .btn-primary:hover {
-            background: var(--primary-hover);
-            transform: translateY(-2px);
-            box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.3);
-        }
-
-        .btn-secondary {
-            background: transparent;
-            color: var(--text-main);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.05);
-            border-color: rgba(255, 255, 255, 0.3);
-            transform: translateY(-2px);
-        }
-
-        .admin-login {
-            margin-top: 2rem;
-            font-size: 0.9rem;
-            color: var(--text-muted);
-        }
-
-        .admin-login a {
-            color: var(--primary);
-            text-decoration: none;
-            font-weight: 600;
-            transition: color 0.2s;
-        }
-
-        .admin-login a:hover {
-            color: #818cf8;
-        }
-
-        /* Ambient floating shapes */
-        .shape {
-            position: absolute;
-            filter: blur(60px);
-            z-index: -1;
-            opacity: 0.4;
-            animation: float 10s infinite alternate;
-        }
-
-        .shape-1 {
-            width: 300px;
-            height: 300px;
-            background: var(--primary);
-            top: -100px;
-            left: -100px;
-            border-radius: 50%;
-        }
-
-        .shape-2 {
-            width: 400px;
-            height: 400px;
-            background: var(--secondary);
-            bottom: -150px;
-            right: -100px;
-            border-radius: 50%;
-            animation-delay: -5s;
-        }
-
-        @keyframes float {
-            0% { transform: translate(0, 0) scale(1); }
-            100% { transform: translate(30px, 50px) scale(1.1); }
-        }
-
-        @media (max-width: 640px) {
-            h1 { font-size: 2rem; }
-            .card { padding: 2rem; }
-        }
-    </style>
+    <!-- Hoja de estilos única del sistema -->
+    <link rel="stylesheet" href="css/estilos.css">
+<base target="_blank">
 </head>
 <body>
-    <div class="shape shape-1"></div>
-    <div class="shape shape-2"></div>
 
-    <div class="container">
-        <div class="card">
-            <div class="icon-container">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z" />
-                </svg>
-            </div>
-            
-            <h1>Sistema PQRS</h1>
-            <p class="subtitle">Gestione sus Peticiones, Quejas, Reclamos y Sugerencias de manera rápida y segura.</p>
+    <!-- ============================================
+         HEADER / NAVEGACIÓN
+         ============================================ -->
+    <header class="header">
+        <div class="container header-container">
+            <!-- Logo -->
+            <a href="index.html" class="logo" aria-label="Inicio - Sistema PQRS">
+                <span class="logo-icon" aria-hidden="true">
+                    <i class="bi bi-clipboard-data"></i>
+                </span>
+                <span>Sistema PQRS</span>
+            </a>
 
-            <div class="actions">
-                <a href="radicar.php" class="btn btn-primary">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                    </svg>
-                    Radicar Nueva Solicitud
+            <!-- Login Admin (discreto, esquina superior derecha) -->
+            <nav class="nav-admin" aria-label="Navegación administrativa">
+                <a href="login.html" class="btn btn-outline" aria-label="Acceder al panel de administración">
+                    <i class="bi bi-shield-lock" aria-hidden="true"></i>
+                    <span>Iniciar Sesión</span>
                 </a>
-                <a href="consultar.php" class="btn btn-secondary">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                    </svg>
-                    Consultar Estado
-                </a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <!-- ============================================
+             HERO SECTION
+             ============================================ -->
+        <section class="hero" aria-labelledby="hero-title">
+            <div class="container">
+                <div class="hero-content">
+                    <div class="hero-badge">
+                        <i class="bi bi-building" aria-hidden="true"></i>
+                        <span>Servicio público de atención ciudadana</span>
+                    </div>
+
+                    <h1 id="hero-title" class="hero-title">
+                        Tu voz cuenta.<br>
+                        <span style="opacity: 0.9;">Gestiona tus PQRS de forma transparente</span>
+                    </h1>
+
+                    <p class="hero-description">
+                        Sistema oficial para la recepción, seguimiento y respuesta de Peticiones, 
+                        Quejas, Reclamos, Sugerencias y Denuncias. Cumplimiento garantizado 
+                        con los tiempos legales establecidos.
+                    </p>
+
+                    <div class="hero-actions">
+ <!-- Botón Nueva Solicitud - Abre modal en la misma página -->
+<button type="button" class="btn btn-primary" onclick="abrirModal()" aria-label="Crear una nueva solicitud PQRS">
+    <i class="bi bi-pencil-square" aria-hidden="true"></i>
+    <span>Nueva Solicitud</span>
+</button>
+
+                        <!-- Botón Consultar Estado -->
+                        <a href="consultar.html" class="btn btn-secondary" aria-label="Consultar el estado de una solicitud existente">
+                            <i class="bi bi-search" aria-hidden="true"></i>
+                            <span>Consultar Estado</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================
+             SECCIÓN: ¿QUÉ ES PQRS?
+             ============================================ -->
+        <section class="section section-alt" aria-labelledby="que-es-title">
+            <div class="container">
+                <header class="section-header">
+                    <span class="section-tag">Información</span>
+                    <h2 id="que-es-title" class="section-title">¿Qué es el sistema PQRS?</h2>
+                    <p class="section-description">
+                        PQRS son las siglas de <strong>Peticiones, Quejas, Reclamos y Sugerencias</strong>, 
+                        mecanismos constitucionales que permiten a los ciudadanos comunicarse con las 
+                        entidades públicas y privadas que prestan servicios públicos.
+                    </p>
+                </header>
+
+                <div class="cards-grid" role="list">
+                    <!-- Petición -->
+                    <article class="card" role="listitem">
+                        <div class="card-icon peticion" aria-hidden="true">
+                            <i class="bi bi-file-text"></i>
+                        </div>
+                        <h3 class="card-title">Petición</h3>
+                        <p class="card-description">
+                            Derecho fundamental de toda persona para presentar solicitudes respetuosas 
+                            ante autoridades y entidades por motivos de interés general o particular.
+                        </p>
+                    </article>
+
+                    <!-- Queja -->
+                    <article class="card" role="listitem">
+                        <div class="card-icon queja" aria-hidden="true">
+                            <i class="bi bi-exclamation-circle"></i>
+                        </div>
+                        <h3 class="card-title">Queja</h3>
+                        <p class="card-description">
+                            Manifestación de inconformidad por la conducta de un servidor público 
+                            o particular en el ejercicio de sus funciones.
+                        </p>
+                    </article>
+
+                    <!-- Reclamo -->
+                    <article class="card" role="listitem">
+                        <div class="card-icon reclamo" aria-hidden="true">
+                            <i class="bi bi-exclamation-triangle"></i>
+                        </div>
+                        <h3 class="card-title">Reclamo</h3>
+                        <p class="card-description">
+                            Derecho del usuario o consumidor para exigir el cumplimiento de derechos 
+                            vulnerados o reclamar por la prestación inadecuada de un servicio.
+                        </p>
+                    </article>
+
+                    <!-- Sugerencia -->
+                    <article class="card" role="listitem">
+                        <div class="card-icon sugerencia" aria-hidden="true">
+                            <i class="bi bi-lightbulb"></i>
+                        </div>
+                        <h3 class="card-title">Sugerencia</h3>
+                        <p class="card-description">
+                            Propuesta constructiva para mejorar los procesos, servicios o procedimientos 
+                            de la entidad, orientada al beneficio colectivo.
+                        </p>
+                    </article>
+
+                    <!-- Denuncia -->
+                    <article class="card" role="listitem">
+                        <div class="card-icon denuncia" aria-hidden="true">
+                            <i class="bi bi-megaphone"></i>
+                        </div>
+                        <h3 class="card-title">Denuncia</h3>
+                        <p class="card-description">
+                            Comunicación de posibles irregularidades, actos de corrupción o violaciones 
+                            a la normatividad por parte de servidores públicos o contratistas.
+                        </p>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================
+             SECCIÓN: PROCESO DE RADICACIÓN
+             ============================================ -->
+        <section class="section" aria-labelledby="proceso-title">
+            <div class="container">
+                <header class="section-header">
+                    <span class="section-tag">Proceso</span>
+                    <h2 id="proceso-title" class="section-title">¿Cómo radicar una PQRS?</h2>
+                    <p class="section-description">
+                        Sigue estos sencillos pasos para registrar tu solicitud y hacer seguimiento 
+                        en tiempo real hasta obtener una respuesta formal.
+                    </p>
+                </header>
+
+                <div class="timeline" aria-label="Pasos del proceso de radicación">
+                    <!-- Paso 1 -->
+                    <div class="timeline-item">
+                        <span class="timeline-number" aria-hidden="true">1</span>
+                        <div class="timeline-content">
+                            <h3 class="timeline-title">Selecciona el tipo de solicitud</h3>
+                            <p class="timeline-text">
+                                Elige entre Petición, Queja, Reclamo, Sugerencia o Denuncia según 
+                                la naturaleza de tu requerimiento.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Paso 2 -->
+                    <div class="timeline-item">
+                        <span class="timeline-number" aria-hidden="true">2</span>
+                        <div class="timeline-content">
+                            <h3 class="timeline-title">Completa el formulario</h3>
+                            <p class="timeline-text">
+                                Ingresa tus datos como persona natural, jurídica o de forma anónima. 
+                                Describe detalladamente tu solicitud y adjunta documentos si es necesario.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Paso 3 -->
+                    <div class="timeline-item">
+                        <span class="timeline-number" aria-hidden="true">3</span>
+                        <div class="timeline-content">
+                            <h3 class="timeline-title">Recibe tu código único</h3>
+                            <p class="timeline-text">
+                                El sistema genera automáticamente un número de radicado con formato 
+                                <strong>PQRS-AAAA-MMMM-NNN</strong> que identifica tu caso de forma única.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Paso 4 -->
+                    <div class="timeline-item">
+                        <span class="timeline-number" aria-hidden="true">4</span>
+                        <div class="timeline-content">
+                            <h3 class="timeline-title">Seguimiento en tiempo real</h3>
+                            <p class="timeline-text">
+                                Consulta el estado de tu solicitud en cualquier momento usando tu 
+                                código de radicado o correo electrónico registrado.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Paso 5 -->
+                    <div class="timeline-item">
+                        <span class="timeline-number" aria-hidden="true">5</span>
+                        <div class="timeline-content">
+                            <h3 class="timeline-title">Recibe respuesta formal</h3>
+                            <p class="timeline-text">
+                                Una vez resuelta, recibirás una respuesta formal por correo electrónico 
+                                y podrás consultarla en el portal público de seguimiento.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================
+             SECCIÓN: TIEMPOS DE RESPUESTA LEGALES
+             ============================================ -->
+        <section class="section section-alt" aria-labelledby="tiempos-title">
+            <div class="container">
+                <header class="section-header">
+                    <span class="section-tag">Marco Legal</span>
+                    <h2 id="tiempos-title" class="section-title">Tiempos de respuesta legales</h2>
+                    <p class="section-description">
+                        De acuerdo con la <strong>Ley 1755 de 2015</strong> y la <strong>Ley 1437 de 2011</strong>, 
+                        las entidades están obligadas a responder dentro de los siguientes términos:
+                    </p>
+                </header>
+
+                <div class="legal-table-container">
+                    <table class="legal-table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Tipo de Solicitud</th>
+                                <th scope="col">Término Legal</th>
+                                <th scope="col">Marco Normativo</th>
+                                <th scope="col">Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Petición</strong></td>
+                                <td>15 días hábiles</td>
+                                <td>Ley 1755 de 2015, Art. 13</td>
+                                <td>
+                                    <span class="badge badge-green">
+                                        <i class="bi bi-check-circle-fill"></i>
+                                        Vigente
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>Queja</strong></td>
+                                <td>15 días hábiles</td>
+                                <td>Ley 1755 de 2015, Art. 14</td>
+                                <td>
+                                    <span class="badge badge-green">
+                                        <i class="bi bi-check-circle-fill"></i>
+                                        Vigente
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>Reclamo</strong></td>
+                                <td>15 días hábiles</td>
+                                <td>Ley 1437 de 2011, Art. 56</td>
+                                <td>
+                                    <span class="badge badge-green">
+                                        <i class="bi bi-check-circle-fill"></i>
+                                        Vigente
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>Sugerencia</strong></td>
+                                <td>15 días hábiles</td>
+                                <td>Ley 1755 de 2015, Art. 15</td>
+                                <td>
+                                    <span class="badge badge-green">
+                                        <i class="bi bi-check-circle-fill"></i>
+                                        Vigente
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>Denuncia</strong></td>
+                                <td>10 días hábiles</td>
+                                <td>Ley 1474 de 2011, Art. 7</td>
+                                <td>
+                                    <span class="badge badge-yellow">
+                                        <i class="bi bi-exclamation-triangle-fill"></i>
+                                        Prioritaria
+                                    </span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div style="margin-top: var(--space-6); text-align: center;">
+                    <p style="color: var(--color-gray-500); font-size: var(--font-size-sm);">
+                        <i class="bi bi-info-circle" style="color: var(--color-primary); margin-right: var(--space-2);"></i>
+                        Los términos pueden ampliarse por una sola vez hasta por el mismo periodo, 
+                        previa justificación escrita al solicitante.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================================
+             SECCIÓN: CTA FINAL
+             ============================================ -->
+        <section class="cta-section" aria-labelledby="cta-title">
+            <div class="container">
+                <div class="cta-content">
+                    <h2 id="cta-title" class="cta-title">¿Necesitas presentar una PQRS?</h2>
+                    <p class="cta-description">
+                        Radica tu solicitud ahora y recibe un código único para hacer seguimiento. 
+                        Nuestro equipo se compromete a responder dentro de los términos legales establecidos.
+                    </p>
+                    <div class="cta-buttons">
+                        <a href="terminos.html" class="btn btn-white" aria-label="Crear nueva solicitud PQRS">
+                            <i class="bi bi-pencil-square" aria-hidden="true"></i>
+                            <span>Nueva Solicitud</span>
+                        </a>
+                        <a href="consultar.html" class="btn btn-outline-white" aria-label="Consultar estado de solicitud existente">
+                            <i class="bi bi-search" aria-hidden="true"></i>
+                            <span>Consultar Estado</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- ============================================
+         FOOTER
+         ============================================ -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <!-- Marca -->
+                <div>
+                    <div class="footer-brand">
+                        <i class="bi bi-clipboard-data" aria-hidden="true"></i>
+                        <span>Sistema PQRS</span>
+                    </div>
+                    <p class="footer-text">
+                        Plataforma oficial de gestión de Peticiones, Quejas, Reclamos, 
+                        Sugerencias y Denuncias. Garantizando transparencia, trazabilidad 
+                        y cumplimiento legal en la atención ciudadana.
+                    </p>
+                </div>
+
+                <!-- Enlaces rápidos -->
+                <div>
+                    <h4 class="footer-title">Enlaces Rápidos</h4>
+                    <ul class="footer-links">
+                        <li>
+                            <a href="terminos.html">
+                                <i class="bi bi-pencil-square"></i>
+                                Nueva Solicitud
+                            </a>
+                        </li>
+                        <li>
+                            <a href="consultar.html">
+                                <i class="bi bi-search"></i>
+                                Consultar Estado
+                            </a>
+                        </li>
+                        <li>
+                            <a href="login.html">
+                                <i class="bi bi-shield-lock"></i>
+                                Panel Administrador
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Marco legal -->
+                <div>
+                    <h4 class="footer-title">Marco Legal</h4>
+                    <ul class="footer-links">
+                        <li>
+                            <a href="https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=62567" target="_blank" rel="noopener noreferrer">
+                                <i class="bi bi-file-earmark-text"></i>
+                                Ley 1755 de 2015
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=42761" target="_blank" rel="noopener noreferrer">
+                                <i class="bi bi-file-earmark-text"></i>
+                                Ley 1437 de 2011
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=44306" target="_blank" rel="noopener noreferrer">
+                                <i class="bi bi-file-earmark-text"></i>
+                                Ley 1474 de 2011
+                            </a>
+                        </li>
+                    </ul>
+                </div>
             </div>
 
-            <div class="admin-login">
-                ¿Eres administrador? <a href="panel.php">Ingresar al panel</a>
+            <div class="footer-bottom">
+                <p>
+                    <i class="bi bi-c-circle" style="margin-right: var(--space-1);"></i>
+                    2026 Sistema PQRS - Todos los derechos reservados | Diseñado para cumplimiento legal y transparencia institucional
+                </p>
             </div>
         </div>
-    </div>
+    </footer>
+    <?php include 'includes/modal_terminos.php'; ?>
 </body>
 </html>
