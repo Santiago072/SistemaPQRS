@@ -13,37 +13,11 @@
 
     <!-- Hoja de estilos única del sistema -->
     <link rel="stylesheet" href="css/estilos.css">
-<base target="_blank">
+<base>
 </head>
 <body>
-
-    <!-- ============================================
-         HEADER / NAVEGACIÓN
-         ============================================ -->
-    <header class="header">
-        <div class="container header-container">
-            <!-- Logo -->
-            <a href="index.html" class="logo" aria-label="Inicio - Sistema PQRS">
-                <span class="logo-icon" aria-hidden="true">
-                    <i class="bi bi-clipboard-data"></i>
-                </span>
-                <span>Sistema PQRS</span>
-            </a>
-
-            <!-- Login Admin (discreto, esquina superior derecha) -->
-            <nav class="nav-admin" aria-label="Navegación administrativa">
-                <a href="login.html" class="btn btn-outline" aria-label="Acceder al panel de administración">
-                    <i class="bi bi-shield-lock" aria-hidden="true"></i>
-                    <span>Iniciar Sesión</span>
-                </a>
-            </nav>
-        </div>
-    </header>
-
-    <main>
-        <!-- ============================================
-             HERO SECTION
-             ============================================ -->
+    <?php include 'includes/header.php'; ?>
+    <main id="enlaces-rapidos">
         <section class="hero" aria-labelledby="hero-title">
             <div class="container">
                 <div class="hero-content">
@@ -71,7 +45,7 @@
 </button>
 
                         <!-- Botón Consultar Estado -->
-                        <a href="consultar.html" class="btn btn-secondary" aria-label="Consultar el estado de una solicitud existente">
+                        <a href="pqrs/consulta_pqrs.php" class="btn btn-outline-white" aria-label="Consultar estado de solicitud existente">
                             <i class="bi bi-search" aria-hidden="true"></i>
                             <span>Consultar Estado</span>
                         </a>
@@ -343,11 +317,10 @@
                         Nuestro equipo se compromete a responder dentro de los términos legales establecidos.
                     </p>
                     <div class="cta-buttons">
-                        <a href="terminos.html" class="btn btn-white" aria-label="Crear nueva solicitud PQRS">
-                            <i class="bi bi-pencil-square" aria-hidden="true"></i>
-                            <span>Nueva Solicitud</span>
-                        </a>
-                        <a href="consultar.html" class="btn btn-outline-white" aria-label="Consultar estado de solicitud existente">
+                        <button type="button" class="btn btn-white" onclick="abrirModal()" aria-label="Crear nueva solicitud PQRS">
+                            <i class="bi bi-pencil-square" aria-hidden="true"></i> Nueva Solicitud
+                        </button>
+                        <a href="pqrs/consulta_pqrs.php" class="btn btn-outline-white" aria-label="Consultar estado de solicitud existente">
                             <i class="bi bi-search" aria-hidden="true"></i>
                             <span>Consultar Estado</span>
                         </a>
@@ -356,85 +329,7 @@
             </div>
         </section>
     </main>
-
-    <!-- ============================================
-         FOOTER
-         ============================================ -->
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-grid">
-                <!-- Marca -->
-                <div>
-                    <div class="footer-brand">
-                        <i class="bi bi-clipboard-data" aria-hidden="true"></i>
-                        <span>Sistema PQRS</span>
-                    </div>
-                    <p class="footer-text">
-                        Plataforma oficial de gestión de Peticiones, Quejas, Reclamos, 
-                        Sugerencias y Denuncias. Garantizando transparencia, trazabilidad 
-                        y cumplimiento legal en la atención ciudadana.
-                    </p>
-                </div>
-
-                <!-- Enlaces rápidos -->
-                <div>
-                    <h4 class="footer-title">Enlaces Rápidos</h4>
-                    <ul class="footer-links">
-                        <li>
-                            <a href="terminos.html">
-                                <i class="bi bi-pencil-square"></i>
-                                Nueva Solicitud
-                            </a>
-                        </li>
-                        <li>
-                            <a href="consultar.html">
-                                <i class="bi bi-search"></i>
-                                Consultar Estado
-                            </a>
-                        </li>
-                        <li>
-                            <a href="login.html">
-                                <i class="bi bi-shield-lock"></i>
-                                Panel Administrador
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-
-                <!-- Marco legal -->
-                <div>
-                    <h4 class="footer-title">Marco Legal</h4>
-                    <ul class="footer-links">
-                        <li>
-                            <a href="https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=62567" target="_blank" rel="noopener noreferrer">
-                                <i class="bi bi-file-earmark-text"></i>
-                                Ley 1755 de 2015
-                            </a>
-                        </li>
-                        <li>
-                            <a href="https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=42761" target="_blank" rel="noopener noreferrer">
-                                <i class="bi bi-file-earmark-text"></i>
-                                Ley 1437 de 2011
-                            </a>
-                        </li>
-                        <li>
-                            <a href="https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=44306" target="_blank" rel="noopener noreferrer">
-                                <i class="bi bi-file-earmark-text"></i>
-                                Ley 1474 de 2011
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-
-            <div class="footer-bottom">
-                <p>
-                    <i class="bi bi-c-circle" style="margin-right: var(--space-1);"></i>
-                    2026 Sistema PQRS - Todos los derechos reservados | Diseñado para cumplimiento legal y transparencia institucional
-                </p>
-            </div>
-        </div>
-    </footer>
+    <?php include 'includes/footer.php'; ?>
     <?php include 'includes/modal_terminos.php'; ?>
 </body>
 </html>
