@@ -1,8 +1,8 @@
 <?php
 function conexion(){
     $host = "turntable.proxy.rlwy.net";
-    $user = "appuser"; // Hardcodeado temporalmente
-    $pass = "contrasenaprueba123"; // Hardcodeado temporalmente
+    $user = "root";
+    $pass = "YpKcDtbHqHcfaQwq1nxVNHiQq0brrYgk";
     $db   = "railway";
     $port = 52251;
 
