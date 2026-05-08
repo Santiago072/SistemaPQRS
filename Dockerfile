@@ -1,27 +1,34 @@
-FROM php:8.1-apache
+FROM php:8.2-fpm
 
-# Instalar extensiones
+# Instalar extensiones PHP
 RUN docker-php-ext-install mysqli pdo pdo_mysql
 
-# Configurar Apache para el puerto dinámico de Railway
-RUN sed -i 's/Listen 80/Listen ${PORT}/' /etc/apache2/ports.conf
-RUN sed -i 's/<VirtualHost \*:80>/<VirtualHost \*:${PORT}>/' /etc/apache2/sites-available/000-default.conf
+# Instalar Caddy (servidor web simple y confiable)
+RUN apt-get update && apt-get install -y debian-keyring debian-archive-keyring apt-transport-https \
+    && curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | gpg --dearmor -o /usr/share/keyrings/caddy-stable-archive-keyring.gpg \
+    && curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | tee /etc/apt/sources.list.d/caddy-stable.list \
+    && apt-get update && apt-get install -y caddy \
+    && rm -rf /var/lib/apt/lists/*
 
-# Habilitar mod_rewrite
-RUN a2enmod rewrite
+# Configurar Caddy
+RUN echo ':${PORT} {\n\
+    root * /var/www/html\n\
+    php_fastcgi 127.0.0.1:9000\n\
+    file_server\n\
+    try_files {path} {path}/ /index.php\n\
+}' > /etc/caddy/Caddyfile
+
+# Script de inicio
+RUN echo '#!/bin/bash\n\
+export PORT=${PORT:-80}\n\
+sed -i "s/\\${PORT}/$PORT/g" /etc/caddy/Caddyfile\n\
+php-fpm --daemonize\n\
+caddy run --config /etc/caddy/Caddyfile' > /start.sh && chmod +x /start.sh
 
 # Copiar archivos
 COPY . /var/www/html/
 
-# Permisos
-RUN chown -R www-data:www-data /var/www/html
-
-# Script de inicio que configura el puerto dinámico
-RUN echo '#!/bin/bash\n\
-PORT=${PORT:-80}\n\
-sed -i "s/\\${PORT}/$PORT/g" /etc/apache2/ports.conf\n\
-sed -i "s/\\${PORT}/$PORT/g" /etc/apache2/sites-available/000-default.conf\n\
-echo "ServerName localhost" >> /etc/apache2/apache2.conf\n\
-apache2-foreground' > /start.sh && chmod +x /start.sh
+# Puerto
+EXPOSE 80
 
 CMD ["/start.sh"]
