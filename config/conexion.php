@@ -4,7 +4,7 @@ function conexion(){
     $user = getenv('MYSQLUSER') ?: "root";
     $pass = getenv('MYSQLPASSWORD') ?: "YpKcDtbHqHcfaQwq1nxVNHiQq0brrYgk";
     $db   = getenv('MYSQLDATABASE') ?: "railway";
-    $port = getenv('MYSQLPORT') ?: "3306";
+    $port = getenv('MYSQLPORT') ?: "52251";
 
     $conexion = mysqli_connect($host, $user, $pass, $db, (int)$port);
 
