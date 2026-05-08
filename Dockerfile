@@ -1,48 +1,24 @@
-FROM php:8.2-fpm
+FROM php:8.2-apache
 
 # Instalar extensiones de PHP
 RUN docker-php-ext-install mysqli pdo pdo_mysql
 
-# Instalar Nginx y supervisor
-RUN apt-get update && apt-get install -y nginx supervisor \
-    && rm -rf /var/lib/apt/lists/*
+# Desactivar mpm_event y activar mpm_prefork correctamente
+RUN a2dismod mpm_event mpm_worker 2>/dev/null || true \
+    && a2enmod mpm_prefork rewrite
 
-# Configurar Nginx
-RUN echo 'server { \
-    listen 80; \
-    server_name localhost; \
-    root /var/www/html; \
-    index index.php index.html; \
-    location / { \
-        try_files $uri $uri/ /index.php?$query_string; \
-    } \
-    location ~ \.php$ { \
-        fastcgi_pass 127.0.0.1:9000; \
-        fastcgi_index index.php; \
-        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name; \
-        include fastcgi_params; \
-    } \
-}' > /etc/nginx/sites-available/default
+# Configurar Apache para escuchar en el puerto que Railway asigne
+RUN sed -i 's/Listen 80/Listen ${PORT}/' /etc/apache2/ports.conf \
+    && sed -i 's/<VirtualHost \*:80>/<VirtualHost \*:${PORT}>/' /etc/apache2/sites-available/000-default.conf
 
-# Configurar supervisor
-RUN mkdir -p /etc/supervisor/conf.d && \
-    echo '[supervisord] \
-    nodaemon=true \
-    user=root \
-    [program:php-fpm] \
-    command=php-fpm \
-    autostart=true \
-    autorestart=true \
-    [program:nginx] \
-    command=nginx -g "daemon off;" \
-    autostart=true \
-    autorestart=true' > /etc/supervisor/conf.d/supervisord.conf
+# Habilitar .htaccess
+RUN sed -i 's/AllowOverride None/AllowOverride All/' /etc/apache2/apache2.conf
 
-# Copiar archivos
+# Copiar archivos del proyecto
 COPY . /var/www/html/
 
-# Puerto 80
+# Puerto dinámico (Railway asigna PORT)
 EXPOSE 80
 
-# Iniciar supervisor
-CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
+# Script de inicio que reemplaza ${PORT} por el valor real
+CMD ["sh", "-c", "export PORT=${PORT:-80} && sed -i \"s/\\${PORT}/$PORT/g\" /etc/apache2/ports.conf /etc/apache2/sites-available/000-default.conf && apache2-foreground"]
