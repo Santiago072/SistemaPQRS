@@ -1,5 +1,5 @@
-CREATE DATABASE IF NOT EXISTS sistema_pqrs CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE sistema_pqrs;
+
+USE railway;
 
 CREATE TABLE administrador (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
@@ -76,7 +76,7 @@ CREATE TABLE alerta_vencimiento (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     pqrs_id BIGINT NOT NULL,
     dias_restantes INTEGER NOT NULL,
-    nivel_alerta VARCHAR(20) NOT NULL, -- VERDE | AMARILLO | ROJO
+    nivel_alerta VARCHAR(20) NOT NULL, 
     notificacion_enviada BOOLEAN DEFAULT FALSE,
     fecha_generacion DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (pqrs_id) REFERENCES pqrs(id) ON DELETE CASCADE
@@ -94,7 +94,7 @@ CREATE TABLE reporte (
     total_rechazadas INTEGER DEFAULT 0,
     tiempo_promedio_respuesta DOUBLE DEFAULT 0,
     porcentaje_cumplimiento DOUBLE DEFAULT 0,
-    formato_exportacion VARCHAR(20) NOT NULL, -- PDF | EXCEL
+    formato_exportacion VARCHAR(20) NOT NULL, 
     administrador_id BIGINT NULL,
     FOREIGN KEY (administrador_id) REFERENCES administrador(id) ON DELETE SET NULL
 );
