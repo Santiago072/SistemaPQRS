@@ -1,15 +1,16 @@
 FROM php:8.2-fpm
 
-# Instalar extensiones de PHP necesarias
+# Instalar extensiones de PHP
 RUN docker-php-ext-install mysqli pdo pdo_mysql
 
-# Instalar Nginx y supervisor
-RUN apt-get update && apt-get install -y nginx supervisor \
+# Instalar Nginx
+RUN apt-get update && apt-get install -y nginx \
     && rm -rf /var/lib/apt/lists/*
 
 # Configurar Nginx
 RUN echo 'server { \
     listen 80; \
+    server_name localhost; \
     root /var/www/html; \
     index index.php index.html; \
     location / { \
@@ -23,24 +24,17 @@ RUN echo 'server { \
     } \
 }' > /etc/nginx/sites-available/default
 
-# Configurar supervisor para correr ambos procesos
-RUN echo '[supervisord]\n\
-nodaemon=true\n\
-\n\
-[program:php-fpm]\n\
-command=php-fpm\n\
-autostart=true\n\
-autorestart=true\n\
-\n\
-[program:nginx]\n\
-command=nginx -g "daemon off;"\n\
-autostart=true\n\
-autorestart=true' > /etc/supervisor/conf.d/supervisord.conf
+# Script de inicio que corre ambos servicios
+RUN echo '#!/bin/bash\n\
+php-fpm --daemonize\n\
+nginx -g "daemon off;"' > /start.sh && chmod +x /start.sh
 
 # Copiar archivos del proyecto
 COPY . /var/www/html/
 
-# Exponer puerto 80 (Railway detectará este puerto)
+# Railway usa la variable PORT, pero Nginx escucha en 80
+# Creamos un proxy simple si es necesario
+ENV PORT=80
 EXPOSE 80
 
-CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
+CMD ["/start.sh"]
