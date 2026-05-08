@@ -1,10 +1,10 @@
 <?php
 function conexion(){
-    $host = "turntable.proxy.rlwy.net";
-    $user = "root";
-    $pass = "YpKcDtbHqHcfaQwq1nxVNHiQq0brrYgk";
-    $db = "railway";
-    $port = 52251;
+    $host = getenv('MYSQLHOST') ?: "turntable.proxy.rlwy.net";
+    $user = getenv('MYSQLUSER') ?: "root";
+    $pass = getenv('MYSQLPASSWORD') ?: "YpKcDtbHqHcfaQwq1nxVNHiQq0brrYgk";
+    $db = getenv('MYSQLDATABASE') ?: "railway";
+    $port = getenv('MYSQLPORT') ?: 52251;
 
     $conexion = mysqli_connect($host, $user, $pass, $db, $port);
 
