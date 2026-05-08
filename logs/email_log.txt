@@ -1,0 +1,9 @@
+2026-05-07 03:30:26 | Para: santiagolizcanosuarez@gmail.com | Codigo: PQRS-2026-05-002 | Estado: FALLO
+2026-05-07 04:40:50 | ENVIADO | Para: santiagolizcanosuarez@gmail.com | Codigo: PQRS-2026-05-003
+2026-05-07 19:16:08 | ENVIADO | Para: murciacorredoremerson@gmail.com | Codigo: PQRS-2026-05-004
+2026-05-07 21:33:13 | ENVIADO | Para: pvfduni@gmail.com | Codigo: PQRS-2026-05-005
+2026-05-08 04:56:56 | ENVIADO-RESPUESTA | Para: pvfduni@gmail.com | Codigo: PQRS-2026-05-005
+2026-05-08 18:57:46 | ENVIADO | Para: gustavoadolfocabrera15@gmail.com | Codigo: PQRS-2026-05-006
+2026-05-08 19:02:20 | ENVIADO-RESPUESTA | Para: gustavoadolfocabrera15@gmail.com | Codigo: PQRS-2026-05-006
+2026-05-08 19:04:53 | ENVIADO-RESPUESTA | Para: gustavoadolfocabrera15@gmail.com | Codigo: PQRS-2026-05-006
+2026-05-08 19:11:05 | ENVIADO | Para: alejopmotta@gmail.com | Codigo: PQRS-2026-05-007
