@@ -1,32 +1,27 @@
-FROM debian:bookworm-slim
+FROM php:8.1-apache
 
-# Instalar Apache, PHP y extensiones necesarias
-RUN apt-get update && apt-get install -y \
-    apache2 \
-    php8.2 \
-    php8.2-mysql \
-    php8.2-mysqli \
-    libapache2-mod-php8.2 \
-    && rm -rf /var/lib/apt/lists/*
+# Instalar extensiones
+RUN docker-php-ext-install mysqli pdo pdo_mysql
+
+# Configurar Apache para el puerto dinámico de Railway
+RUN sed -i 's/Listen 80/Listen ${PORT}/' /etc/apache2/ports.conf
+RUN sed -i 's/<VirtualHost \*:80>/<VirtualHost \*:${PORT}>/' /etc/apache2/sites-available/000-default.conf
 
 # Habilitar mod_rewrite
 RUN a2enmod rewrite
 
-# Configurar Apache para usar el puerto dinámico de Railway
-RUN sed -i 's/Listen 80/Listen ${PORT}/' /etc/apache2/ports.conf \
-    && sed -i 's/<VirtualHost \*:80>/<VirtualHost \*:${PORT}>/' /etc/apache2/sites-available/000-default.conf
-
-# Permitir .htaccess
-RUN sed -i 's/AllowOverride None/AllowOverride All/' /etc/apache2/apache2.conf
-
-# Copiar archivos del proyecto
+# Copiar archivos
 COPY . /var/www/html/
 
-# Establecer permisos correctos
+# Permisos
 RUN chown -R www-data:www-data /var/www/html
 
-# Puerto dinámico
-EXPOSE 80
+# Script de inicio que configura el puerto dinámico
+RUN echo '#!/bin/bash\n\
+PORT=${PORT:-80}\n\
+sed -i "s/\\${PORT}/$PORT/g" /etc/apache2/ports.conf\n\
+sed -i "s/\\${PORT}/$PORT/g" /etc/apache2/sites-available/000-default.conf\n\
+echo "ServerName localhost" >> /etc/apache2/apache2.conf\n\
+apache2-foreground' > /start.sh && chmod +x /start.sh
 
-# Script de inicio que configura el puerto y arranca Apache
-CMD ["sh", "-c", "export PORT=${PORT:-80} && sed -i \"s/\\${PORT}/$PORT/g\" /etc/apache2/ports.conf /etc/apache2/sites-available/000-default.conf && apachectl -D FOREGROUND"]
+CMD ["/start.sh"]
