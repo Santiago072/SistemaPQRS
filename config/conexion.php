@@ -6,9 +6,14 @@ function conexion(){
     $db   = getenv('DB_NAME') ?: "railway";
     $port = getenv('DB_PORT') ?: "52251";
 
-    $conexion = mysqli_connect($host, $user, $pass, $db, (int)$port);
-
-    if (!$conexion) {
+    // Inicializar conexión
+    $conexion = mysqli_init();
+    
+    // Configurar SSL (requerido para caching_sha2_password)
+    mysqli_ssl_set($conexion, NULL, NULL, NULL, NULL, NULL);
+    
+    // Conectar con flag SSL
+    if (!mysqli_real_connect($conexion, $host, $user, $pass, $db, (int)$port, NULL, MYSQLI_CLIENT_SSL)) {
         die("Error de conexión: " . mysqli_connect_error());
     }
     
