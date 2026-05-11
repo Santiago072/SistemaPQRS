@@ -20,7 +20,7 @@ if (headers_sent() === false) {
 
 // CORREGIDO: Tiempo de inactividad (30 minutos = 1800 segundos)
 // Antes estaba en 300 (5 minutos), no 1800
-define('TIEMPO_INACTIVIDAD', 1800);
+define('TIEMPO_INACTIVIDAD', 300);
 
 // Verificar si hay sesión activa
 if (!isset($_SESSION['admin_id']) || empty($_SESSION['admin_id'])) {
