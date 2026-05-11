@@ -1,17 +1,13 @@
 <?php
-function conexion(){
-    $host = getenv('DB_HOST') ?: "mysql.railway.internal";
-    $user = getenv('DB_USER') ?: "root";
-    $pass = getenv('DB_PASS') ?: "YpKcDtbHqHcfaQwq1nxVNHiQq0brrYgk";
-    $db   = getenv('DB_NAME') ?: "railway";
-    $port = getenv('DB_PORT') ?: "3306";
+function conexion() {
+    $host = 'localhost';
+    $user = 'root';
+    $pass = '';
+    $db = 'sistema_pqrs';
 
-    $conexion = mysqli_connect($host, $user, $pass, $db, (int)$port);
-
+    $conexion = mysqli_connect($host, $user, $pass, $db);
     if (!$conexion) {
         die("Error de conexión: " . mysqli_connect_error());
     }
-    
     return $conexion;
 }
-?>
