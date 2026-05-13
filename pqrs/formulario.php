@@ -47,6 +47,17 @@ function enviarCorreoPQRS(
         $mail->Port       = $smtp_puerto;
         $mail->CharSet    = 'UTF-8';
 
+        // ⚡ TIMEOUTS CORTOS para evitar que se quede cargando
+        $mail->Timeout       = 10;  // Timeout de conexión (segundos)
+        $mail->SMTPKeepAlive = false;
+        $mail->SMTPOptions   = [
+            'ssl' => [
+                'verify_peer'       => false,
+                'verify_peer_name'  => false,
+                'allow_self_signed' => true
+            ]
+        ];
+
         $mail->setFrom($smtp_usuario, $smtp_nombre);
         $mail->addAddress($para, $nombre ?: 'Usuario');
 
