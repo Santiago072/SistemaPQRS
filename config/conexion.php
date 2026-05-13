@@ -1,9 +1,9 @@
 <?php
 function conexion() {
-    $host = 'localhost';
+    $host = 'mysql.railway.internal';
     $user = 'root';
-    $pass = '';
-    $db = 'sistema_pqrs';
+    $pass = 'YpKcDtbHqHcfaQwqlnxVNHiQqObrrYgk';
+    $db = 'railway';
 
     $conexion = mysqli_connect($host, $user, $pass, $db);
     if (!$conexion) {
