@@ -4,6 +4,11 @@
  * Usa PHPMailer (SMTP) en lugar de mail() nativo
  */
 
+// ⚡ SESSION START PRIMERO — antes de cualquier output
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
 require_once '../config/conexion.php';
 
 // ─── HELPER PHPMailer ──────────────────────────────────────────────────────────
@@ -11,6 +16,23 @@ use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
 require_once __DIR__ . '/../vendor/autoload.php';
+
+// ─── HELPER: Log seguro (evita errores de permisos en cloud) ─────────────────
+function logEmail(string $mensaje): void {
+    $paths = [
+        __DIR__ . '/../logs/email_log.txt',
+        '/tmp/pqrs_email_log.txt',
+    ];
+    foreach ($paths as $path) {
+        $dir = dirname($path);
+        if (!is_dir($dir)) {
+            @mkdir($dir, 0755, true);
+        }
+        if (@file_put_contents($path, $mensaje, FILE_APPEND | LOCK_EX) !== false) {
+            break;
+        }
+    }
+}
 
 /**
  * Envía el correo de confirmación usando PHPMailer + SMTP
@@ -139,14 +161,8 @@ function enviarCorreoPQRS(
         return true;
 
     } catch (Exception $e) {
-        $logFile = __DIR__ . '/../logs/email_log.txt';
-        if (!is_dir(dirname($logFile))) {
-            mkdir(dirname($logFile), 0755, true);
-        }
-        file_put_contents(
-            $logFile,
-            date('Y-m-d H:i:s') . " | FALLO | Para: $para | Codigo: $codigo_radicado | Error: {$mail->ErrorInfo}\n",
-            FILE_APPEND | LOCK_EX
+        logEmail(
+            date('Y-m-d H:i:s') . " | FALLO | Para: $para | Codigo: $codigo_radicado | Error: {$mail->ErrorInfo}\n"
         );
         return false;
     }
@@ -293,22 +309,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SERVER['HTTP_HOST']
         );
 
-        // Log de éxito también
-        $logFile = __DIR__ . '/../logs/email_log.txt';
-        if (!is_dir(dirname($logFile))) {
-            mkdir(dirname($logFile), 0755, true);
-        }
-        file_put_contents(
-            $logFile,
-            date('Y-m-d H:i:s') . " | " . ($correoEnviado ? "ENVIADO" : "FALLO") . " | Para: $correoDestino | Codigo: $codigo_radicado\n",
-            FILE_APPEND | LOCK_EX
+        // Log seguro (no genera warnings)
+        logEmail(
+            date('Y-m-d H:i:s') . " | " . ($correoEnviado ? "ENVIADO" : "FALLO") . " | Para: $correoDestino | Codigo: $codigo_radicado\n"
         );
     }
 
     mysqli_close($con);
 
-    // 8. REDIRIGIR A CONFIRMACIÓN
-    session_start();
+    // 8. REDIRIGIR A CONFIRMACIÓN (session ya iniciada arriba)
     $_SESSION['correo_enviado'] = $correoEnviado;
 
     header("Location: confirmacion.php?id=$pqrs_id");
