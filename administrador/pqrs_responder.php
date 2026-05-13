@@ -1,15 +1,15 @@
 <?php
 /* HU-Detalle y Respuesta: Formulario para responder PQRS y cambiar estado
    Envía correo al ciudadano si tiene correo registrado (Opción B)
+   Usa SendGrid API (HTTP) en lugar de PHPMailer SMTP
 */
 
 include '../includes/verificar_sesion.php';
 include '../config/conexion.php';
 include '../includes/funciones.php';
 
-// ─── PHPMailer ────────────────────────────────────────────────────────────────
-use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\Exception;
+// ─── SendGrid ────────────────────────────────────────────────────────────────
+use SendGrid\Mail\Mail;
 require_once __DIR__ . '/../vendor/autoload.php';
 
 // ─── HELPER: Log seguro (evita errores de permisos en cloud) ─────────────────
@@ -30,7 +30,7 @@ function logEmail(string $mensaje): void {
 }
 
 /**
- * Envía correo de notificación de respuesta al ciudadano.
+ * Envía correo de notificación de respuesta al ciudadano usando SendGrid API.
  * Solo se llama si el usuario tiene correo registrado (Opción B).
  */
 function enviarCorreoRespuesta(
@@ -43,11 +43,16 @@ function enviarCorreoRespuesta(
     string $nuevo_estado,
     string $host
 ): bool {
-    // ✅ USAR esto:
-$emailConfig = require __DIR__ . '/../config/email_config.php';
-$sendgrid_api_key = $emailConfig['sendgrid_api_key'];
-$from_email = $emailConfig['from_email'];
-$from_name  = $emailConfig['from_name'];
+
+    // Leer configuración desde variables de entorno de Railway
+    $sendgrid_api_key = $_ENV['SENDGRID_API_KEY'] ?? '';
+    $from_email       = $_ENV['SENDGRID_FROM_EMAIL'] ?? 'santiagolizcanosuarez@gmail.com';
+    $from_name        = $_ENV['SENDGRID_FROM_NAME']  ?? 'Sistema PQRS';
+
+    if (empty($sendgrid_api_key)) {
+        logEmail(date('Y-m-d H:i:s') . " | FALLO-RESPUESTA | SendGrid API Key no configurada\n");
+        return false;
+    }
 
     // Colores y texto según estado
     $estadoColores = [
@@ -66,39 +71,15 @@ $from_name  = $emailConfig['from_name'];
         'denuncia'   => 'Denuncia',
     ][$tipo_pqrs] ?? ucfirst($tipo_pqrs);
 
-    $mail = new PHPMailer(true);
-
     try {
-        $mail->isSMTP();
-        $mail->Host       = $smtp_host;
-        $mail->SMTPAuth   = true;
-        $mail->Username   = $smtp_usuario;
-        $mail->Password   = $smtp_password;
-        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-        $mail->Port       = $smtp_puerto;
-        $mail->CharSet    = 'UTF-8';
+        $email = new Mail();
+        $email->setFrom($from_email, $from_name);
+        $email->addTo($para, $nombre ?: 'Ciudadano');
+        $email->setSubject("Respuesta a su solicitud PQRS - $codigo_radicado");
 
-        // ⚡ TIMEOUTS CORTOS para evitar que se quede cargando
-        $mail->Timeout       = 10;  // Timeout de conexión (segundos)
-        $mail->SMTPKeepAlive = false;
-        $mail->SMTPOptions   = [
-            'ssl' => [
-                'verify_peer'       => false,
-                'verify_peer_name'  => false,
-                'allow_self_signed' => true
-            ]
-        ];
-
-        $mail->setFrom($smtp_usuario, $smtp_nombre);
-        $mail->addAddress($para, $nombre ?: 'Ciudadano');
-
-        $mail->Subject = "Respuesta a su solicitud PQRS - $codigo_radicado";
-        $mail->isHTML(true);
-
-        // Respuesta con saltos de línea convertidos a <br>
         $respuesta_html = nl2br(htmlspecialchars($contenido_respuesta));
 
-        $mail->Body = "
+        $html = "
         <!DOCTYPE html>
         <html>
         <head>
@@ -179,7 +160,8 @@ $from_name  = $emailConfig['from_name'];
         </body>
         </html>";
 
-        $mail->AltBody =
+        $email->addContent("text/html", $html);
+        $email->addContent("text/plain", 
             "Su solicitud PQRS ha sido atendida.\n\n"
             . "Código: $codigo_radicado\n"
             . "Tipo: $tipoLabel\n"
@@ -187,15 +169,22 @@ $from_name  = $emailConfig['from_name'];
             . "Estado: {$estado['texto']}\n"
             . "Fecha de respuesta: " . date('d/m/Y H:i:s') . "\n\n"
             . "Respuesta:\n$contenido_respuesta\n\n"
-            . "Consulte en: http://{$host}/pqrs/consulta_pqrs.php?codigo=" . urlencode($codigo_radicado);
-
-        $mail->send();
-        return true;
-
-    } catch (Exception $e) {
-        logEmail(
-            date('Y-m-d H:i:s') . " | FALLO-RESPUESTA | Para: $para | Codigo: $codigo_radicado | Error: {$mail->ErrorInfo}\n"
+            . "Consulte en: http://{$host}/pqrs/consulta_pqrs.php?codigo=" . urlencode($codigo_radicado)
         );
+
+        $sendgrid = new \SendGrid($sendgrid_api_key);
+        $response = $sendgrid->send($email);
+        $statusCode = $response->statusCode();
+
+        if ($statusCode >= 200 && $statusCode < 300) {
+            return true;
+        } else {
+            logEmail(date('Y-m-d H:i:s') . " | FALLO-RESPUESTA-SENDGRID | Para: $para | Status: $statusCode | Body: " . $response->body() . "\n");
+            return false;
+        }
+
+    } catch (\Exception $e) {
+        logEmail(date('Y-m-d H:i:s') . " | FALLO-RESPUESTA-EXCEPTION | Para: $para | Error: " . $e->getMessage() . "\n");
         return false;
     }
 }
