@@ -56,3 +56,9 @@ caddy run --config /etc/caddy/Caddyfile --adapter caddyfile' > /start.sh && chmo
 EXPOSE 80
 
 CMD ["/start.sh"]
+
+# Crear carpeta logs con permisos para www-data
+RUN mkdir -p /var/www/html/logs && chown -R www-data:www-data /var/www/html/logs
+
+# Asegurar que uploads también tenga permisos
+RUN mkdir -p /var/www/html/pqrs/uploads && chown -R www-data:www-data /var/www/html/pqrs/uploads
