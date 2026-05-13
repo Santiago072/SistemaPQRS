@@ -7,3 +7,6 @@
 2026-05-08 19:02:20 | ENVIADO-RESPUESTA | Para: gustavoadolfocabrera15@gmail.com | Codigo: PQRS-2026-05-006
 2026-05-08 19:04:53 | ENVIADO-RESPUESTA | Para: gustavoadolfocabrera15@gmail.com | Codigo: PQRS-2026-05-006
 2026-05-08 19:11:05 | ENVIADO | Para: alejopmotta@gmail.com | Codigo: PQRS-2026-05-007
+2026-05-09 00:34:29 | ENVIADO | Para: santiagosiu07@gmail.com | Codigo: PQRS-2026-05-008
+2026-05-09 00:36:54 | ENVIADO | Para: santiagolizcanosuarez@gmail.com | Codigo: PQRS-2026-05-009
+2026-05-09 00:38:54 | ENVIADO-RESPUESTA | Para: santiagolizcanosuarez@gmail.com | Codigo: PQRS-2026-05-009

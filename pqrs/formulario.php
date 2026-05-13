@@ -1,7 +1,7 @@
 <?php
 /**
  * HU-04 + HU-05: Formulario Adaptable + Generación de Código + Envío de Correo
- * Usa PHPMailer (SMTP) en lugar de mail() nativo
+ * Usa SendGrid API (HTTP) en lugar de PHPMailer SMTP
  */
 
 // ⚡ SESSION START PRIMERO — antes de cualquier output
@@ -10,12 +10,9 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 require_once '../config/conexion.php';
-
-// ─── HELPER PHPMailer ──────────────────────────────────────────────────────────
-use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\Exception;
-
 require_once __DIR__ . '/../vendor/autoload.php';
+
+use SendGrid\Mail\Mail;
 
 // ─── HELPER: Log seguro (evita errores de permisos en cloud) ─────────────────
 function logEmail(string $mensaje): void {
@@ -35,7 +32,7 @@ function logEmail(string $mensaje): void {
 }
 
 /**
- * Envía el correo de confirmación usando PHPMailer + SMTP
+ * Envía el correo de confirmación usando SendGrid API
  */
 function enviarCorreoPQRS(
     string $para,
@@ -46,42 +43,24 @@ function enviarCorreoPQRS(
     string $fecha_vencimiento,
     string $host
 ): bool {
-    // ✅ USAR esto:
-$emailConfig = require __DIR__ . '/../config/email_config.php';
-$sendgrid_api_key = $emailConfig['sendgrid_api_key'];
-$from_email = $emailConfig['from_email'];
-$from_name  = $emailConfig['from_name'];
-    
-    $mail = new PHPMailer(true);
+
+    // Leer configuración desde variables de entorno de Railway
+    $sendgrid_api_key = $_ENV['SENDGRID_API_KEY'] ?? '';
+    $from_email       = $_ENV['SENDGRID_FROM_EMAIL'] ?? 'santiagolizcanosuarez@gmail.com';
+    $from_name        = $_ENV['SENDGRID_FROM_NAME']  ?? 'Sistema PQRS';
+
+    if (empty($sendgrid_api_key)) {
+        logEmail(date('Y-m-d H:i:s') . " | FALLO | SendGrid API Key no configurada\n");
+        return false;
+    }
 
     try {
-        $mail->isSMTP();
-        $mail->Host       = $smtp_host;
-        $mail->SMTPAuth   = true;
-        $mail->Username   = $smtp_usuario;
-        $mail->Password   = $smtp_password;
-        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-        $mail->Port       = $smtp_puerto;
-        $mail->CharSet    = 'UTF-8';
+        $email = new Mail();
+        $email->setFrom($from_email, $from_name);
+        $email->addTo($para, $nombre ?: 'Usuario');
+        $email->setSubject("Confirmación de Radicación PQRS - $codigo_radicado");
 
-        // ⚡ TIMEOUTS CORTOS para evitar que se quede cargando
-        $mail->Timeout       = 10;  // Timeout de conexión (segundos)
-        $mail->SMTPKeepAlive = false;
-        $mail->SMTPOptions   = [
-            'ssl' => [
-                'verify_peer'       => false,
-                'verify_peer_name'  => false,
-                'allow_self_signed' => true
-            ]
-        ];
-
-        $mail->setFrom($smtp_usuario, $smtp_nombre);
-        $mail->addAddress($para, $nombre ?: 'Usuario');
-
-        $mail->Subject = "Confirmación de Radicación PQRS - $codigo_radicado";
-        $mail->isHTML(true);
-
-        $mail->Body = "
+        $html = "
         <!DOCTYPE html>
         <html>
         <head>
@@ -143,22 +122,30 @@ $from_name  = $emailConfig['from_name'];
         </body>
         </html>";
 
-        $mail->AltBody =
+        $email->addContent("text/html", $html);
+        $email->addContent("text/plain", 
             "Solicitud PQRS radicada.\n\n"
             . "Código: $codigo_radicado\n"
             . "Tipo: " . ucfirst($tipo_pqrs) . "\n"
             . "Asunto: $asunto_solicitud\n"
             . "Radicado: " . date('d/m/Y H:i:s') . "\n"
             . "Vencimiento: $fecha_vencimiento\n\n"
-            . "Consulte en: http://{$host}/pqrs/consultar.php?codigo=" . urlencode($codigo_radicado);
-
-        $mail->send();
-        return true;
-
-    } catch (Exception $e) {
-        logEmail(
-            date('Y-m-d H:i:s') . " | FALLO | Para: $para | Codigo: $codigo_radicado | Error: {$mail->ErrorInfo}\n"
+            . "Consulte en: http://{$host}/pqrs/consulta_pqrs.php?codigo=" . urlencode($codigo_radicado)
         );
+
+        $sendgrid = new \SendGrid($sendgrid_api_key);
+        $response = $sendgrid->send($email);
+        $statusCode = $response->statusCode();
+
+        if ($statusCode >= 200 && $statusCode < 300) {
+            return true;
+        } else {
+            logEmail(date('Y-m-d H:i:s') . " | FALLO-SENDGRID | Para: $para | Status: $statusCode | Body: " . $response->body() . "\n");
+            return false;
+        }
+
+    } catch (\Exception $e) {
+        logEmail(date('Y-m-d H:i:s') . " | FALLO-EXCEPTION | Para: $para | Error: " . $e->getMessage() . "\n");
         return false;
     }
 }
@@ -283,7 +270,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     $pqrs_id = mysqli_insert_id($con);
 
-    // 7. ENVIAR CORREO CON PHPMAILER
+    // 7. ENVIAR CORREO CON SENDGRID
     $correoDestino = null;
     if ($tipo_persona === 'natural') {
         $correoDestino = $correo_electronico;
