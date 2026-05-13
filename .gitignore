@@ -1,3 +1,6 @@
 dompdf/
 uploads/
 config/conexion.php
+config/email_config.php
+pqrs/formulario.php
+pqrs/responder.php

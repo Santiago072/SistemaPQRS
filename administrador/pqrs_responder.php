@@ -12,6 +12,23 @@ use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 require_once __DIR__ . '/../vendor/autoload.php';
 
+// ─── HELPER: Log seguro (evita errores de permisos en cloud) ─────────────────
+function logEmail(string $mensaje): void {
+    $paths = [
+        __DIR__ . '/../logs/email_log.txt',
+        '/tmp/pqrs_email_log.txt',
+    ];
+    foreach ($paths as $path) {
+        $dir = dirname($path);
+        if (!is_dir($dir)) {
+            @mkdir($dir, 0755, true);
+        }
+        if (@file_put_contents($path, $mensaje, FILE_APPEND | LOCK_EX) !== false) {
+            break;
+        }
+    }
+}
+
 /**
  * Envía correo de notificación de respuesta al ciudadano.
  * Solo se llama si el usuario tiene correo registrado (Opción B).
@@ -26,16 +43,11 @@ function enviarCorreoRespuesta(
     string $nuevo_estado,
     string $host
 ): bool {
-
-    // =====================================================
-    //  *** CREDENCIALES SMTP — iguales que en formulario.php ***
-    // =====================================================
-    $smtp_host     = 'smtp.gmail.com';
-    $smtp_usuario  = 'santiagolizcanosuarez@gmail.com';
-    $smtp_password = 'ueud mnzg asuj kvxm';
-    $smtp_puerto   = 587;
-    $smtp_nombre   = 'Sistema PQRS';
-    // =====================================================
+    // ✅ USAR esto:
+$emailConfig = require __DIR__ . '/../config/email_config.php';
+$sendgrid_api_key = $emailConfig['sendgrid_api_key'];
+$from_email = $emailConfig['from_email'];
+$from_name  = $emailConfig['from_name'];
 
     // Colores y texto según estado
     $estadoColores = [
@@ -65,6 +77,17 @@ function enviarCorreoRespuesta(
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
         $mail->Port       = $smtp_puerto;
         $mail->CharSet    = 'UTF-8';
+
+        // ⚡ TIMEOUTS CORTOS para evitar que se quede cargando
+        $mail->Timeout       = 10;  // Timeout de conexión (segundos)
+        $mail->SMTPKeepAlive = false;
+        $mail->SMTPOptions   = [
+            'ssl' => [
+                'verify_peer'       => false,
+                'verify_peer_name'  => false,
+                'allow_self_signed' => true
+            ]
+        ];
 
         $mail->setFrom($smtp_usuario, $smtp_nombre);
         $mail->addAddress($para, $nombre ?: 'Ciudadano');
@@ -170,15 +193,8 @@ function enviarCorreoRespuesta(
         return true;
 
     } catch (Exception $e) {
-        // Log del error
-        $logFile = __DIR__ . '/../logs/email_log.txt';
-        if (!is_dir(dirname($logFile))) {
-            mkdir(dirname($logFile), 0755, true);
-        }
-        file_put_contents(
-            $logFile,
-            date('Y-m-d H:i:s') . " | FALLO-RESPUESTA | Para: $para | Codigo: $codigo_radicado | Error: {$mail->ErrorInfo}\n",
-            FILE_APPEND | LOCK_EX
+        logEmail(
+            date('Y-m-d H:i:s') . " | FALLO-RESPUESTA | Para: $para | Codigo: $codigo_radicado | Error: {$mail->ErrorInfo}\n"
         );
         return false;
     }
@@ -281,16 +297,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $_SERVER['HTTP_HOST']
                 );
 
-                // Log
-                $logFile = __DIR__ . '/../logs/email_log.txt';
-                if (!is_dir(dirname($logFile))) {
-                    mkdir(dirname($logFile), 0755, true);
-                }
-                file_put_contents(
-                    $logFile,
+                // Log seguro (no genera warnings)
+                logEmail(
                     date('Y-m-d H:i:s') . " | " . ($correo_notificado ? "ENVIADO-RESPUESTA" : "FALLO-RESPUESTA")
-                    . " | Para: $correoDestino | Codigo: {$datos['codigo_radicado']}\n",
-                    FILE_APPEND | LOCK_EX
+                    . " | Para: $correoDestino | Codigo: {$datos['codigo_radicado']}\n"
                 );
             }
         }
