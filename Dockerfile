@@ -18,25 +18,28 @@ RUN apt-get update && apt-get install -y \
     && curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | tee /etc/apt/sources.list.d/caddy-stable.list \
     && apt-get update && apt-get install -y caddy \
     && rm -rf /var/lib/apt/lists/* \
-    # Instalar Composer
     && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-# Copiar archivos del proyecto PRIMERO (para aprovechar cache de Docker)
+# Copiar archivos del proyecto
 COPY composer.json composer.lock* /var/www/html/
 
-# Instalar dependencias PHP (PHPMailer, etc.)
+# Instalar dependencias PHP
 WORKDIR /var/www/html
 RUN composer install --no-dev --optimize-autoloader --no-interaction
 
-# Copiar el resto de archivos del proyecto
+# Copiar el resto de archivos
 COPY . /var/www/html/
 
-# Script de inicio (genera Caddyfile dinámicamente)
+# ✅ Crear carpetas con permisos ANTES del script de inicio
+RUN mkdir -p /var/www/html/logs \
+    && mkdir -p /var/www/html/pqrs/uploads \
+    && chown -R www-data:www-data /var/www/html/logs \
+    && chown -R www-data:www-data /var/www/html/pqrs/uploads
+
+# Script de inicio
 RUN echo '#!/bin/bash\n\
 PORT=${PORT:-80}\n\
 echo "Iniciando en puerto: $PORT"\n\
-\n\
-# Generar Caddyfile con el puerto real\n\
 cat > /etc/caddy/Caddyfile << EOF\n\
 :${PORT} {\n\
     root * /var/www/html\n\
@@ -45,20 +48,8 @@ cat > /etc/caddy/Caddyfile << EOF\n\
     try_files {path} {path}/ /index.php\n\
 }\n\
 EOF\n\
-\n\
-# Iniciar PHP-FPM en background\n\
 php-fpm --daemonize\n\
-\n\
-# Iniciar Caddy\n\
 caddy run --config /etc/caddy/Caddyfile --adapter caddyfile' > /start.sh && chmod +x /start.sh
 
-# Puerto dinámico (Railway lo sobreescribe)
 EXPOSE 80
-
 CMD ["/start.sh"]
-
-# Crear carpeta logs con permisos para www-data
-RUN mkdir -p /var/www/html/logs && chown -R www-data:www-data /var/www/html/logs
-
-# Asegurar que uploads también tenga permisos
-RUN mkdir -p /var/www/html/pqrs/uploads && chown -R www-data:www-data /var/www/html/pqrs/uploads
