@@ -46,17 +46,12 @@ function enviarCorreoPQRS(
     string $fecha_vencimiento,
     string $host
 ): bool {
-
-    // =====================================================
-    //  *** EDITA ESTOS VALORES CON TUS CREDENCIALES ***
-    // =====================================================
-    $smtp_host     = 'smtp.gmail.com';          // Servidor SMTP
-    $smtp_usuario  = 'santiagolizcanosuarez@gmail.com';       // Tu correo remitente
-    $smtp_password = 'ueud mnzg asuj kvxm';     // Contraseña de aplicación
-    $smtp_puerto   = 587;                        // 587 (TLS) o 465 (SSL)
-    $smtp_nombre   = 'Sistema PQRS';             // Nombre visible al destinatario
-    // =====================================================
-
+    // ✅ USAR esto:
+$emailConfig = require __DIR__ . '/../config/email_config.php';
+$sendgrid_api_key = $emailConfig['sendgrid_api_key'];
+$from_email = $emailConfig['from_email'];
+$from_name  = $emailConfig['from_name'];
+    
     $mail = new PHPMailer(true);
 
     try {
