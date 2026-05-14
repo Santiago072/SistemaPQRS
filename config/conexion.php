@@ -1,8 +1,8 @@
 <?php
-/* function conexion() {
+function conexion() {
     $host = 'mysql.railway.internal';
     $user = 'root';
-    $pass = 'YpKcDtbHqHcfaQwqlnxVNHiQqObrrYgk';
+    $pass = 'WVXMFjQXkasneOrwxSgOESFYaYKhpBYz';
     $db = 'railway';
 
     $conexion = mysqli_connect($host, $user, $pass, $db);
@@ -10,11 +10,11 @@
         die("Error de conexión: " . mysqli_connect_error());
     }
     return $conexion;
-} */
-function conexion() {
+}
+/* function conexion() {
     $host = 'localhost';
     $user = 'root';
-    $pass = 'root';
+    $pass = '';
     $db = 'sistema_pqrs';
 
     $conexion = mysqli_connect($host, $user, $pass, $db);
@@ -23,4 +23,4 @@ function conexion() {
     }
     return $conexion;
 }
-?>
+?> */
