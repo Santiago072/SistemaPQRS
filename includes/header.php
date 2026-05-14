@@ -1,20 +1,5 @@
 <?php
-// Definir BASE_URL si no existe (compatible con cualquier inclusión)
-if (!defined('BASE_URL')) {
-    $protocolo = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
-    $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
-    
-    // Detectar Railway
-    $isRailway = (getenv('RAILWAY_ENVIRONMENT') !== false) 
-              || (strpos($host, 'railway.app') !== false);
-    
-    if ($isRailway) {
-        define('BASE_URL', $protocolo . '://' . $host . '/');
-    } else {
-        // XAMPP local
-        define('BASE_URL', $protocolo . '://' . $host . '/PROYECTO_PQRS/');
-    }
-}
+require_once __DIR__ . '/../config/config.php';
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -43,3 +28,4 @@ if (!defined('BASE_URL')) {
             </nav>
         </div>
     </header>
+</body>
