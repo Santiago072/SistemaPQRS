@@ -1,6 +1,9 @@
 <?php
-if (!defined('BASE_URL')) {
-    require_once __DIR__ . '/../config/config.php';
+if (!isset($basePath)) {
+    $scriptDir = dirname($_SERVER['SCRIPT_NAME']);
+    $depth = substr_count($scriptDir, '/') - 1;
+    $basePath = str_repeat('../', max(0, $depth));
+    if (empty($basePath)) $basePath = './';
 }
 ?>
     <footer class="footer">
@@ -19,9 +22,9 @@ if (!defined('BASE_URL')) {
                 <div>
                     <h4 class="footer-title">Enlaces Rápidos</h4>
                     <ul class="footer-links">
-                        <li><a href="<?php echo BASE_URL; ?>pqrs/tipos.php"><i class="bi bi-pencil-square"></i> Nueva Solicitud</a></li>
-                        <li><a href="<?php echo BASE_URL; ?>pqrs/consulta_pqrs.php"><i class="bi bi-search"></i> Consultar Estado</a></li>
-                        <li><a href="<?php echo BASE_URL; ?>administrador/login.php"><i class="bi bi-shield-lock"></i> Panel Administrador</a></li>
+                        <li><a href="<?php echo $basePath; ?>pqrs/tipos.php"><i class="bi bi-pencil-square"></i> Nueva Solicitud</a></li>
+                        <li><a href="<?php echo $basePath; ?>pqrs/consulta_pqrs.php"><i class="bi bi-search"></i> Consultar Estado</a></li>
+                        <li><a href="<?php echo $basePath; ?>administrador/login.php"><i class="bi bi-shield-lock"></i> Panel Administrador</a></li>
                     </ul>
                 </div>
                 <div>
