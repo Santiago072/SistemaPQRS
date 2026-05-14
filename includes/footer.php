@@ -1,5 +1,7 @@
 <?php
-require_once __DIR__ . '/../config/config.php';
+if (!defined('BASE_URL')) {
+    require_once __DIR__ . '/../config/config.php';
+}
 ?>
     <footer class="footer">
         <div class="container">

@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/config/config.php';
+require_once __DIR__ . '/../config/config.php';
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -28,4 +28,3 @@ require_once __DIR__ . '/config/config.php';
             </nav>
         </div>
     </header>
-</body>
