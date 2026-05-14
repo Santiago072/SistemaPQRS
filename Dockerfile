@@ -20,21 +20,23 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/* \
     && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-# Copiar archivos del proyecto
-COPY composer.json composer.lock* /var/www/html/
+WORKDIR /var/www/html
+
+# Copiar SOLO composer primero para cachear dependencias
+COPY composer.json composer.lock ./
 
 # Instalar dependencias PHP
-WORKDIR /var/www/html
 RUN composer install --no-dev --optimize-autoloader --no-interaction
 
-# Copiar el resto de archivos
-COPY . /var/www/html/
+# Copiar el resto de archivos del proyecto
+COPY . .
 
-# ✅ Crear carpetas con permisos ANTES del script de inicio
+# ✅ Crear carpetas con permisos
 RUN mkdir -p /var/www/html/logs \
     && mkdir -p /var/www/html/pqrs/uploads \
     && chown -R www-data:www-data /var/www/html/logs \
-    && chown -R www-data:www-data /var/www/html/pqrs/uploads
+    && chown -R www-data:www-data /var/www/html/pqrs/uploads \
+    && chown -R www-data:www-data /var/www/html/vendor
 
 # Script de inicio
 RUN echo '#!/bin/bash\n\
