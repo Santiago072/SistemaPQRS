@@ -5,8 +5,7 @@ include '../includes/verificar_sesion.php';
 include '../config/conexion.php';
 
 // CORREGIDO: Ruta correcta del autoload de DomPDF según tu estructura
-require_once '../dompdf/vendor/autoload.php';
-
+require_once '../vendor/autoload.php';
 use Dompdf\Dompdf;
 use Dompdf\Options;
 
