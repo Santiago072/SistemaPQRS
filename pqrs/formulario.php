@@ -217,17 +217,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $usuario_id = mysqli_insert_id($con);
 
     // 3. GENERAR CÓDIGO RADICADO
-    $anio = date('Y');
-    $mes  = date('m');
+$anio = date('Y');
+$mes  = date('m');
 
-    $sqlConsecutivo = "SELECT COUNT(*) as total FROM pqrs
-                       WHERE YEAR(fecha_radicacion) = $anio
-                       AND MONTH(fecha_radicacion)  = $mes";
-    $resultCons  = mysqli_query($con, $sqlConsecutivo);
-    $rowCons     = mysqli_fetch_assoc($resultCons);
-    $consecutivo = str_pad(($rowCons['total'] + 1), 3, '0', STR_PAD_LEFT);
+// Buscar el máximo consecutivo existente (no contar registros)
+$sqlConsecutivo = "SELECT MAX(CAST(SUBSTRING(codigo_radicado, -3) AS UNSIGNED)) as max_num 
+                   FROM pqrs 
+                   WHERE YEAR(fecha_radicacion) = $anio 
+                   AND MONTH(fecha_radicacion) = $mes";
+$resultCons  = mysqli_query($con, $sqlConsecutivo);
+$rowCons     = mysqli_fetch_assoc($resultCons);
+$maxNum      = $rowCons['max_num'] ?? 0;
+$consecutivo = str_pad(($maxNum + 1), 3, '0', STR_PAD_LEFT);
 
-    $codigo_radicado = "PQRS-{$anio}-{$mes}-{$consecutivo}";
+$codigo_radicado = "PQRS-{$anio}-{$mes}-{$consecutivo}";
 
     // 4. CALCULAR FECHA DE VENCIMIENTO
     $sqlConfig  = "SELECT dias_vencimiento_peticion, dias_vencimiento_queja,
