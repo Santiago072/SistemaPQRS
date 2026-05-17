@@ -96,7 +96,12 @@ $meses = ['01' => 'Ene', '02' => 'Feb', '03' => 'Mar', '04' => 'Abr', '05' => 'M
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reportes - Sistema PQRS</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="css/estilos.css">
+    <?php
+$host = $_SERVER['HTTP_HOST'] ?? 'localhost';
+$isRailway = (strpos($host, 'railway.app') !== false) || (getenv('RAILWAY_ENVIRONMENT') !== false);
+$baseUrl = $isRailway ? '/' : '/PROYECTO_PQRS/';
+?>
+<link rel="stylesheet" href="<?php echo $baseUrl; ?>css/estilos.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
