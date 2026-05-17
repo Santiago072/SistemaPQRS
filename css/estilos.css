@@ -60,6 +60,16 @@
     --consulta-max: 900px;
 }
 
+.btn-cerrar-sesion {
+    color: #dc3545;
+    border-color: #dc3545;
+}
+
+.btn-cerrar-sesion:hover {
+    background-color: #dc3545;
+    color: #fff;
+}
+
 /* ── 2. RESET ────────────────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
