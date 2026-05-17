@@ -17,6 +17,11 @@ if (isset($_COOKIE[session_name()])) {
 // Destruir la sesión
 session_destroy();
 
+// Detectar entorno para redirección correcta
+$host = $_SERVER['HTTP_HOST'] ?? 'localhost';
+$isRailway = (strpos($host, 'railway.app') !== false) || (getenv('RAILWAY_ENVIRONMENT') !== false);
+$baseUrl = $isRailway ? '/' : '/PROYECTO_PQRS/';
+
 // Redirigir al login
-header('Location: login.php?logout=1');
+header('Location: ' . $baseUrl . 'administrador/login.php?logout=1');
 exit();
