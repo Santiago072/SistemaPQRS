@@ -11,7 +11,11 @@ if ($isRailway) {
 }
 
 // Verificar si hay sesión de administrador activa
-session_start();
+// session_start() SOLO si no hay sesión activa (evita el notice)
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
 $sesionActiva = isset($_SESSION['admin_id']) || isset($_SESSION['usuario_id']) || isset($_SESSION['rol']);
 ?>
 <header class="header">
@@ -24,18 +28,19 @@ $sesionActiva = isset($_SESSION['admin_id']) || isset($_SESSION['usuario_id']) |
         </a>
 
         <nav class="nav-admin" aria-label="Navegación administrativa">
+            <?php if ($sesionActiva): ?>
+                <!-- Si hay sesión activa: mostrar SOLO botón de cerrar sesión -->
+                <a href="<?php echo $baseUrl; ?>administrador/logout.php" class="btn btn-outline btn-cerrar-sesion">
+                    <i class="bi bi-box-arrow-right" aria-hidden="true"></i>
+                    <span>Cerrar Sesión</span>
+                </a>
+            <?php else: ?>
                 <!-- Si NO hay sesión: mostrar botón de administrador -->
                 <a href="<?php echo $baseUrl; ?>administrador/login.php" class="btn btn-outline">
                     <i class="bi bi-shield-lock" aria-hidden="true"></i>
                     <span>Administrador</span>
                 </a>
-                <?php if ($sesionActiva): ?>
-                <!-- Si hay sesión activa: mostrar botón de cerrar sesión -->
-                <a href="<?php echo $baseUrl; ?>administrador/logout.php" class="btn btn-outline btn-cerrar-sesion">
-                    <i class="bi bi-box-arrow-right" aria-hidden="true"></i>
-                    <span>Cerrar Sesión</span>
-                </a>
-                 <?php endif; ?>
+            <?php endif; ?>
         </nav>
     </div>
 </header>
