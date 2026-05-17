@@ -1,33 +1,29 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Header - Sistema PQRS</title>
-    <!-- Bootstrap Icons CDN -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
-    <!-- Hoja de estilos única del sistema -->
-    <link rel="stylesheet" href="../css/estilos.css">
-</head>
-<body>
+<?php
+// Detectar si estamos en Railway o XAMPP local
+$host = $_SERVER['HTTP_HOST'] ?? 'localhost';
+$isRailway = (strpos($host, 'railway.app') !== false) || (getenv('RAILWAY_ENVIRONMENT') !== false);
+
+// Base URL: en Railway es raíz, en XAMPP es /PROYECTO_PQRS/
+if ($isRailway) {
+    $baseUrl = '/';
+} else {
+    $baseUrl = '/PROYECTO_PQRS/';
+}
+?>
     <header class="header">
         <div class="container header-container">
-            <!-- Logo -->
-            <a href="../index.php" class="logo" aria-label="Inicio - Sistema PQRS">
+            <a href="<?php echo $baseUrl; ?>index.php" class="logo" aria-label="Inicio - Sistema PQRS">
                 <span class="logo-icon" aria-hidden="true">
                     <i class="bi bi-clipboard-data"></i>
                 </span>
                 <span>Sistema PQRS</span>
             </a>
 
-            <!-- Login Admin (discreto, esquina superior derecha) -->
             <nav class="nav-admin" aria-label="Navegación administrativa">
-                <a href="administrador/login.php" class="btn btn-outline" aria-label="Acceder al panel de administración">
+                <a href="<?php echo $baseUrl; ?>administrador/login.php" class="btn btn-outline">
                     <i class="bi bi-shield-lock" aria-hidden="true"></i>
                     <span>Administrador</span>
                 </a>
             </nav>
         </div>
     </header>
-</body>
-</html>

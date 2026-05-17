@@ -7,12 +7,15 @@
     <meta name="keywords" content="PQRS, peticiones, quejas, reclamos, sugerencias, denuncias, servicios públicos, Neiva">
     <meta name="author" content="Sistema PQRS">
     <title>Sistema PQRS - Gestión de Peticiones, Quejas, Reclamos y Sugerencias</title>
-
     <!-- Bootstrap Icons CDN -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
-
     <!-- Hoja de estilos única del sistema -->
-    <link rel="stylesheet" href="css/estilos.css">
+    <?php
+$host = $_SERVER['HTTP_HOST'] ?? 'localhost';
+$isRailway = (strpos($host, 'railway.app') !== false) || (getenv('RAILWAY_ENVIRONMENT') !== false);
+$baseUrl = $isRailway ? '/' : '/PROYECTO_PQRS/';
+?>
+<link rel="stylesheet" href="<?php echo $baseUrl; ?>css/estilos.css">
 <base>
 </head>
 <body>

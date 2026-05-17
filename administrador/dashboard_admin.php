@@ -141,13 +141,12 @@ if ($con) {
             </div>
 
             <!-- Acceso rápido -->
-            <!-- Acceso rápido -->
 <div class="acceso-rapido-section">
     <div class="dashboard-section-title">
         <h2><i class="bi bi-lightning"></i> Acceso Rápido</h2>
     </div>
     <div class="acceso-grid">
-        <a href="pqrs.php" class="acceso-card">
+        <a href="pqrs.php" class="acceso-card">  <!-- relativo, mismo directorio -->
             <div class="acceso-icon acceso-inbox">
                 <i class="bi bi-inbox-fill"></i>
             </div>
