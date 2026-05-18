@@ -11,7 +11,14 @@ use SendGrid\Mail\Mail;
  * Envía email usando SendGrid API
  */
 function enviarEmailSendGrid($destinatario, $asunto, $html, $textoPlano = '') {
-    $config = require __DIR__ . '/email_config.php';
+    $configFile = __DIR__ . '/email_config.php';
+    
+    if (!file_exists($configFile)) {
+        error_log("Archivo de configuración no encontrado: " . $configFile);
+        return false;
+    }
+    
+    $config = require $configFile;
     
     if (empty($config['sendgrid_api_key'])) {
         error_log("SendGrid API Key no configurada");
