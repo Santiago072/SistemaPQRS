@@ -465,23 +465,6 @@ function marcarAlertasEnviadas($pqrs_list) {
     mysqli_close($con);
 }
 
-/**
- * Obtiene el correo de notificaciones desde configuracion_sistema
- */
-function obtenerCorreoNotificaciones() {
-    $con = conexion();
-    if (!$con) return '';
-    
-    $result = mysqli_query($con, "SELECT correo_notificaciones FROM configuracion_sistema WHERE id = 1");
-    if ($result && $row = mysqli_fetch_assoc($result)) {
-        $correo = $row['correo_notificaciones'];
-        mysqli_close($con);
-        return $correo;
-    }
-    mysqli_close($con);
-    return '';
-}
-
 // Ejecutar si se llama directamente
 if (php_sapi_name() === 'cli' || isset($_GET['ejecutar'])) {
     error_log("=== INICIO CRON ALERTAS PQRS === " . date('Y-m-d H:i:s'));
