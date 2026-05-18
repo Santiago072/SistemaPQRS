@@ -168,6 +168,12 @@ $baseUrl = $isRailway ? '/' : '/PROYECTO_PQRS/';
             </div>
             <span class="acceso-label">Reportes</span>
         </a>
+                <a href="cron_alertas.php?ejecutar=1" target="_blank" class="acceso-card" style="background: #fef2f2; border-color: #dc2626;">
+            <div class="acceso-icon" style="background: #dc2626; color: white;">
+                <i class="bi bi-envelope-fill"></i>
+            </div>
+            <span class="acceso-label" style="color: #dc2626; font-weight: 600;">Enviar Alertas</span>
+        </a>
     </div>
 </div>
 
