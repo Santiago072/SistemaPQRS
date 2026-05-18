@@ -1,6 +1,7 @@
 <?php
 /**
  * Funciones para envío de emails usando SendGrid API
+ * Usa variables de entorno directamente (Railway)
  */
 
 require_once __DIR__ . '/../vendor/autoload.php';
@@ -11,22 +12,18 @@ use SendGrid\Mail\Mail;
  * Envía email usando SendGrid API
  */
 function enviarEmailSendGrid($destinatario, $asunto, $html, $textoPlano = '') {
-    $configFile = __DIR__ . '/email_config.php';
+    // Usar variables de entorno directamente (Railway las inyecta)
+    $apiKey = $_ENV['SENDGRID_API_KEY'] ?? '';
+    $fromEmail = $_ENV['SENDGRID_FROM_EMAIL'] ?? 'santiagolizcanosuarez@gmail.com';
+    $fromName = $_ENV['SENDGRID_FROM_NAME'] ?? 'Sistema PQRS';
     
-    if (!file_exists($configFile)) {
-        error_log("Archivo de configuración no encontrado: " . $configFile);
-        return false;
-    }
-    
-    $config = require $configFile;
-    
-    if (empty($config['sendgrid_api_key'])) {
-        error_log("SendGrid API Key no configurada");
+    if (empty($apiKey)) {
+        error_log("SendGrid API Key no configurada en variables de entorno");
         return false;
     }
 
     $email = new Mail();
-    $email->setFrom($config['from_email'], $config['from_name']);
+    $email->setFrom($fromEmail, $fromName);
     $email->addTo($destinatario);
     $email->setSubject($asunto);
     
@@ -35,7 +32,7 @@ function enviarEmailSendGrid($destinatario, $asunto, $html, $textoPlano = '') {
     }
     $email->addContent("text/html", $html);
 
-    $sendgrid = new \SendGrid($config['sendgrid_api_key']);
+    $sendgrid = new \SendGrid($apiKey);
     
     try {
         $response = $sendgrid->send($email);
