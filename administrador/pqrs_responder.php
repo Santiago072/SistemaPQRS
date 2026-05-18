@@ -347,8 +347,12 @@ $tienCorreo = !empty($pqrs['correo_electronico']) && $pqrs['tipo_persona'] !== '
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Responder PQRS <?php echo htmlspecialchars($pqrs['codigo_radicado']); ?> - Sistema PQRS</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="css/estilos.css">
-    <style>
+<?php
+$host = $_SERVER['HTTP_HOST'] ?? 'localhost';
+$isRailway = (strpos($host, 'railway.app') !== false) || (getenv('RAILWAY_ENVIRONMENT') !== false);
+$baseUrl = $isRailway ? '/' : '/PROYECTO_PQRS/';
+?>
+<link rel="stylesheet" href="<?php echo $baseUrl; ?>css/estilos.css">    <style>
         /* ── Estilos específicos de esta vista ── */
         .detalle-nav { margin-bottom: var(--space-6); }
 
