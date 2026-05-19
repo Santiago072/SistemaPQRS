@@ -166,7 +166,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <!-- Información de seguridad -->
                 <div class="login-seguridad">
                     <i class="bi bi-shield-check"></i>
-                    <p>Conexión segura. Su sesión expirará automáticamente después de <strong>5 minutos</strong> de
+                    <p>Conexión segura. Su sesión expirará automáticamente después de <strong>30 minutos</strong> de
                         inactividad.</p>
                 </div>
 
