@@ -102,6 +102,137 @@ $isRailway = (strpos($host, 'railway.app') !== false) || (getenv('RAILWAY_ENVIRO
 $baseUrl = $isRailway ? '/' : '/PROYECTO_PQRS/';
 ?>
 <link rel="stylesheet" href="<?php echo $baseUrl; ?>css/estilos.css">
+    <style>
+        /* ── Modal de Archivo Adjunto ── */
+        .modal-adjunto-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(6px);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            animation: fadeInOverlay .2s ease;
+        }
+        .modal-adjunto-overlay.activo {
+            display: flex;
+        }
+        @keyframes fadeInOverlay {
+            from { opacity: 0; }
+            to   { opacity: 1; }
+        }
+        .modal-adjunto-box {
+            background: #fff;
+            border-radius: 1rem;
+            box-shadow: 0 25px 60px rgba(0,0,0,.4);
+            width: 100%;
+            max-width: 860px;
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+            animation: slideUpModal .25s ease;
+            overflow: hidden;
+        }
+        @keyframes slideUpModal {
+            from { transform: translateY(24px); opacity: 0; }
+            to   { transform: translateY(0);    opacity: 1; }
+        }
+        .modal-adjunto-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: .9rem 1.25rem;
+            border-bottom: 1px solid #e5e7eb;
+            background: #f8fafc;
+            border-radius: 1rem 1rem 0 0;
+            gap: 1rem;
+        }
+        .modal-adjunto-header h3 {
+            margin: 0;
+            font-size: .95rem;
+            font-weight: 700;
+            color: #1e293b;
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .modal-adjunto-header h3 i { color: #1e40af; flex-shrink: 0; }
+        .modal-header-acciones { display: flex; gap: .5rem; flex-shrink: 0; }
+        .modal-btn-descargar {
+            display: inline-flex;
+            align-items: center;
+            gap: .4rem;
+            background: #1e40af;
+            color: #fff;
+            border: none;
+            border-radius: .5rem;
+            padding: .45rem .9rem;
+            font-size: .8rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background .2s;
+        }
+        .modal-btn-descargar:hover { background: #1e3a8a; color: #fff; }
+        .modal-btn-cerrar {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            background: #f1f5f9;
+            border: 1px solid #e2e8f0;
+            border-radius: .5rem;
+            color: #64748b;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all .2s;
+        }
+        .modal-btn-cerrar:hover { background: #fee2e2; border-color: #fca5a5; color: #dc2626; }
+        .modal-adjunto-body {
+            flex: 1;
+            overflow: auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            background: #0f172a;
+            min-height: 300px;
+        }
+        .modal-adjunto-body img {
+            max-width: 100%;
+            max-height: 70vh;
+            border-radius: .5rem;
+            object-fit: contain;
+            box-shadow: 0 8px 32px rgba(0,0,0,.5);
+        }
+        .modal-adjunto-body iframe {
+            width: 100%;
+            height: 70vh;
+            border: none;
+            border-radius: .25rem;
+        }
+        .modal-adjunto-descarga {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+            padding: 2.5rem 1rem;
+            color: #94a3b8;
+            text-align: center;
+        }
+        .modal-adjunto-descarga i { font-size: 4rem; color: #475569; }
+        .modal-adjunto-descarga p { margin: 0; font-size: .9rem; }
+        .modal-adjunto-descarga .modal-btn-descargar {
+            font-size: .9rem;
+            padding: .65rem 1.5rem;
+        }
+    </style>
 </head>
 <body>
     <?php include '../includes/header.php'; ?>
@@ -173,12 +304,33 @@ $baseUrl = $isRailway ? '/' : '/PROYECTO_PQRS/';
                                 <div class="descripcion-text"><?php echo nl2br(htmlspecialchars($pqrs['descripcion'])); ?></div>
                             </div>
                             <?php if ($pqrs['archivo_adjunto']): ?>
+                            <?php
+                                // Determinar ruta real del adjunto
+                                $rutaAdjunto   = $pqrs['archivo_adjunto'];
+                                // Si ya empieza con "uploads/" solo quitar ese prefijo para la URL base
+                                $nombreArchivo = basename($rutaAdjunto);
+                                $urlAdjunto    = '../uploads/' . $nombreArchivo;
+                                $ext           = strtolower(pathinfo($nombreArchivo, PATHINFO_EXTENSION));
+                                $esImagen      = in_array($ext, ['jpg','jpeg','png','gif','webp']);
+                                $esPDF         = ($ext === 'pdf');
+                                $iconoArchivo  = match(true) {
+                                    $esImagen => 'bi-file-earmark-image',
+                                    $esPDF    => 'bi-file-earmark-pdf',
+                                    in_array($ext, ['doc','docx']) => 'bi-file-earmark-word',
+                                    default   => 'bi-file-earmark'
+                                };
+                            ?>
                             <div class="info-grupo">
                                 <label>Archivo Adjunto</label>
-                                <a href="../uploads/<?php echo htmlspecialchars($pqrs['archivo_adjunto']); ?>" class="adjunto-link" target="_blank">
-                                    <i class="bi bi-paperclip"></i>
-                                    <?php echo htmlspecialchars($pqrs['archivo_adjunto']); ?>
-                                </a>
+                                <button type="button"
+                                    class="adjunto-link"
+                                    onclick="abrirModalAdjunto('<?php echo htmlspecialchars($urlAdjunto, ENT_QUOTES); ?>', '<?php echo htmlspecialchars($nombreArchivo, ENT_QUOTES); ?>', '<?php echo $ext; ?>')"
+                                    style="background:none;border:none;cursor:pointer;display:inline-flex;align-items:center;gap:.4rem;color:#1e40af;font-weight:500;font-size:.9rem;padding:.35rem .75rem;border-radius:.4rem;border:1px solid #bfdbfe;background:#eff6ff;transition:all .2s;"
+                                    onmouseover="this.style.background='#dbeafe'" onmouseout="this.style.background='#eff6ff'">
+                                    <i class="bi <?php echo $iconoArchivo; ?>"></i>
+                                    <?php echo htmlspecialchars($nombreArchivo); ?>
+                                    <i class="bi bi-eye" style="font-size:.75rem;opacity:.7;"></i>
+                                </button>
                             </div>
                             <?php endif; ?>
                         </div>
@@ -388,5 +540,78 @@ $baseUrl = $isRailway ? '/' : '/PROYECTO_PQRS/';
     </section>
 
     <?php include '../includes/footer.php'; ?>
+
+    <!-- ── Modal Archivo Adjunto ─────────────────────────────────────────── -->
+    <div id="modalAdjunto" class="modal-adjunto-overlay" onclick="if(event.target===this)cerrarModalAdjunto()">
+        <div class="modal-adjunto-box">
+            <div class="modal-adjunto-header">
+                <h3 id="modalAdjuntoTitulo">
+                    <i class="bi bi-paperclip"></i>
+                    <span id="modalAdjuntoNombre">Archivo adjunto</span>
+                </h3>
+                <div class="modal-header-acciones">
+                    <a id="modalAdjuntoDescargar" href="#" download class="modal-btn-descargar">
+                        <i class="bi bi-download"></i> Descargar
+                    </a>
+                    <button class="modal-btn-cerrar" onclick="cerrarModalAdjunto()" title="Cerrar">
+                        <i class="bi bi-x-lg"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="modal-adjunto-body" id="modalAdjuntoBody">
+                <!-- Contenido dinámico -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+    function abrirModalAdjunto(url, nombre, ext) {
+        const modal   = document.getElementById('modalAdjunto');
+        const body    = document.getElementById('modalAdjuntoBody');
+        const titulo  = document.getElementById('modalAdjuntoNombre');
+        const descBtn = document.getElementById('modalAdjuntoDescargar');
+
+        titulo.textContent  = nombre;
+        descBtn.href        = url;
+        descBtn.download    = nombre;
+
+        const extensiones_imagen = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+        const es_imagen = extensiones_imagen.includes(ext.toLowerCase());
+        const es_pdf    = ext.toLowerCase() === 'pdf';
+
+        if (es_imagen) {
+            body.innerHTML = `<img src="${url}" alt="${nombre}" />`;
+        } else if (es_pdf) {
+            body.innerHTML = `<iframe src="${url}" title="${nombre}"></iframe>`;
+        } else {
+            body.innerHTML = `
+                <div class="modal-adjunto-descarga">
+                    <i class="bi bi-file-earmark-arrow-down"></i>
+                    <p>Este tipo de archivo no se puede previsualizar.</p>
+                    <p style="font-size:.8rem;color:#64748b;">${nombre}</p>
+                    <a href="${url}" download="${nombre}" class="modal-btn-descargar">
+                        <i class="bi bi-download"></i> Descargar archivo
+                    </a>
+                </div>`;
+        }
+
+        modal.classList.add('activo');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function cerrarModalAdjunto() {
+        const modal = document.getElementById('modalAdjunto');
+        const body  = document.getElementById('modalAdjuntoBody');
+        modal.classList.remove('activo');
+        body.innerHTML = ''; // liberar recursos (especialmente iframe PDF)
+        document.body.style.overflow = '';
+    }
+
+    // Cerrar con tecla ESC
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') cerrarModalAdjunto();
+    });
+    </script>
+
 </body>
 </html>
