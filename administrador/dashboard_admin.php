@@ -167,6 +167,7 @@ $baseUrl = $isRailway ? '/' : '/PROYECTO_PQRS/';
                 <i class="bi bi-bar-chart-fill"></i>
             </div>
             <span class="acceso-label">Reportes</span>
+        </a>
     </div>
 </div>
 
