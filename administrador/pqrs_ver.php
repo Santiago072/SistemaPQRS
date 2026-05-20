@@ -307,8 +307,9 @@ $baseUrl = $isRailway ? '/' : '/PROYECTO_PQRS/';
                             <?php
                                 $rutaAdjunto   = $pqrs['archivo_adjunto'];
                                 $nombreArchivo = basename($rutaAdjunto);
-                                // pqrs_ver.php está en administrador/, los archivos en pqrs/uploads/
-                                $urlAdjunto    = '../pqrs/uploads/' . $nombreArchivo;
+                                // pqrs_ver.php está en administrador/
+                                // Los archivos se guardan en pqrs/uploads/
+                                $urlAdjunto    = '../pqrs/uploads/' . rawurlencode($nombreArchivo);
                                 $ext           = strtolower(pathinfo($nombreArchivo, PATHINFO_EXTENSION));
                                 $esImagen      = in_array($ext, ['jpg','jpeg','png','gif','webp']);
                                 $esPDF         = ($ext === 'pdf');
