@@ -305,11 +305,10 @@ $baseUrl = $isRailway ? '/' : '/PROYECTO_PQRS/';
                             </div>
                             <?php if ($pqrs['archivo_adjunto']): ?>
                             <?php
-                                // Determinar ruta real del adjunto
                                 $rutaAdjunto   = $pqrs['archivo_adjunto'];
-                                // Si ya empieza con "uploads/" solo quitar ese prefijo para la URL base
                                 $nombreArchivo = basename($rutaAdjunto);
-                                $urlAdjunto    = '../uploads/' . $nombreArchivo;
+                                // pqrs_ver.php está en administrador/, los archivos en pqrs/uploads/
+                                $urlAdjunto    = '../pqrs/uploads/' . $nombreArchivo;
                                 $ext           = strtolower(pathinfo($nombreArchivo, PATHINFO_EXTENSION));
                                 $esImagen      = in_array($ext, ['jpg','jpeg','png','gif','webp']);
                                 $esPDF         = ($ext === 'pdf');
@@ -580,7 +579,23 @@ $baseUrl = $isRailway ? '/' : '/PROYECTO_PQRS/';
         const es_pdf    = ext.toLowerCase() === 'pdf';
 
         if (es_imagen) {
-            body.innerHTML = `<img src="${url}" alt="${nombre}" />`;
+            const img = document.createElement('img');
+            img.alt = nombre;
+            // Si la imagen no carga (ruta rota, formato incompatible, etc.) mostrar descarga
+            img.onerror = function() {
+                body.innerHTML = `
+                    <div class="modal-adjunto-descarga">
+                        <i class="bi bi-exclamation-circle" style="color:#f59e0b;"></i>
+                        <p style="color:#fbbf24;">No se pudo previsualizar la imagen.</p>
+                        <p style="font-size:.8rem;color:#94a3b8;">${nombre}</p>
+                        <a href="${url}" download="${nombre}" class="modal-btn-descargar">
+                            <i class="bi bi-download"></i> Descargar archivo
+                        </a>
+                    </div>`;
+            };
+            img.src = url;
+            body.innerHTML = '';
+            body.appendChild(img);
         } else if (es_pdf) {
             body.innerHTML = `<iframe src="${url}" title="${nombre}"></iframe>`;
         } else {
