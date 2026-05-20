@@ -125,6 +125,125 @@ function progresoPorEstado(string $estado): int {
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
     <link rel="stylesheet" href="../css/estilos.css">
+    <style>
+        /* ── Modal de Archivo Adjunto ── */
+        .modal-adjunto-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(6px);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+        .modal-adjunto-overlay.activo { display: flex; }
+        .modal-adjunto-box {
+            background: #fff;
+            border-radius: 1rem;
+            box-shadow: 0 25px 60px rgba(0,0,0,.4);
+            width: 100%;
+            max-width: 860px;
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+            animation: slideUpModal .25s ease;
+            overflow: hidden;
+        }
+        @keyframes slideUpModal {
+            from { transform: translateY(24px); opacity: 0; }
+            to   { transform: translateY(0); opacity: 1; }
+        }
+        .modal-adjunto-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: .9rem 1.25rem;
+            border-bottom: 1px solid #e5e7eb;
+            background: #f8fafc;
+            border-radius: 1rem 1rem 0 0;
+            gap: 1rem;
+        }
+        .modal-adjunto-header h3 {
+            margin: 0;
+            font-size: .95rem;
+            font-weight: 700;
+            color: #1e293b;
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .modal-adjunto-header h3 i { color: #1e40af; flex-shrink: 0; }
+        .modal-header-acciones { display: flex; gap: .5rem; flex-shrink: 0; }
+        .modal-btn-descargar {
+            display: inline-flex;
+            align-items: center;
+            gap: .4rem;
+            background: #1e40af;
+            color: #fff;
+            border: none;
+            border-radius: .5rem;
+            padding: .45rem .9rem;
+            font-size: .8rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background .2s;
+        }
+        .modal-btn-descargar:hover { background: #1e3a8a; color: #fff; }
+        .modal-btn-cerrar {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 32px;
+            height: 32px;
+            background: #f1f5f9;
+            border: 1px solid #e2e8f0;
+            border-radius: .5rem;
+            color: #64748b;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all .2s;
+        }
+        .modal-btn-cerrar:hover { background: #fee2e2; border-color: #fca5a5; color: #dc2626; }
+        .modal-adjunto-body {
+            flex: 1;
+            overflow: auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            background: #0f172a;
+            min-height: 300px;
+        }
+        .modal-adjunto-body img {
+            max-width: 100%;
+            max-height: 70vh;
+            border-radius: .5rem;
+            object-fit: contain;
+            box-shadow: 0 8px 32px rgba(0,0,0,.5);
+        }
+        .modal-adjunto-body iframe {
+            width: 100%;
+            height: 70vh;
+            border: none;
+        }
+        .modal-adjunto-descarga {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+            padding: 2.5rem 1rem;
+            color: #94a3b8;
+            text-align: center;
+        }
+        .modal-adjunto-descarga i { font-size: 4rem; color: #475569; }
+        .modal-adjunto-descarga p { margin: 0; font-size: .9rem; }
+    </style>
 </head>
 <body class="consulta-page">
 
@@ -378,12 +497,26 @@ function progresoPorEstado(string $estado): int {
                 <?php endif; ?>
 
                 <!-- Adjunto -->
-                <?php if (!empty($pqrs['archivo_adjunto'])): ?>
-                <a href="<?php echo htmlspecialchars($pqrs['archivo_adjunto']); ?>"
-                   class="adjunto-link" target="_blank" rel="noopener noreferrer">
-                    <i class="bi bi-paperclip"></i>
+                <?php if (!empty($pqrs['archivo_adjunto'])):
+                    $nombreArch = basename($pqrs['archivo_adjunto']);
+                    $urlArch    = '../uploads/' . $nombreArch;
+                    $extArch    = strtolower(pathinfo($nombreArch, PATHINFO_EXTENSION));
+                    $iconArch   = match(true) {
+                        in_array($extArch, ['jpg','jpeg','png','gif','webp']) => 'bi-file-earmark-image',
+                        $extArch === 'pdf' => 'bi-file-earmark-pdf',
+                        in_array($extArch, ['doc','docx']) => 'bi-file-earmark-word',
+                        default => 'bi-file-earmark'
+                    };
+                ?>
+                <button type="button"
+                    class="adjunto-link"
+                    onclick="abrirModalAdjunto('<?php echo htmlspecialchars($urlArch, ENT_QUOTES); ?>', '<?php echo htmlspecialchars($nombreArch, ENT_QUOTES); ?>', '<?php echo $extArch; ?>')"
+                    style="display:inline-flex;align-items:center;gap:.4rem;background:#eff6ff;color:#1e40af;border:1px solid #bfdbfe;border-radius:.5rem;padding:.45rem .9rem;font-size:.875rem;font-weight:500;cursor:pointer;transition:all .2s;margin-top:.25rem;"
+                    onmouseover="this.style.background='#dbeafe'" onmouseout="this.style.background='#eff6ff'">
+                    <i class="bi <?php echo $iconArch; ?>"></i>
                     Ver archivo adjunto
-                </a>
+                    <i class="bi bi-eye" style="font-size:.75rem;opacity:.7;"></i>
+                </button>
                 <?php endif; ?>
 
             </article>
@@ -469,6 +602,55 @@ function progresoPorEstado(string $estado): int {
             setTimeout(function () { fill.style.width = target; }, 100);
         });
     });
+    </script>
+
+    <!-- ── Modal Archivo Adjunto ───────────────────────────────────────── -->
+    <div id="modalAdjunto" class="modal-adjunto-overlay" onclick="if(event.target===this)cerrarModalAdjunto()">
+        <div class="modal-adjunto-box">
+            <div class="modal-adjunto-header">
+                <h3>
+                    <i class="bi bi-paperclip"></i>
+                    <span id="modalAdjuntoNombre">Archivo adjunto</span>
+                </h3>
+                <div class="modal-header-acciones">
+                    <a id="modalAdjuntoDescargar" href="#" download class="modal-btn-descargar">
+                        <i class="bi bi-download"></i> Descargar
+                    </a>
+                    <button class="modal-btn-cerrar" onclick="cerrarModalAdjunto()" title="Cerrar">
+                        <i class="bi bi-x-lg"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="modal-adjunto-body" id="modalAdjuntoBody"></div>
+        </div>
+    </div>
+
+    <script>
+    function abrirModalAdjunto(url, nombre, ext) {
+        const modal   = document.getElementById('modalAdjunto');
+        const body    = document.getElementById('modalAdjuntoBody');
+        const titulo  = document.getElementById('modalAdjuntoNombre');
+        const descBtn = document.getElementById('modalAdjuntoDescargar');
+        titulo.textContent = nombre;
+        descBtn.href       = url;
+        descBtn.download   = nombre;
+        const imgs = ['jpg','jpeg','png','gif','webp'];
+        if (imgs.includes(ext.toLowerCase())) {
+            body.innerHTML = `<img src="${url}" alt="${nombre}" />`;
+        } else if (ext.toLowerCase() === 'pdf') {
+            body.innerHTML = `<iframe src="${url}" title="${nombre}"></iframe>`;
+        } else {
+            body.innerHTML = `<div class="modal-adjunto-descarga"><i class="bi bi-file-earmark-arrow-down"></i><p>Este archivo no puede previsualizarse.</p><p style="font-size:.8rem;color:#64748b">${nombre}</p><a href="${url}" download="${nombre}" class="modal-btn-descargar"><i class="bi bi-download"></i> Descargar</a></div>`;
+        }
+        modal.classList.add('activo');
+        document.body.style.overflow = 'hidden';
+    }
+    function cerrarModalAdjunto() {
+        document.getElementById('modalAdjunto').classList.remove('activo');
+        document.getElementById('modalAdjuntoBody').innerHTML = '';
+        document.body.style.overflow = '';
+    }
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') cerrarModalAdjunto(); });
     </script>
 
 </body>
