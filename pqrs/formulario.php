@@ -257,16 +257,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $archivo_adjunto = null;
     if (isset($_FILES['adjunto']) && $_FILES['adjunto']['error'] === UPLOAD_ERR_OK) {
         $nombreArchivo = time() . '_' . basename($_FILES['adjunto']['name']);
-        // Subimos a la raíz del proyecto para que todos los archivos (admin, public) accedan fácilmente
-        $dirDestino = __DIR__ . '/../uploads';
+        // pqrs/uploads/ es la carpeta configurada en el Dockerfile con permisos correctos
+        $dirDestino  = __DIR__ . '/uploads';
         $rutaDestino = $dirDestino . '/' . $nombreArchivo;
-        
+
         if (!is_dir($dirDestino)) {
-            mkdir($dirDestino, 0755, true);
+            @mkdir($dirDestino, 0755, true);
         }
-        if (move_uploaded_file($_FILES['adjunto']['tmp_name'], $rutaDestino)) {
-            $archivo_adjunto = $nombreArchivo; // Guardamos solo el nombre para mayor flexibilidad
+        // Guardamos solo el nombre; la ruta base se reconstruye en cada vista
+        if (@move_uploaded_file($_FILES['adjunto']['tmp_name'], $rutaDestino)) {
+            $archivo_adjunto = $nombreArchivo;
         }
+        // Si falla el upload el PQRS se radica igual sin adjunto (no bloqueamos el flujo)
     }
 
     // 6. INSERTAR PQRS — Prepared Statement (protección SQL)

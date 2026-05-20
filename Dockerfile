@@ -34,9 +34,13 @@ COPY . .
 # ✅ Crear carpetas con permisos
 RUN mkdir -p /var/www/html/logs \
     && mkdir -p /var/www/html/pqrs/uploads \
+    && mkdir -p /var/www/html/uploads \
     && chown -R www-data:www-data /var/www/html/logs \
     && chown -R www-data:www-data /var/www/html/pqrs/uploads \
-    && chown -R www-data:www-data /var/www/html/vendor
+    && chown -R www-data:www-data /var/www/html/uploads \
+    && chown -R www-data:www-data /var/www/html/vendor \
+    && chmod 755 /var/www/html/pqrs/uploads \
+    && chmod 755 /var/www/html/uploads
 
 # Script de inicio
 RUN echo '#!/bin/bash\n\
