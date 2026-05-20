@@ -257,12 +257,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $archivo_adjunto = null;
     if (isset($_FILES['adjunto']) && $_FILES['adjunto']['error'] === UPLOAD_ERR_OK) {
         $nombreArchivo = time() . '_' . basename($_FILES['adjunto']['name']);
-        $rutaDestino   = 'uploads/' . $nombreArchivo;
-        if (!is_dir('uploads')) {
-            mkdir('uploads', 0755, true);
+        // Subimos a la raíz del proyecto para que todos los archivos (admin, public) accedan fácilmente
+        $dirDestino = __DIR__ . '/../uploads';
+        $rutaDestino = $dirDestino . '/' . $nombreArchivo;
+        
+        if (!is_dir($dirDestino)) {
+            mkdir($dirDestino, 0755, true);
         }
         if (move_uploaded_file($_FILES['adjunto']['tmp_name'], $rutaDestino)) {
-            $archivo_adjunto = $rutaDestino;
+            $archivo_adjunto = $nombreArchivo; // Guardamos solo el nombre para mayor flexibilidad
         }
     }
 
