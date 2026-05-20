@@ -499,7 +499,8 @@ function progresoPorEstado(string $estado): int {
                 <!-- Adjunto -->
                 <?php if (!empty($pqrs['archivo_adjunto'])):
                     $nombreArch = basename($pqrs['archivo_adjunto']);
-                    $urlArch    = '../uploads/' . $nombreArch;
+                    // consulta_pqrs.php está en pqrs/, los archivos en pqrs/uploads/
+                    $urlArch    = 'uploads/' . $nombreArch;
                     $extArch    = strtolower(pathinfo($nombreArch, PATHINFO_EXTENSION));
                     $iconArch   = match(true) {
                         in_array($extArch, ['jpg','jpeg','png','gif','webp']) => 'bi-file-earmark-image',
@@ -636,7 +637,14 @@ function progresoPorEstado(string $estado): int {
         descBtn.download   = nombre;
         const imgs = ['jpg','jpeg','png','gif','webp'];
         if (imgs.includes(ext.toLowerCase())) {
-            body.innerHTML = `<img src="${url}" alt="${nombre}" />`;
+            const img = document.createElement('img');
+            img.alt = nombre;
+            img.onerror = function() {
+                body.innerHTML = `<div class="modal-adjunto-descarga"><i class="bi bi-exclamation-circle" style="color:#f59e0b"></i><p style="color:#fbbf24">No se pudo previsualizar la imagen.</p><p style="font-size:.8rem;color:#94a3b8">${nombre}</p><a href="${url}" download="${nombre}" class="modal-btn-descargar"><i class="bi bi-download"></i> Descargar</a></div>`;
+            };
+            img.src = url;
+            body.innerHTML = '';
+            body.appendChild(img);
         } else if (ext.toLowerCase() === 'pdf') {
             body.innerHTML = `<iframe src="${url}" title="${nombre}"></iframe>`;
         } else {
