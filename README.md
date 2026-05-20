@@ -154,15 +154,3 @@ Este proyecto incluye soporte directo para desplegarse en [Railway](https://rail
 2. **Configuración de Conexión:** En el archivo `config/conexion.php` ya está definida la conexión interna segura para Railway (`mysql.railway.internal`).
 3. **Servidor Web Caddy:** El `Dockerfile` instala PHP 8.2 y configura **Caddy Server** automáticamente. Caddy redirige de forma dinámica el puerto de escucha definido por Railway (`$PORT`), gestiona las rutas seguras de PHP FastCGI y realiza la reescritura de URL sin necesidad de archivos `.htaccess`.
 
----
-
-## 🔑 Credenciales de Acceso por Defecto
-
-Para propósitos de prueba e inicialización en entornos de desarrollo, el script de la base de datos registra la siguiente credencial de administrador:
-
-* **URL de Acceso Administrativo:** `http://localhost/PROYECTO_PQRS/administrador/login.php`
-* **Nombre de Usuario (Usuario):** `admin`
-* **Contraseña:** `1118367962`
-
-> [!IMPORTANT]
-> **Recomendación de Seguridad:** Se aconseja encarecidamente cambiar la contraseña y el nombre de usuario por defecto una vez desplegado el sistema en entornos públicos o de producción para proteger la integridad de los datos de los ciudadanos.
