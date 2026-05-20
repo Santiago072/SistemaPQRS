@@ -18,21 +18,30 @@ if (!$con) {
     die("Error de conexión: " . mysqli_connect_error());
 }
 
-$sql = "SELECT p.*, u.tipo_persona, u.nombre_completo, u.documento_identidad,
-        u.tipo_documento, u.correo_electronico, u.telefono, u.razon_social,
-        u.nit, u.nombre_representante, u.correo_corporativo
-        FROM pqrs p
-        LEFT JOIN usuario u ON p.usuario_id = u.id
-        WHERE p.id = $pqrs_id";
-
-$result = mysqli_query($con, $sql);
+// Prepared Statement — protección contra SQLi en el parámetro id
+$stmt = mysqli_prepare($con,
+    "SELECT p.*, u.tipo_persona, u.nombre_completo, u.documento_identidad,
+     u.tipo_documento, u.correo_electronico, u.telefono, u.razon_social,
+     u.nit, u.nombre_representante, u.correo_corporativo
+     FROM pqrs p
+     LEFT JOIN usuario u ON p.usuario_id = u.id
+     WHERE p.id = ?"
+);
+if (!$stmt) {
+    die("Error preparando consulta: " . mysqli_error($con));
+}
+mysqli_stmt_bind_param($stmt, 'i', $pqrs_id);
+mysqli_stmt_execute($stmt);
+$result = mysqli_stmt_get_result($stmt);
 
 if (!$result || mysqli_num_rows($result) === 0) {
+    mysqli_stmt_close($stmt);
     header('Location: ../index.php');
     exit();
 }
 
 $pqrs = mysqli_fetch_assoc($result);
+mysqli_stmt_close($stmt);
 mysqli_close($con);
 
 // Verificar estado del correo desde sesión

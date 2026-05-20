@@ -27,46 +27,60 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (!$con) {
             $error = 'Error de conexión con la base de datos.';
         } else {
-            // Buscar administrador (usando prepared statement sería ideal, manteniendo compatibilidad)
-            $usuario_safe = mysqli_real_escape_string($con, $usuario);
-            $sql = "SELECT id, nombre_usuario, contrasena, nombre_completo, correo_electronico, rol, activo 
-                    FROM administrador 
-                    WHERE nombre_usuario = '$usuario_safe' AND activo = 'activo' 
-                    LIMIT 1";
-            $result = mysqli_query($con, $sql);
-
-            if ($result && mysqli_num_rows($result) === 1) {
-                $admin = mysqli_fetch_assoc($result);
-
-                // Verificar contraseña (hash o texto plano según implementación)
-                // En producción usar password_verify() con hash bcrypt
-                $passwordValida = ($password === $admin['contrasena']) || 
-                                  password_verify($password, $admin['contrasena']);
-
-                if ($passwordValida) {
-                    // Crear sesión
-                    $_SESSION['admin_id']       = $admin['id'];
-                    $_SESSION['admin_usuario']  = $admin['nombre_usuario'];
-                    $_SESSION['admin_nombre']   = $admin['nombre_completo'];
-                    $_SESSION['admin_correo']   = $admin['correo_electronico'];
-                    $_SESSION['admin_rol']      = $admin['rol'];
-                    $_SESSION['ultima_actividad'] = time();
-                    $_SESSION['tiempo_inicio']    = time();
-
-                    // Actualizar último acceso
-                    $adminId = $admin['id'];
-                    mysqli_query($con, "UPDATE administrador SET ultimo_acceso = NOW() WHERE id = $adminId");
-
-                    mysqli_close($con);
-
-                    // Redirigir al dashboard
-                    header('Location: dashboard_admin.php');
-                    exit();
-                } else {
-                    $error = 'Contraseña incorrecta. Intente nuevamente.';
-                }
+            // Buscar administrador — Prepared Statement (protección SQL)
+            $stmt = mysqli_prepare($con,
+                "SELECT id, nombre_usuario, contrasena, nombre_completo, correo_electronico, rol, activo
+                 FROM administrador
+                 WHERE nombre_usuario = ? AND activo = 'activo'
+                 LIMIT 1"
+            );
+            if (!$stmt) {
+                $error = 'Error interno del servidor.';
             } else {
-                $error = 'Usuario no encontrado o cuenta inactiva.';
+                mysqli_stmt_bind_param($stmt, 's', $usuario);
+                mysqli_stmt_execute($stmt);
+                $result = mysqli_stmt_get_result($stmt);
+
+                if ($result && mysqli_num_rows($result) === 1) {
+                    $admin = mysqli_fetch_assoc($result);
+                    mysqli_stmt_close($stmt);
+
+                    // Verificar contraseña (hash o texto plano según implementación)
+                    // En producción usar password_verify() con hash bcrypt
+                    $passwordValida = ($password === $admin['contrasena']) ||
+                                      password_verify($password, $admin['contrasena']);
+
+                    if ($passwordValida) {
+                        // Crear sesión
+                        $_SESSION['admin_id']       = $admin['id'];
+                        $_SESSION['admin_usuario']  = $admin['nombre_usuario'];
+                        $_SESSION['admin_nombre']   = $admin['nombre_completo'];
+                        $_SESSION['admin_correo']   = $admin['correo_electronico'];
+                        $_SESSION['admin_rol']      = $admin['rol'];
+                        $_SESSION['ultima_actividad'] = time();
+                        $_SESSION['tiempo_inicio']    = time();
+
+                        // Actualizar último acceso — Prepared Statement
+                        $adminId  = $admin['id'];
+                        $stmtUpd  = mysqli_prepare($con, "UPDATE administrador SET ultimo_acceso = NOW() WHERE id = ?");
+                        if ($stmtUpd) {
+                            mysqli_stmt_bind_param($stmtUpd, 'i', $adminId);
+                            mysqli_stmt_execute($stmtUpd);
+                            mysqli_stmt_close($stmtUpd);
+                        }
+
+                        mysqli_close($con);
+
+                        // Redirigir al dashboard
+                        header('Location: dashboard_admin.php');
+                        exit();
+                    } else {
+                        $error = 'Contraseña incorrecta. Intente nuevamente.';
+                    }
+                } else {
+                    mysqli_stmt_close($stmt);
+                    $error = 'Usuario no encontrado o cuenta inactiva.';
+                }
             }
             mysqli_close($con);
         }
@@ -143,17 +157,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <i class="bi bi-eye" id="icono-password"></i>
                             </button>
                         </div>
-                    </div>
-
-                    <div class="login-opciones">
-                        <label class="login-recordar">
-                            <input type="checkbox" name="recordar" value="1">
-                            <span>Recordar sesión en este dispositivo</span>
-                        </label>
-                        <a href="#" class="login-olvidar"
-                            onclick="alert('Contacte al administrador del sistema para restablecer su contraseña.'); return false;">
-                            ¿Olvidó su contraseña?
-                        </a>
                     </div>
 
                     <button type="submit" class="login-btn">

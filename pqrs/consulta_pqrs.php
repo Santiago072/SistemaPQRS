@@ -40,44 +40,60 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' || isset($_GET['codigo'])) {
         $correo = trim($_POST['correo'] ?? '');
 
         if (!empty($codigo)) {
-            // ── Búsqueda por código ──────────────────────────────────────────
-            $codigo_safe = mysqli_real_escape_string($con, strtoupper($codigo));
-            $sql = "SELECT p.*, u.tipo_persona, u.nombre_completo, u.correo_electronico,
-                           u.correo_corporativo, u.nombre_representante
-                    FROM pqrs p
-                    LEFT JOIN usuario u ON p.usuario_id = u.id
-                    WHERE p.codigo_radicado = '$codigo_safe'
-                    LIMIT 1";
-
-            $result = mysqli_query($con, $sql);
-            if ($result && mysqli_num_rows($result) > 0) {
-                $resultados[]  = mysqli_fetch_assoc($result);
-                $tipoBusqueda  = 'codigo';
-                $busqueda      = $codigo_safe;
+            // ── Búsqueda por código — Prepared Statement ─────────────────────
+            $codigo_upper = strtoupper($codigo);
+            $stmt = mysqli_prepare($con,
+                "SELECT p.*, u.tipo_persona, u.nombre_completo, u.correo_electronico,
+                        u.correo_corporativo, u.nombre_representante
+                 FROM pqrs p
+                 LEFT JOIN usuario u ON p.usuario_id = u.id
+                 WHERE p.codigo_radicado = ?
+                 LIMIT 1"
+            );
+            if ($stmt) {
+                mysqli_stmt_bind_param($stmt, 's', $codigo_upper);
+                mysqli_stmt_execute($stmt);
+                $result = mysqli_stmt_get_result($stmt);
+                if ($result && mysqli_num_rows($result) > 0) {
+                    $resultados[]  = mysqli_fetch_assoc($result);
+                    $tipoBusqueda  = 'codigo';
+                    $busqueda      = $codigo_upper;
+                } else {
+                    $error = "No se encontró ninguna solicitud con el código <strong>" . htmlspecialchars($codigo_upper) . "</strong>. Verifique que el código sea correcto.";
+                }
+                mysqli_stmt_close($stmt);
             } else {
-                $error = "No se encontró ninguna solicitud con el código <strong>$codigo_safe</strong>. Verifique que el código sea correcto.";
+                $error = 'Error interno al preparar la consulta.';
             }
 
         } elseif (!empty($correo)) {
-            // ── Búsqueda por correo ──────────────────────────────────────────
-            $correo_safe = mysqli_real_escape_string($con, strtolower($correo));
-            $sql = "SELECT p.*, u.tipo_persona, u.nombre_completo, u.correo_electronico,
-                           u.correo_corporativo, u.nombre_representante
-                    FROM pqrs p
-                    LEFT JOIN usuario u ON p.usuario_id = u.id
-                    WHERE LOWER(u.correo_electronico) = '$correo_safe'
-                       OR LOWER(u.correo_corporativo) = '$correo_safe'
-                    ORDER BY p.fecha_radicacion DESC";
-
-            $result = mysqli_query($con, $sql);
-            if ($result && mysqli_num_rows($result) > 0) {
-                while ($row = mysqli_fetch_assoc($result)) {
-                    $resultados[] = $row;
+            // ── Búsqueda por correo — Prepared Statement ─────────────────────
+            $correo_lower = strtolower($correo);
+            $stmt = mysqli_prepare($con,
+                "SELECT p.*, u.tipo_persona, u.nombre_completo, u.correo_electronico,
+                        u.correo_corporativo, u.nombre_representante
+                 FROM pqrs p
+                 LEFT JOIN usuario u ON p.usuario_id = u.id
+                 WHERE LOWER(u.correo_electronico) = ?
+                    OR LOWER(u.correo_corporativo) = ?
+                 ORDER BY p.fecha_radicacion DESC"
+            );
+            if ($stmt) {
+                mysqli_stmt_bind_param($stmt, 'ss', $correo_lower, $correo_lower);
+                mysqli_stmt_execute($stmt);
+                $result = mysqli_stmt_get_result($stmt);
+                if ($result && mysqli_num_rows($result) > 0) {
+                    while ($row = mysqli_fetch_assoc($result)) {
+                        $resultados[] = $row;
+                    }
+                    $tipoBusqueda = 'correo';
+                    $busqueda     = $correo_lower;
+                } else {
+                    $error = "No se encontraron solicitudes asociadas al correo <strong>" . htmlspecialchars($correo_lower) . "</strong>.";
                 }
-                $tipoBusqueda = 'correo';
-                $busqueda     = $correo_safe;
+                mysqli_stmt_close($stmt);
             } else {
-                $error = "No se encontraron solicitudes asociadas al correo <strong>$correo_safe</strong>.";
+                $error = 'Error interno al preparar la consulta.';
             }
 
         } else {

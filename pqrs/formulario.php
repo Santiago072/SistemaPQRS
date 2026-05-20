@@ -160,12 +160,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         die("Error de conexión: " . mysqli_connect_error());
     }
 
-    // 1. RECOGER DATOS
-    $tipo_pqrs    = mysqli_real_escape_string($con, $_POST['tipo_pqrs']    ?? 'peticion');
-    $tipo_persona = mysqli_real_escape_string($con, $_POST['tipo_persona'] ?? 'natural');
-    $asunto       = mysqli_real_escape_string($con, $_POST['asunto']       ?? '');
-    $descripcion  = mysqli_real_escape_string($con, $_POST['descripcion']  ?? '');
-    $notificar    = isset($_POST['notificar_correo']) ? 1 : 0;
+    // 1. RECOGER Y SANITIZAR DATOS BÁSICOS
+    $tipos_pqrs_validos    = ['peticion', 'queja', 'reclamo', 'sugerencia', 'denuncia'];
+    $tipos_persona_validos = ['natural', 'juridica', 'anonima'];
+
+    $tipo_pqrs    = in_array($_POST['tipo_pqrs']    ?? '', $tipos_pqrs_validos)    ? $_POST['tipo_pqrs']    : 'peticion';
+    $tipo_persona = in_array($_POST['tipo_persona'] ?? '', $tipos_persona_validos) ? $_POST['tipo_persona'] : 'natural';
+    $asunto       = trim($_POST['asunto']      ?? '');
+    $descripcion  = trim($_POST['descripcion'] ?? '');
+    // Anónimos nunca notifican por correo
+    $notificar    = ($tipo_persona !== 'anonima' && isset($_POST['notificar_correo'])) ? 1 : 0;
 
     $nombre_completo      = null;
     $documento_identidad  = null;
@@ -178,68 +182,74 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $correo_corporativo   = null;
 
     if ($tipo_persona === 'natural') {
-        $nombre_completo     = mysqli_real_escape_string($con, $_POST['nombre']            ?? '');
-        $documento_identidad = mysqli_real_escape_string($con, $_POST['numero_documento']  ?? '');
-        $tipo_documento      = mysqli_real_escape_string($con, $_POST['tipo_documento']    ?? '');
-        $correo_electronico  = mysqli_real_escape_string($con, $_POST['correo']            ?? '');
-        $telefono            = mysqli_real_escape_string($con, $_POST['telefono']          ?? '');
+        $nombre_completo     = trim($_POST['nombre']            ?? '') ?: null;
+        $documento_identidad = trim($_POST['numero_documento']  ?? '') ?: null;
+        $tipo_documento      = trim($_POST['tipo_documento']    ?? '') ?: null;
+        $correo_electronico  = trim($_POST['correo']            ?? '') ?: null;
+        $telefono            = trim($_POST['telefono']          ?? '') ?: null;
     } elseif ($tipo_persona === 'juridica') {
-        $razon_social         = mysqli_real_escape_string($con, $_POST['razon_social']     ?? '');
-        $nit                  = mysqli_real_escape_string($con, $_POST['nit']              ?? '');
-        $nombre_representante = mysqli_real_escape_string($con, $_POST['representante']    ?? '');
-        $correo_corporativo   = mysqli_real_escape_string($con, $_POST['correo_corporativo'] ?? '');
-        $telefono             = mysqli_real_escape_string($con, $_POST['telefono_juridica'] ?? '');
+        $razon_social         = trim($_POST['razon_social']        ?? '') ?: null;
+        $nit                  = trim($_POST['nit']                 ?? '') ?: null;
+        $nombre_representante = trim($_POST['representante']       ?? '') ?: null;
+        $correo_corporativo   = trim($_POST['correo_corporativo']  ?? '') ?: null;
+        $telefono             = trim($_POST['telefono_juridica']   ?? '') ?: null;
         $correo_electronico   = $correo_corporativo;
         $nombre_completo      = $nombre_representante;
     }
 
-    // 2. INSERTAR USUARIO
-    $sqlUsuario = "INSERT INTO usuario (
-        tipo_persona, nombre_completo, documento_identidad, tipo_documento,
-        correo_electronico, telefono, razon_social, nit,
-        nombre_representante, correo_corporativo
-    ) VALUES (
-        '$tipo_persona',
-        " . ($nombre_completo      ? "'$nombre_completo'"      : "NULL") . ",
-        " . ($documento_identidad  ? "'$documento_identidad'"  : "NULL") . ",
-        " . ($tipo_documento       ? "'$tipo_documento'"       : "NULL") . ",
-        " . ($correo_electronico   ? "'$correo_electronico'"   : "NULL") . ",
-        " . ($telefono             ? "'$telefono'"             : "NULL") . ",
-        " . ($razon_social         ? "'$razon_social'"         : "NULL") . ",
-        " . ($nit                  ? "'$nit'"                  : "NULL") . ",
-        " . ($nombre_representante ? "'$nombre_representante'" : "NULL") . ",
-        " . ($correo_corporativo   ? "'$correo_corporativo'"   : "NULL") . "
-    )";
-
-    if (!mysqli_query($con, $sqlUsuario)) {
-        die("Error al insertar usuario: " . mysqli_error($con));
+    // 2. INSERTAR USUARIO — Prepared Statement (protección SQL)
+    $stmtUsuario = mysqli_prepare($con,
+        "INSERT INTO usuario (
+            tipo_persona, nombre_completo, documento_identidad, tipo_documento,
+            correo_electronico, telefono, razon_social, nit,
+            nombre_representante, correo_corporativo
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+    );
+    if (!$stmtUsuario) {
+        die("Error preparando sentencia usuario: " . mysqli_error($con));
     }
-    $usuario_id = mysqli_insert_id($con);
+    mysqli_stmt_bind_param($stmtUsuario, 'ssssssssss',
+        $tipo_persona,
+        $nombre_completo,
+        $documento_identidad,
+        $tipo_documento,
+        $correo_electronico,
+        $telefono,
+        $razon_social,
+        $nit,
+        $nombre_representante,
+        $correo_corporativo
+    );
+    if (!mysqli_stmt_execute($stmtUsuario)) {
+        die("Error al insertar usuario: " . mysqli_stmt_error($stmtUsuario));
+    }
+    $usuario_id = mysqli_stmt_insert_id($stmtUsuario);
+    mysqli_stmt_close($stmtUsuario);
 
     // 3. GENERAR CÓDIGO RADICADO
-$anio = date('Y');
-$mes  = date('m');
+    $anio = date('Y');
+    $mes  = date('m');
 
-// Buscar el máximo consecutivo existente (no contar registros)
-$sqlConsecutivo = "SELECT MAX(CAST(SUBSTRING(codigo_radicado, -3) AS UNSIGNED)) as max_num 
-                   FROM pqrs 
-                   WHERE YEAR(fecha_radicacion) = $anio 
-                   AND MONTH(fecha_radicacion) = $mes";
-$resultCons  = mysqli_query($con, $sqlConsecutivo);
-$rowCons     = mysqli_fetch_assoc($resultCons);
-$maxNum      = $rowCons['max_num'] ?? 0;
-$consecutivo = str_pad(($maxNum + 1), 3, '0', STR_PAD_LEFT);
+    // Consulta segura: año y mes son enteros generados por PHP, sin input del usuario
+    $sqlConsecutivo = "SELECT MAX(CAST(SUBSTRING(codigo_radicado, -3) AS UNSIGNED)) as max_num
+                       FROM pqrs
+                       WHERE YEAR(fecha_radicacion) = $anio
+                       AND MONTH(fecha_radicacion) = $mes";
+    $resultCons  = mysqli_query($con, $sqlConsecutivo);
+    $rowCons     = mysqli_fetch_assoc($resultCons);
+    $maxNum      = $rowCons['max_num'] ?? 0;
+    $consecutivo = str_pad(($maxNum + 1), 3, '0', STR_PAD_LEFT);
 
-$codigo_radicado = "PQRS-{$anio}-{$mes}-{$consecutivo}";
+    $codigo_radicado = "PQRS-{$anio}-{$mes}-{$consecutivo}";
 
-    // 4. CALCULAR FECHA DE VENCIMIENTO
-    $sqlConfig  = "SELECT dias_vencimiento_peticion, dias_vencimiento_queja,
-                   dias_vencimiento_reclamo, dias_vencimiento_sugerencia,
-                   dias_vencimiento_denuncia
-                   FROM configuracion_sistema WHERE id = 1";
-    $resultConfig    = mysqli_query($con, $sqlConfig);
-    $config          = mysqli_fetch_assoc($resultConfig);
-    $campoDias       = 'dias_vencimiento_' . $tipo_pqrs;
+    // 4. CALCULAR FECHA DE VENCIMIENTO (consulta a tabla de configuración fija, sin input)
+    $sqlConfig = "SELECT dias_vencimiento_peticion, dias_vencimiento_queja,
+                  dias_vencimiento_reclamo, dias_vencimiento_sugerencia,
+                  dias_vencimiento_denuncia
+                  FROM configuracion_sistema WHERE id = 1";
+    $resultConfig     = mysqli_query($con, $sqlConfig);
+    $config           = mysqli_fetch_assoc($resultConfig);
+    $campoDias        = 'dias_vencimiento_' . $tipo_pqrs;
     $dias_vencimiento = isset($config[$campoDias]) ? (int)$config[$campoDias] : 15;
     $fecha_vencimiento = date('Y-m-d', strtotime("+$dias_vencimiento days"));
 
@@ -252,26 +262,40 @@ $codigo_radicado = "PQRS-{$anio}-{$mes}-{$consecutivo}";
             mkdir('uploads', 0755, true);
         }
         if (move_uploaded_file($_FILES['adjunto']['tmp_name'], $rutaDestino)) {
-            $archivo_adjunto = mysqli_real_escape_string($con, $rutaDestino);
+            $archivo_adjunto = $rutaDestino;
         }
     }
 
-    // 6. INSERTAR PQRS
-    $sqlPQRS = "INSERT INTO pqrs (
-        codigo_radicado, tipo_solicitud, asunto, descripcion,
-        archivo_adjunto, estado, fecha_vencimiento,
-        usuario_id, administrador_id
-    ) VALUES (
-        '$codigo_radicado', '$tipo_pqrs', '$asunto', '$descripcion',
-        " . ($archivo_adjunto ? "'$archivo_adjunto'" : "NULL") . ",
-        'PENDIENTE', '$fecha_vencimiento',
-        $usuario_id, NULL
-    )";
-
-    if (!mysqli_query($con, $sqlPQRS)) {
-        die("Error al insertar PQRS: " . mysqli_error($con));
+    // 6. INSERTAR PQRS — Prepared Statement (protección SQL)
+    $estado_inicial = 'PENDIENTE';
+    $admin_id_null  = null;
+    $stmtPQRS = mysqli_prepare($con,
+        "INSERT INTO pqrs (
+            codigo_radicado, tipo_solicitud, asunto, descripcion,
+            archivo_adjunto, estado, fecha_vencimiento,
+            desea_notificacion, usuario_id, administrador_id
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+    );
+    if (!$stmtPQRS) {
+        die("Error preparando sentencia pqrs: " . mysqli_error($con));
     }
-    $pqrs_id = mysqli_insert_id($con);
+    mysqli_stmt_bind_param($stmtPQRS, 'sssssssiis',
+        $codigo_radicado,
+        $tipo_pqrs,
+        $asunto,
+        $descripcion,
+        $archivo_adjunto,
+        $estado_inicial,
+        $fecha_vencimiento,
+        $notificar,
+        $usuario_id,
+        $admin_id_null
+    );
+    if (!mysqli_stmt_execute($stmtPQRS)) {
+        die("Error al insertar PQRS: " . mysqli_stmt_error($stmtPQRS));
+    }
+    $pqrs_id = mysqli_stmt_insert_id($stmtPQRS);
+    mysqli_stmt_close($stmtPQRS);
 
     // 7. ENVIAR CORREO CON SENDGRID
     $correoDestino = null;
@@ -513,6 +537,22 @@ $nombreTipo = $nombresTipos[$tipoPQRS] ?? 'Petición';
         document.getElementById('tipo_persona').value = tipo;
         document.querySelectorAll('.error-mensaje').forEach(e => e.classList.remove('visible'));
         document.querySelectorAll('.form-input,.form-select,.form-textarea').forEach(i => i.classList.remove('error'));
+
+        // Ocultar opción de notificación por correo si es anónima
+        const notificacionDiv = document.getElementById('notificacion-correo');
+        if (notificacionDiv) {
+            if (tipo === 'anonima') {
+                notificacionDiv.style.display = 'none';
+                // Desmarcar el checkbox para que no se envíe al servidor
+                const chk = notificacionDiv.querySelector('input[type="checkbox"]');
+                if (chk) chk.checked = false;
+            } else {
+                notificacionDiv.style.display = '';
+                // Volver a marcar por defecto
+                const chk = notificacionDiv.querySelector('input[type="checkbox"]');
+                if (chk) chk.checked = true;
+            }
+        }
     }
 
     function mostrarArchivo(input) {
