@@ -166,8 +166,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $tipo_pqrs    = in_array($_POST['tipo_pqrs']    ?? '', $tipos_pqrs_validos)    ? $_POST['tipo_pqrs']    : 'peticion';
     $tipo_persona = in_array($_POST['tipo_persona'] ?? '', $tipos_persona_validos) ? $_POST['tipo_persona'] : 'natural';
-    $asunto       = trim($_POST['asunto']      ?? '');
-    $descripcion  = trim($_POST['descripcion'] ?? '');
+    // Limitar longitud para evitar errores en base de datos
+    $asunto       = mb_substr(trim($_POST['asunto']      ?? ''), 0, 250);
+    $descripcion  = mb_substr(trim($_POST['descripcion'] ?? ''), 0, 5000);
     // Anónimos nunca notifican por correo
     $notificar    = ($tipo_persona !== 'anonima' && isset($_POST['notificar_correo'])) ? 1 : 0;
 
@@ -484,12 +485,12 @@ $nombreTipo = $nombresTipos[$tipoPQRS] ?? 'Petición';
                 <div class="form-body" style="border-top:1px solid #e5e7eb;">
                     <div class="form-grupo">
                         <label class="form-label">Asunto <span class="requerido">*</span></label>
-                        <input type="text" name="asunto" class="form-input" placeholder="Resumen breve de su solicitud" onblur="validarCampo(this, 'asunto')">
+                        <input type="text" name="asunto" class="form-input" placeholder="Resumen breve de su solicitud" maxlength="250" onblur="validarCampo(this, 'asunto')">
                         <span class="error-mensaje" id="error-asunto">Ingrese el asunto de su solicitud</span>
                     </div>
                     <div class="form-grupo">
                         <label class="form-label">Descripción detallada <span class="requerido">*</span></label>
-                        <textarea name="descripcion" class="form-textarea" placeholder="Describa detalladamente su solicitud..." onblur="validarCampo(this, 'descripcion')"></textarea>
+                        <textarea name="descripcion" class="form-textarea" placeholder="Describa detalladamente su solicitud..." maxlength="5000" onblur="validarCampo(this, 'descripcion')"></textarea>
                         <span class="error-mensaje" id="error-descripcion">Ingrese la descripción de su solicitud</span>
                     </div>
 
