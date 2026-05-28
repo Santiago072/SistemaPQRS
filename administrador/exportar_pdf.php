@@ -66,6 +66,57 @@ while ($row = mysqli_fetch_assoc($result)) {
     $pqrs_list[] = $row;
 }
 
+// Calcular métricas de cumplimiento para persistir
+$total_terminos_pdf = ($metricas['por_estado']['RESUELTO'] ?? 0);
+$query_cumpl = "SELECT
+    SUM(CASE WHEN p.fecha_actualizacion <= p.fecha_vencimiento THEN 1 ELSE 0 END) as en_tiempo
+    FROM pqrs p $where_clause AND p.estado = 'RESUELTO' AND p.fecha_vencimiento IS NOT NULL";
+$row_cumpl = mysqli_fetch_assoc(mysqli_query($con, $query_cumpl));
+$en_tiempo_pdf = (int)($row_cumpl['en_tiempo'] ?? 0);
+$porcentaje_cumpl_pdf = $total_terminos_pdf > 0
+    ? round(($en_tiempo_pdf / $total_terminos_pdf) * 100, 2)
+    : 0;
+
+// Tiempo promedio
+$query_tp = "SELECT AVG(DATEDIFF(COALESCE(p.fecha_respuesta, p.fecha_actualizacion), p.fecha_radicacion)) as promedio
+             FROM pqrs p $where_clause AND p.estado = 'RESUELTO'";
+$tiempo_prom_pdf = round(mysqli_fetch_assoc(mysqli_query($con, $query_tp))['promedio'] ?? 0, 1);
+
+// Persistir en tabla reporte
+$tipo_rep_pdf   = !empty($filtro_tipo) ? strtoupper($filtro_tipo) : 'GENERAL';
+$admin_id_pdf   = $_SESSION['admin_id'] ?? null;
+$total_rec_pdf  = (int)$metricas['total'];
+$total_res_pdf  = (int)($metricas['por_estado']['RESUELTO']   ?? 0);
+$total_pen_pdf  = (int)(($metricas['por_estado']['PENDIENTE']  ?? 0)
+                      + ($metricas['por_estado']['EN_PROCESO'] ?? 0));
+$total_rech_pdf = (int)($metricas['por_estado']['RECHAZADO']  ?? 0);
+
+$stmt_rep_pdf = $con->prepare(
+    "INSERT INTO reporte (
+        tipo_reporte, fecha_inicio, fecha_fin,
+        total_recibidas, total_resueltas, total_pendientes, total_rechazadas,
+        tiempo_promedio_respuesta, porcentaje_cumplimiento,
+        formato_exportacion, administrador_id
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'PDF', ?)"
+);
+if ($stmt_rep_pdf) {
+    $stmt_rep_pdf->bind_param(
+        'sssiiiddi',
+        $tipo_rep_pdf,
+        $filtro_fecha_inicio,
+        $filtro_fecha_fin,
+        $total_rec_pdf,
+        $total_res_pdf,
+        $total_pen_pdf,
+        $total_rech_pdf,
+        $tiempo_prom_pdf,
+        $porcentaje_cumpl_pdf,
+        $admin_id_pdf
+    );
+    $stmt_rep_pdf->execute();
+    $stmt_rep_pdf->close();
+}
+
 mysqli_close($con);
 
 $tipoLabels = [
