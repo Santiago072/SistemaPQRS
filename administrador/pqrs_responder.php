@@ -1,18 +1,19 @@
 <?php
 /* HU-Detalle y Respuesta: Formulario para responder PQRS y cambiar estado
-   Envía correo al ciudadano si tiene correo registrado (Opción B)
-   Usa SendGrid API (HTTP) en lugar de PHPMailer SMTP
+   Envía correo al ciudadano si tiene correo registrado
+   Usa PHPMailer con SMTP (contraseña de aplicación)
 */
 
 include '../includes/verificar_sesion.php';
 include '../config/conexion.php';
 include '../includes/funciones.php';
 
-// ─── SendGrid ────────────────────────────────────────────────────────────────
-use SendGrid\Mail\Mail;
 require_once __DIR__ . '/../vendor/autoload.php';
 
-// ─── HELPER: Log seguro (evita errores de permisos en cloud) ─────────────────
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
+// ─── HELPER: Log seguro ───────────────────────────────────────────────────────
 function logEmail(string $mensaje): void {
     $paths = [
         __DIR__ . '/../logs/email_log.txt',
@@ -30,8 +31,7 @@ function logEmail(string $mensaje): void {
 }
 
 /**
- * Envía correo de notificación de respuesta al ciudadano usando SendGrid API.
- * Solo se llama si el usuario tiene correo registrado (Opción B).
+ * Envía correo de notificación de respuesta al ciudadano usando PHPMailer SMTP.
  */
 function enviarCorreoRespuesta(
     string $para,
@@ -44,42 +44,43 @@ function enviarCorreoRespuesta(
     string $host
 ): bool {
 
-    // Leer configuración desde variables de entorno de Railway
-    $sendgrid_api_key = $_ENV['SENDGRID_API_KEY'] ?? '';
-    $from_email       = $_ENV['SENDGRID_FROM_EMAIL'] ?? 'santiagolizcanosuarez@gmail.com';
-    $from_name        = $_ENV['SENDGRID_FROM_NAME']  ?? 'Sistema PQRS';
+    $cfg = require __DIR__ . '/../config/email_config.php';
 
-    if (empty($sendgrid_api_key)) {
-        logEmail(date('Y-m-d H:i:s') . " | FALLO-RESPUESTA | SendGrid API Key no configurada\n");
-        return false;
-    }
-
-    // Colores y texto según estado
-    $estadoColores = [
-        'RESUELTO'   => ['color' => '#059669', 'bg' => '#d1fae5', 'texto' => 'Resuelto',   'icon' => '✓'],
-        'RECHAZADO'  => ['color' => '#dc2626', 'bg' => '#fee2e2', 'texto' => 'Rechazado',  'icon' => '✗'],
-        'EN_PROCESO' => ['color' => '#1e40af', 'bg' => '#dbeafe', 'texto' => 'En Proceso', 'icon' => '↻'],
-        'PENDIENTE'  => ['color' => '#d97706', 'bg' => '#fef3c7', 'texto' => 'Pendiente',  'icon' => '◷'],
+    $estadoInfo = [
+        'RESUELTO'   => ['texto' => 'Resuelto',   'color' => '#059669', 'icon' => '&#10003;'],
+        'RECHAZADO'  => ['texto' => 'Rechazado',  'color' => '#dc2626', 'icon' => '&#10007;'],
+        'EN_PROCESO' => ['texto' => 'En Proceso', 'color' => '#1e40af', 'icon' => '&#8635;'],
+        'PENDIENTE'  => ['texto' => 'Pendiente',  'color' => '#d97706', 'icon' => '&#9711;'],
     ];
-    $estado = $estadoColores[$nuevo_estado] ?? $estadoColores['PENDIENTE'];
+    $estado = $estadoInfo[$nuevo_estado] ?? $estadoInfo['PENDIENTE'];
 
     $tipoLabel = [
-        'peticion'   => 'Petición',
+        'peticion'   => 'Peticion',
         'queja'      => 'Queja',
         'reclamo'    => 'Reclamo',
         'sugerencia' => 'Sugerencia',
         'denuncia'   => 'Denuncia',
     ][$tipo_pqrs] ?? ucfirst($tipo_pqrs);
 
+    $respuesta_html = nl2br(htmlspecialchars($contenido_respuesta));
+
     try {
-        $email = new Mail();
-        $email->setFrom($from_email, $from_name);
-        $email->addTo($para, $nombre ?: 'Ciudadano');
-        $email->setSubject("Respuesta a su solicitud PQRS - $codigo_radicado");
+        $mail = new PHPMailer(true);
+        $mail->isSMTP();
+        $mail->Host       = $cfg['smtp_host'];
+        $mail->SMTPAuth   = true;
+        $mail->Username   = $cfg['smtp_user'];
+        $mail->Password   = $cfg['smtp_password'];
+        $mail->SMTPSecure = $cfg['smtp_encryption'] === 'ssl' ? PHPMailer::ENCRYPTION_SMTPS : PHPMailer::ENCRYPTION_STARTTLS;
+        $mail->Port       = $cfg['smtp_port'];
+        $mail->CharSet    = 'UTF-8';
 
-        $respuesta_html = nl2br(htmlspecialchars($contenido_respuesta));
+        $mail->setFrom($cfg['from_email'], $cfg['from_name']);
+        $mail->addAddress($para, $nombre ?: 'Ciudadano');
+        $mail->Subject = "Respuesta a su solicitud PQRS - $codigo_radicado";
 
-        $html = "
+        $mail->isHTML(true);
+        $mail->Body = "
         <!DOCTYPE html>
         <html>
         <head>
@@ -93,7 +94,6 @@ function enviarCorreoRespuesta(
                 .cbox{background:#1e40af;color:#fff;padding:20px;text-align:center;border-radius:8px;margin:20px 0}
                 .cbox .lbl{font-size:11px;text-transform:uppercase;letter-spacing:1px;opacity:.8}
                 .cbox .cod{font-size:24px;font-weight:700;font-family:'Courier New',monospace;margin:10px 0;letter-spacing:2px}
-                .estado-box{padding:12px 20px;border-radius:8px;margin:16px 0;display:inline-block;font-weight:700;font-size:15px}
                 .respuesta-box{background:#fff;border:1px solid #e5e7eb;border-left:4px solid #1e40af;border-radius:8px;padding:20px;margin:16px 0}
                 .respuesta-box h3{margin:0 0 12px;font-size:14px;color:#6b7280;text-transform:uppercase;letter-spacing:.05em}
                 .respuesta-texto{font-size:14px;color:#374151;line-height:1.7}
@@ -112,84 +112,64 @@ function enviarCorreoRespuesta(
             <div class='head'>
                 <div style='font-size:40px;margin-bottom:10px'>{$estado['icon']}</div>
                 <h1>Su solicitud ha sido atendida</h1>
-                <p style='margin:5px 0 0;opacity:.85;font-size:14px'>Sistema PQRS — Respuesta Oficial</p>
+                <p style='margin:5px 0 0;opacity:.85;font-size:14px'>Sistema PQRS - Respuesta Oficial</p>
             </div>
             <div class='body'>
                 <p>Estimado(a) <strong>" . htmlspecialchars($nombre ?: 'Ciudadano') . "</strong>,</p>
-                <p>Le informamos que su solicitud ha recibido una respuesta oficial por parte de nuestro equipo.</p>
-
+                <p>Le informamos que su solicitud ha recibido una respuesta oficial.</p>
                 <div class='cbox'>
-                    <div class='lbl'>Código de Radicado</div>
+                    <div class='lbl'>Codigo de Radicado</div>
                     <div class='cod'>" . htmlspecialchars($codigo_radicado) . "</div>
                 </div>
-
                 <div class='det'>
                     <div class='row'><span>Tipo de solicitud:</span><span>$tipoLabel</span></div>
                     <div class='row'><span>Asunto:</span><span>" . htmlspecialchars($asunto_solicitud) . "</span></div>
                     <div class='row'><span>Fecha de respuesta:</span><span>" . date('d/m/Y H:i:s') . "</span></div>
                     <div class='row'>
                         <span>Estado actualizado:</span>
-                        <span style='color:{$estado['color']};font-weight:700'>{$estado['icon']} {$estado['texto']}</span>
+                        <span style='color:{$estado['color']};font-weight:700'>{$estado['texto']}</span>
                     </div>
                 </div>
-
                 <div class='respuesta-box'>
-                    <h3><i>📋</i> Respuesta del Administrador</h3>
+                    <h3>Respuesta del Administrador</h3>
                     <div class='respuesta-texto'>$respuesta_html</div>
                 </div>
-
                 <p style='text-align:center'>
                     <a href='http://{$host}/pqrs/consulta_pqrs.php?codigo=" . urlencode($codigo_radicado) . "' class='btn'>
                         Ver mi Solicitud en el Portal
                     </a>
                 </p>
-
                 <div class='aviso'>
-                    ⚠️ Si no está de acuerdo con la respuesta, puede presentar una nueva solicitud de revisión citando el código de radicado.
+                    Si no esta de acuerdo con la respuesta, puede presentar una nueva solicitud citando el codigo de radicado.
                 </div>
-
-                <p style='font-size:12px;color:#9ca3af;margin-top:24px'>
-                    Mensaje automático generado por el Sistema PQRS. Por favor no responda a este correo.
-                </p>
+                <p style='font-size:12px;color:#9ca3af;margin-top:24px'>Mensaje automatico, no responda este correo.</p>
             </div>
             <div class='foot'>
-                <p>© " . date('Y') . " Sistema PQRS — Todos los derechos reservados</p>
-                <p>Cumplimiento legal según Ley 1755 de 2015 y Ley 1437 de 2011</p>
+                <p>&copy; " . date('Y') . " Sistema PQRS</p>
+                <p>Ley 1755 de 2015 &middot; Ley 1437 de 2011</p>
             </div>
         </div>
         </body>
         </html>";
 
-        $email->addContent("text/html", $html);
-        $email->addContent("text/plain", 
-            "Su solicitud PQRS ha sido atendida.\n\n"
-            . "Código: $codigo_radicado\n"
+        $mail->AltBody = "Su solicitud PQRS ha sido atendida.\n\n"
+            . "Codigo: $codigo_radicado\n"
             . "Tipo: $tipoLabel\n"
-            . "Asunto: " . htmlspecialchars($asunto_solicitud) . "\n"
+            . "Asunto: $asunto_solicitud\n"
             . "Estado: {$estado['texto']}\n"
             . "Fecha de respuesta: " . date('d/m/Y H:i:s') . "\n\n"
             . "Respuesta:\n$contenido_respuesta\n\n"
-            . "Consulte en: http://{$host}/pqrs/consulta_pqrs.php?codigo=" . urlencode($codigo_radicado)
-        );
+            . "Consulte en: http://{$host}/pqrs/consulta_pqrs.php?codigo=" . urlencode($codigo_radicado);
 
-        $sendgrid = new \SendGrid($sendgrid_api_key);
-        $response = $sendgrid->send($email);
-        $statusCode = $response->statusCode();
+        $mail->send();
+        return true;
 
-        if ($statusCode >= 200 && $statusCode < 300) {
-            return true;
-        } else {
-            logEmail(date('Y-m-d H:i:s') . " | FALLO-RESPUESTA-SENDGRID | Para: $para | Status: $statusCode | Body: " . $response->body() . "\n");
-            return false;
-        }
-
-    } catch (\Exception $e) {
-        logEmail(date('Y-m-d H:i:s') . " | FALLO-RESPUESTA-EXCEPTION | Para: $para | Error: " . $e->getMessage() . "\n");
+    } catch (Exception $e) {
+        logEmail(date('Y-m-d H:i:s') . " | FALLO-SMTP-RESPUESTA | Para: $para | Error: " . $e->getMessage() . "\n");
         return false;
     }
 }
 // ─────────────────────────────────────────────────────────────────────────────
-
 
 $con = conexion();
 $id  = intval($_GET['id'] ?? 0);
