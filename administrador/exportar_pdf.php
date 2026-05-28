@@ -101,7 +101,7 @@ $stmt_rep_pdf = $con->prepare(
 );
 if ($stmt_rep_pdf) {
     $stmt_rep_pdf->bind_param(
-        'sssiiiddi',
+        'sssiiiiddi',
         $tipo_rep_pdf,
         $filtro_fecha_inicio,
         $filtro_fecha_fin,

@@ -82,7 +82,7 @@ $stmt_rep_xls = $con->prepare(
 );
 if ($stmt_rep_xls) {
     $stmt_rep_xls->bind_param(
-        'sssiiiddi',
+        'sssiiiiddi',
         $tipo_rep_xls,
         $filtro_fecha_inicio,
         $filtro_fecha_fin,
