@@ -101,7 +101,7 @@ if ($stmt_rep) {
     $total_rec_r        = (int)$metricas['total_recibidas'];
 
     $stmt_rep->bind_param(
-        'sssiiiddi',
+        'sssiiiiddi',
         $tipo_reporte_r,
         $filtro_fecha_inicio,
         $filtro_fecha_fin,
