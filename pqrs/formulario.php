@@ -303,7 +303,41 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $pqrs_id = mysqli_stmt_insert_id($stmtPQRS);
     mysqli_stmt_close($stmtPQRS);
 
-    // 7. ENVIAR CORREO CON SENDGRID
+    // 7. INSERTAR ALERTAS DE VENCIMIENTO (5, 10 y 15 días)
+    // Solo si la PQRS tiene fecha de vencimiento calculada
+    if (!empty($fecha_vencimiento)) {
+        $hoy_ts       = strtotime(date('Y-m-d'));
+        $venc_ts      = strtotime($fecha_vencimiento);
+        $dias_totales = (int)(($venc_ts - $hoy_ts) / 86400);
+
+        // Niveles de alerta según los días configurados en los requisitos
+        $niveles_alerta = [
+            ['dias' => 5,  'nivel' => 'ROJO'],
+            ['dias' => 10, 'nivel' => 'AMARILLO'],
+            ['dias' => 15, 'nivel' => 'VERDE'],
+        ];
+
+        $stmtAlerta = mysqli_prepare($con,
+            "INSERT INTO alerta_vencimiento (pqrs_id, dias_restantes, nivel_alerta, notificacion_enviada)
+             VALUES (?, ?, ?, 0)"
+        );
+        if ($stmtAlerta) {
+            foreach ($niveles_alerta as $alerta) {
+                // Solo insertar alertas que apliquen según los días totales de vencimiento
+                if ($dias_totales >= $alerta['dias']) {
+                    mysqli_stmt_bind_param($stmtAlerta, 'iis',
+                        $pqrs_id,
+                        $alerta['dias'],
+                        $alerta['nivel']
+                    );
+                    mysqli_stmt_execute($stmtAlerta);
+                }
+            }
+            mysqli_stmt_close($stmtAlerta);
+        }
+    }
+
+    // 8. ENVIAR CORREO CON SENDGRID
     $correoDestino = null;
     if ($tipo_persona === 'natural') {
         $correoDestino = $correo_electronico;

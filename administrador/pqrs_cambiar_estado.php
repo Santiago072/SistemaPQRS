@@ -67,6 +67,18 @@ if ($stmt->execute()) {
     $stmt_log = $con->prepare("INSERT INTO historial_accion (pqrs_id, administrador_id, accion_realizada, estado_anterior, estado_nuevo, descripcion, fecha_hora) VALUES (?, ?, 'CAMBIO_ESTADO', ?, ?, ?, NOW())");
     $stmt_log->bind_param("iisss", $pqrs_id, $adminId, $estado_anterior, $nuevo_estado, $descripcion);
     $stmt_log->execute();
+
+    // Si la PQRS se cierra (RESUELTO o RECHAZADO), marcar sus alertas como notificadas
+    if (in_array($nuevo_estado, ['RESUELTO', 'RECHAZADO'])) {
+        $stmt_alerta = $con->prepare(
+            "UPDATE alerta_vencimiento SET notificacion_enviada = 1 WHERE pqrs_id = ?"
+        );
+        if ($stmt_alerta) {
+            $stmt_alerta->bind_param("i", $pqrs_id);
+            $stmt_alerta->execute();
+            $stmt_alerta->close();
+        }
+    }
     
     mysqli_close($con);
     

@@ -46,6 +46,58 @@ $query = "SELECT
 
 $result = mysqli_query($con, $query);
 
+// Calcular métricas para persistir en tabla reporte
+$query_met = "SELECT estado, COUNT(*) as cantidad FROM pqrs p $where_clause GROUP BY estado";
+$res_met   = mysqli_query($con, $query_met);
+$estados_xls = [];
+while ($r = mysqli_fetch_assoc($res_met)) {
+    $estados_xls[$r['estado']] = (int)$r['cantidad'];
+}
+$total_rec_xls  = array_sum($estados_xls);
+$total_res_xls  = $estados_xls['RESUELTO']   ?? 0;
+$total_pen_xls  = ($estados_xls['PENDIENTE']  ?? 0) + ($estados_xls['EN_PROCESO'] ?? 0);
+$total_rech_xls = $estados_xls['RECHAZADO']  ?? 0;
+
+$query_tp_xls = "SELECT AVG(DATEDIFF(COALESCE(p.fecha_respuesta, p.fecha_actualizacion), p.fecha_radicacion)) as promedio
+                 FROM pqrs p $where_clause AND p.estado = 'RESUELTO'";
+$tiempo_prom_xls = round(mysqli_fetch_assoc(mysqli_query($con, $query_tp_xls))['promedio'] ?? 0, 1);
+
+$query_cumpl_xls = "SELECT SUM(CASE WHEN p.fecha_actualizacion <= p.fecha_vencimiento THEN 1 ELSE 0 END) as en_tiempo
+                    FROM pqrs p $where_clause AND p.estado = 'RESUELTO' AND p.fecha_vencimiento IS NOT NULL";
+$en_tiempo_xls = (int)(mysqli_fetch_assoc(mysqli_query($con, $query_cumpl_xls))['en_tiempo'] ?? 0);
+$porcentaje_cumpl_xls = $total_res_xls > 0
+    ? round(($en_tiempo_xls / $total_res_xls) * 100, 2)
+    : 0;
+
+$tipo_rep_xls  = !empty($filtro_tipo) ? strtoupper($filtro_tipo) : 'GENERAL';
+$admin_id_xls  = $_SESSION['admin_id'] ?? null;
+
+$stmt_rep_xls = $con->prepare(
+    "INSERT INTO reporte (
+        tipo_reporte, fecha_inicio, fecha_fin,
+        total_recibidas, total_resueltas, total_pendientes, total_rechazadas,
+        tiempo_promedio_respuesta, porcentaje_cumplimiento,
+        formato_exportacion, administrador_id
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'EXCEL', ?)"
+);
+if ($stmt_rep_xls) {
+    $stmt_rep_xls->bind_param(
+        'sssiiiddi',
+        $tipo_rep_xls,
+        $filtro_fecha_inicio,
+        $filtro_fecha_fin,
+        $total_rec_xls,
+        $total_res_xls,
+        $total_pen_xls,
+        $total_rech_xls,
+        $tiempo_prom_xls,
+        $porcentaje_cumpl_xls,
+        $admin_id_xls
+    );
+    $stmt_rep_xls->execute();
+    $stmt_rep_xls->close();
+}
+
 mysqli_close($con);
 
 $tipoLabels = [
