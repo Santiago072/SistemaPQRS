@@ -249,8 +249,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $archivo_adjunto = null;
     if (isset($_FILES['adjunto']) && $_FILES['adjunto']['error'] === UPLOAD_ERR_OK) {
         $nombreArchivo = time() . '_' . basename($_FILES['adjunto']['name']);
-        // pqrs/uploads/ es la carpeta configurada en el Dockerfile con permisos correctos
-        $dirDestino  = __DIR__ . '/uploads';
+        // Usar la carpeta uploads/ en la raíz del proyecto
+        $dirDestino  = dirname(__DIR__) . '/uploads';
         $rutaDestino = $dirDestino . '/' . $nombreArchivo;
 
         if (!is_dir($dirDestino)) {
