@@ -1,5 +1,4 @@
-
-USE railway;
+USE sistema_pqrs;
 
 CREATE TABLE administrador (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
@@ -10,21 +9,6 @@ CREATE TABLE administrador (
     rol VARCHAR(50) DEFAULT 'ADMIN',
     activo ENUM('activo', 'inactivo') DEFAULT 'activo',
     ultimo_acceso DATETIME NULL
-);
-
-CREATE TABLE usuario (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    tipo_persona VARCHAR(50) NOT NULL, -- NATURAL | JURIDICA | ANONIMA
-    nombre_completo VARCHAR(150) NULL,
-    documento_identidad VARCHAR(50) NULL,
-    tipo_documento VARCHAR(20) NULL, -- CC | CE | TI | NIT | PASAPORTE
-    correo_electronico VARCHAR(150) NULL,
-    telefono VARCHAR(20) NULL,
-    razon_social VARCHAR(150) NULL,
-    nit VARCHAR(50) NULL,
-    nombre_representante VARCHAR(150) NULL,
-    correo_corporativo VARCHAR(150) NULL,
-    fecha_registro DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE configuracion_sistema (
@@ -40,20 +24,35 @@ CREATE TABLE configuracion_sistema (
 
 INSERT INTO configuracion_sistema (id, dias_vencimiento_peticion, dias_vencimiento_queja, dias_vencimiento_reclamo, dias_vencimiento_sugerencia, dias_vencimiento_denuncia, correo_notificaciones, nombre_empresa) VALUES (1, 15, 15, 15, 15, 15, 'santiagolizcanosuarez@gmail.com', 'Sistema PQRS');
 
+CREATE TABLE usuario (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    tipo_persona VARCHAR(50) NOT NULL,
+    nombre_completo VARCHAR(150) NULL,
+    documento_identidad VARCHAR(50) NULL,
+    tipo_documento VARCHAR(20) NULL,
+    correo_electronico VARCHAR(150) NULL,
+    telefono VARCHAR(20) NULL,
+    razon_social VARCHAR(150) NULL,
+    nit VARCHAR(50) NULL,
+    nombre_representante VARCHAR(150) NULL,
+    correo_corporativo VARCHAR(150) NULL,
+    fecha_registro DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
 CREATE TABLE pqrs (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     codigo_radicado VARCHAR(50) UNIQUE NOT NULL,
-    tipo_solicitud VARCHAR(50) NOT NULL, -- PETICION | QUEJA | RECLAMO | SUGERENCIA | DENUNCIA
+    tipo_solicitud VARCHAR(50) NOT NULL,
     asunto VARCHAR(255) NOT NULL,
     descripcion TEXT NOT NULL,
     archivo_adjunto VARCHAR(255) NULL,
-    estado VARCHAR(50) DEFAULT 'PENDIENTE', -- PENDIENTE | EN_PROCESO | RESUELTO | RECHAZADO
+    estado VARCHAR(50) DEFAULT 'PENDIENTE',
     fecha_radicacion DATETIME DEFAULT CURRENT_TIMESTAMP,
     fecha_actualizacion DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     fecha_vencimiento DATE NULL,
     respuesta_administrador TEXT NULL,
     fecha_respuesta DATETIME NULL,
-    desea_notificacion TINYINT(1) DEFAULT 1, -- 1 = desea recibir correo, 0 = no desea
+    desea_notificacion TINYINT(1) DEFAULT 1,
     usuario_id BIGINT NOT NULL,
     administrador_id BIGINT NULL,
     FOREIGN KEY (usuario_id) REFERENCES usuario(id) ON DELETE CASCADE,
@@ -71,16 +70,6 @@ CREATE TABLE historial_accion (
     fecha_hora DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (pqrs_id) REFERENCES pqrs(id) ON DELETE CASCADE,
     FOREIGN KEY (administrador_id) REFERENCES administrador(id) ON DELETE SET NULL
-);
-
-CREATE TABLE alerta_vencimiento (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    pqrs_id BIGINT NOT NULL,
-    dias_restantes INTEGER NOT NULL,
-    nivel_alerta VARCHAR(20) NOT NULL, 
-    notificacion_enviada BOOLEAN DEFAULT FALSE,
-    fecha_generacion DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (pqrs_id) REFERENCES pqrs(id) ON DELETE CASCADE
 );
 
 CREATE TABLE reporte (
