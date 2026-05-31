@@ -27,7 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $tipo_mensaje = 'error';
         } else {
             // Buscar administrador activo con ese correo
-            $stmt = mysqli_prepare($con, "SELECT id, nombre_completo, nombre_usuario FROM administrador WHERE correo_electronico = ? AND activo = 'activo' LIMIT 1");
+            $stmt = mysqli_prepare($con, "SELECT id, nombre_completo, nombre_usuario FROM administrador WHERE correo_electronico = ? AND estado = 'activo' LIMIT 1");
             mysqli_stmt_bind_param($stmt, 's', $correo);
             mysqli_stmt_execute($stmt);
             $result = mysqli_stmt_get_result($stmt);

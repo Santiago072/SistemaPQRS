@@ -19,7 +19,7 @@ if (empty($token)) {
     $con = conexion();
     if ($con) {
         // Verificar token válido y no expirado
-        $stmt = mysqli_prepare($con, "SELECT id, nombre_usuario FROM administrador WHERE token_recuperacion = ? AND token_expiracion > NOW() AND activo = 'activo' LIMIT 1");
+        $stmt = mysqli_prepare($con, "SELECT id, nombre_usuario FROM administrador WHERE token_recuperacion = ? AND token_expiracion > NOW() AND estado = 'activo' LIMIT 1");
         mysqli_stmt_bind_param($stmt, 's', $token);
         mysqli_stmt_execute($stmt);
         $result = mysqli_stmt_get_result($stmt);
