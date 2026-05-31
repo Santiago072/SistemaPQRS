@@ -1571,3 +1571,96 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 @media (min-width: 640px) {
     .acceso-grid { grid-template-columns: repeat(4, 1fr); }
 }
+
+/* ── CONFIGURACIÓN MODAL PERFIL ─────────────────────────────────── */
+.config-grupo {
+    margin-bottom: 1rem;
+}
+.acceso-config {
+    background: #ede9fe;
+    color: #6d28d9;
+}
+.acceso-card:hover .acceso-config {
+    background: #6d28d9;
+    color: #ffffff;
+}
+.spin {
+    animation: spin 1s linear infinite;
+}
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* ── RECUPERAR CONTRASEÑA ────────────────────────────────────────── */
+.login-recuperar {
+    text-align: right;
+    margin: -0.25rem 0 1rem;
+}
+.login-recuperar a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    color: var(--color-gray-500);
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    transition: color var(--transition-fast);
+}
+.login-recuperar a:hover {
+    color: var(--color-primary);
+}
+.login-exito {
+    margin: 0 var(--space-6) var(--space-4);
+    padding: var(--space-3) var(--space-4);
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    color: #065f46;
+    font-size: var(--font-size-sm);
+}
+.login-exito i {
+    font-size: 1.25rem;
+    flex-shrink: 0;
+    color: var(--color-secondary);
+}
+.btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1.2rem;
+    background: var(--color-gray-100);
+    color: var(--color-gray-700);
+    border: 1px solid var(--color-gray-300);
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    font-size: var(--font-size-sm);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+.btn-secondary:hover {
+    background: var(--color-gray-200);
+}
+.btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1.2rem;
+    background: var(--color-primary);
+    color: white;
+    border: none;
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    font-size: var(--font-size-sm);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+.btn-primary:hover {
+    background: var(--color-primary-dark);
+}
+.btn-primary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}

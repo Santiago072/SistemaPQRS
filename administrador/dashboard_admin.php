@@ -168,6 +168,12 @@ $baseUrl = $isRailway ? '/' : '/PROYECTO_PQRS/';
             </div>
             <span class="acceso-label">Reportes</span>
         </a>
+        <a href="#" class="acceso-card" onclick="abrirModalConfig(); return false;">
+            <div class="acceso-icon acceso-config">
+                <i class="bi bi-gear-fill"></i>
+            </div>
+            <span class="acceso-label">Mi Perfil</span>
+        </a>
     </div>
 </div>
 
@@ -231,6 +237,152 @@ $baseUrl = $isRailway ? '/' : '/PROYECTO_PQRS/';
 
         </div>
     </section>
+    <!-- ============================================
+     MODAL: Configuración de Perfil
+     ============================================ -->
+<div class="modal-overlay" id="modalConfig">
+    <div class="modal-container" style="max-width:520px">
+        <div class="modal-header">
+            <div>
+                <h2 class="modal-title"><i class="bi bi-gear"></i> Mi Perfil</h2>
+                <p class="modal-subtitle">Actualice su información personal</p>
+            </div>
+            <button class="modal-close" onclick="cerrarModalConfig()" aria-label="Cerrar">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div id="configMsg" style="display:none;padding:10px 14px;border-radius:8px;margin-bottom:16px;font-size:14px"></div>
+            <form id="formConfig" onsubmit="guardarConfig(event)">
+                <div class="config-grupo">
+                    <label for="cfg_nombre" class="login-label">
+                        <i class="bi bi-person"></i> Nombre Completo
+                    </label>
+                    <input type="text" id="cfg_nombre" name="nombre_completo" class="login-input"
+                        value="<?php echo htmlspecialchars($adminNombre); ?>" required>
+                </div>
+                <div class="config-grupo">
+                    <label for="cfg_correo" class="login-label">
+                        <i class="bi bi-envelope"></i> Correo Electrónico
+                    </label>
+                    <input type="email" id="cfg_correo" name="correo_electronico" class="login-input"
+                        value="<?php echo htmlspecialchars($adminCorreo); ?>" required>
+                </div>
+                <hr style="border:none;border-top:1px solid #e5e7eb;margin:20px 0">
+                <p style="font-size:13px;color:#6b7280;margin-bottom:12px">
+                    <i class="bi bi-info-circle"></i> Deje en blanco si no desea cambiar la contraseña
+                </p>
+                <div class="config-grupo">
+                    <label for="cfg_pass_actual" class="login-label">
+                        <i class="bi bi-lock"></i> Contraseña Actual
+                    </label>
+                    <input type="password" id="cfg_pass_actual" name="password_actual" class="login-input"
+                        placeholder="Solo si desea cambiarla" autocomplete="current-password">
+                </div>
+                <div class="config-grupo">
+                    <label for="cfg_pass_nueva" class="login-label">
+                        <i class="bi bi-key"></i> Nueva Contraseña
+                    </label>
+                    <input type="password" id="cfg_pass_nueva" name="password_nueva" class="login-input"
+                        placeholder="Mínimo 6 caracteres" autocomplete="new-password">
+                </div>
+                <div class="config-grupo">
+                    <label for="cfg_pass_confirm" class="login-label">
+                        <i class="bi bi-key-fill"></i> Confirmar Nueva Contraseña
+                    </label>
+                    <input type="password" id="cfg_pass_confirm" name="password_confirmar" class="login-input"
+                        placeholder="Repita la nueva contraseña" autocomplete="new-password">
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer" style="display:flex;gap:10px;justify-content:flex-end">
+            <button type="button" class="btn btn-secondary" onclick="cerrarModalConfig()">Cancelar</button>
+            <button type="button" class="btn btn-primary" onclick="guardarConfig(event)">
+                <i class="bi bi-check-lg"></i> Guardar Cambios
+            </button>
+        </div>
+    </div>
+</div>
 
+<script>
+function abrirModalConfig() {
+    document.getElementById('modalConfig').classList.add('active');
+    document.getElementById('configMsg').style.display = 'none';
+}
+function cerrarModalConfig() {
+    document.getElementById('modalConfig').classList.remove('active');
+}
+// Cerrar con ESC o clic fuera
+document.getElementById('modalConfig').addEventListener('click', function(e) {
+    if (e.target === this) cerrarModalConfig();
+});
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') cerrarModalConfig();
+});
+
+function guardarConfig(e) {
+    if (e) e.preventDefault();
+    var form = document.getElementById('formConfig');
+    var msgBox = document.getElementById('configMsg');
+    var passNueva = document.getElementById('cfg_pass_nueva').value;
+    var passConfirm = document.getElementById('cfg_pass_confirm').value;
+
+    if (passNueva && passNueva.length < 6) {
+        mostrarMsg('La nueva contraseña debe tener al menos 6 caracteres.', 'error');
+        return;
+    }
+    if (passNueva && passNueva !== passConfirm) {
+        mostrarMsg('Las contraseñas nuevas no coinciden.', 'error');
+        return;
+    }
+
+    var formData = new FormData(form);
+    var btn = document.querySelector('.modal-footer .btn-primary');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="bi bi-arrow-repeat spin"></i> Guardando...';
+
+    fetch('actualizar_perfil.php', { method: 'POST', body: formData })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+        if (data.ok) {
+            mostrarMsg(data.msg, 'exito');
+            // Actualizar nombre en dashboard
+            if (data.nombre) {
+                var el = document.querySelector('.dashboard-subtitle strong');
+                if (el) el.textContent = data.nombre;
+            }
+            // Limpiar campos de contraseña
+            document.getElementById('cfg_pass_actual').value = '';
+            document.getElementById('cfg_pass_nueva').value = '';
+            document.getElementById('cfg_pass_confirm').value = '';
+        } else {
+            mostrarMsg(data.msg, 'error');
+        }
+    })
+    .catch(function() {
+        mostrarMsg('Error de conexión. Intente nuevamente.', 'error');
+    })
+    .finally(function() {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="bi bi-check-lg"></i> Guardar Cambios';
+    });
+}
+
+function mostrarMsg(texto, tipo) {
+    var box = document.getElementById('configMsg');
+    box.style.display = 'block';
+    box.textContent = texto;
+    if (tipo === 'exito') {
+        box.style.background = '#f0fdf4';
+        box.style.color = '#065f46';
+        box.style.border = '1px solid #bbf7d0';
+    } else {
+        box.style.background = '#fef2f2';
+        box.style.color = '#991b1b';
+        box.style.border = '1px solid #fecaca';
+    }
+    box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+</script>
 </body>
 </html>

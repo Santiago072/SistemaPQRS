@@ -29,9 +29,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } else {
             // Buscar administrador — Prepared Statement (protección SQL)
             $stmt = mysqli_prepare($con,
-                "SELECT id, nombre_usuario, contrasena, nombre_completo, correo_electronico, rol, activo
+                "SELECT id, nombre_usuario, contrasena, nombre_completo, correo_electronico, rol, estado
                  FROM administrador
-                 WHERE nombre_usuario = ? AND activo = 'activo'
+                 WHERE nombre_usuario = ? AND estado = 'activo'
                  LIMIT 1"
             );
             if (!$stmt) {
@@ -157,6 +157,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <i class="bi bi-eye" id="icono-password"></i>
                             </button>
                         </div>
+                    </div>
+
+                    <!-- NUEVO: Enlace recuperar contraseña -->
+                    <div class="login-recuperar">
+                        <a href="recuperar_contrasena.php">
+                            <i class="bi bi-question-circle"></i>
+                            ¿Olvidó su contraseña?
+                        </a>
                     </div>
 
                     <button type="submit" class="login-btn">
