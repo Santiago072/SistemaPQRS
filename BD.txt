@@ -8,7 +8,9 @@ CREATE TABLE administrador (
     correo_electronico VARCHAR(150) NOT NULL,
     rol VARCHAR(50) DEFAULT 'ADMIN',
     activo ENUM('activo', 'inactivo') DEFAULT 'activo',
-    ultimo_acceso DATETIME NULL
+    ultimo_acceso DATETIME NULL,
+    token_recuperacion VARCHAR(64) NULL,
+    token_expiracion DATETIME NULL
 );
 
 CREATE TABLE configuracion_sistema (
