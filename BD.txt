@@ -7,7 +7,7 @@ CREATE TABLE administrador (
     nombre_completo VARCHAR(150) NOT NULL,
     correo_electronico VARCHAR(150) NOT NULL,
     rol VARCHAR(50) DEFAULT 'ADMIN',
-    activo ENUM('activo', 'inactivo') DEFAULT 'activo',
+    estado ENUM('activo', 'inactivo') DEFAULT 'activo',
     ultimo_acceso DATETIME NULL,
     token_recuperacion VARCHAR(64) NULL,
     token_expiracion DATETIME NULL
