@@ -95,7 +95,14 @@ if (empty($token)) {
                 <?php if ($mensaje): ?>
                 <div class="login-<?php echo $tipo_mensaje === 'exito' ? 'exito' : 'error'; ?>" role="alert">
                     <i class="bi bi-<?php echo $tipo_mensaje === 'exito' ? 'check-circle-fill' : 'exclamation-triangle-fill'; ?>"></i>
-                    <span><?php echo htmlspecialchars($mensaje); ?></span>
+                    <span>
+                        <?php echo htmlspecialchars($mensaje); ?>
+                        <?php if ($tipo_mensaje === 'exito'): ?>
+                            <a href="login.php" style="display:inline-flex;align-items:center;gap:0.25rem;margin-top:0.5rem;color:#065f46;font-weight:600;text-decoration:underline;">
+                                <i class="bi bi-box-arrow-in-right"></i> Ir al Login
+                            </a>
+                        <?php endif; ?>
+                    </span>
                 </div>
                 <?php endif; ?>
 

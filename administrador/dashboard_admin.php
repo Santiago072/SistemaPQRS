@@ -174,6 +174,12 @@ $baseUrl = $isRailway ? '/' : '/PROYECTO_PQRS/';
             </div>
             <span class="acceso-label">Mi Perfil</span>
         </a>
+        <a href="configuracion.php" class="acceso-card">
+            <div class="acceso-icon" style="background:linear-gradient(135deg,#0f766e,#0d9488);">
+                <i class="bi bi-sliders"></i>
+            </div>
+            <span class="acceso-label">Configuración</span>
+        </a>
     </div>
 </div>
 
