@@ -8,6 +8,15 @@ El sistema cuenta con dos portales principales:
 
 ---
 
+## 📚 Documentación
+
+| Documento | Descripción |
+|-----------|-------------|
+| 📖 [Documentación Técnica](docs/documentacion-tecnica.md) | Arquitectura, base de datos, módulos, seguridad, API interna, requisitos implementados e instalación detallada |
+| 👤 [Manual de Usuario](docs/manual-usuario.md) | Guía paso a paso para ciudadanos y administradores: radicar PQRS, consultar estado, gestionar solicitudes, reportes y configuración |
+
+---
+
 ## 🚀 Características Principales
 
 ### 👥 Portal Ciudadano
@@ -79,10 +88,13 @@ PROYECTO_PQRS/
 │
 ├── vendor/                  # Dependencias de Composer (PHPMailer, DomPDF)
 ├── uploads/                 # Directorio de almacenamiento de archivos adjuntos
+├── docs/                    # Documentación del proyecto
+│   ├── documentacion-tecnica.md  # Arquitectura, BD, módulos y seguridad
+│   └── manual-usuario.md         # Guía de uso para ciudadanos y admins
 ├── BD.txt                   # Script SQL de la Base de Datos
 ├── composer.json            # Dependencias PHP (Composer)
 ├── index.php                # Página de inicio del portal del ciudadano
-└── README.md                # Documentación del proyecto
+└── README.md                # Presentación y enlaces a la documentación
 ```
 
 ---
