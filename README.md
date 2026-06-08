@@ -125,31 +125,50 @@ El script de inicialización se encuentra en `BD.txt`. Contiene la creación de 
 
 Actualmente, el sistema está diseñado para ejecutarse de forma local. Sigue estos pasos para su configuración:
 
-1. Clona o copia el repositorio en el directorio web root de tu servidor local:
+1. Clona el repositorio en el directorio web root de tu servidor local:
+   ```bash
+   git clone https://github.com/Santiago072/SistemaPQRS.git PROYECTO_PQRS
+   ```
    * **XAMPP:** `C:\xampp\htdocs\PROYECTO_PQRS`
    * **Laragon:** `C:\laragon\www\PROYECTO_PQRS`
 
-2. Revisa la conexión a la base de datos en `config/conexion.php`. Asegúrate de que las credenciales (`$host`, `$user`, `$pass`, `$db`) coincidan con tu entorno local:
+2. **Crea los archivos de configuración** copiando los ejemplos incluidos:
+   ```bash
+   cp config/conexion_example.php    config/conexion.php
+   cp config/email_config_example.php config/email_config.php
+   ```
+   Luego edita cada archivo con tus credenciales reales. Estos archivos están en `.gitignore` y **nunca se subirán al repositorio**.
+
+3. Edita `config/conexion.php` con los datos de tu base de datos local:
    ```php
-   function conexion() {
-       $host = 'localhost';
-       $user = 'root';
-       $pass = ''; // Por defecto en XAMPP es vacío
-       $db   = 'sistema_pqrs';
-       
-       $conexion = mysqli_connect($host, $user, $pass, $db);
-       if (!$conexion) die("Error de conexión: " . mysqli_connect_error());
-       return $conexion;
-   }
+   $host = 'localhost';
+   $user = 'root';
+   $pass = '';            // En XAMPP suele estar vacío
+   $db   = 'sistema_pqrs';
    ```
 
-3. Configura el envío de correos (opcional). El sistema usa PHPMailer mediante SMTP. Si deseas habilitar las notificaciones por correo electrónico y el restablecimiento de contraseñas, asegúrate de colocar credenciales válidas en `config/email_config.php` y habilitar la extensión `openssl` en tu `php.ini`.
+4. Edita `config/email_config.php` con tus credenciales SMTP (opcional, solo si quieres recibir correos):
+   ```php
+   'smtp_host'     => 'smtp.gmail.com',
+   'smtp_port'     => 587,
+   'smtp_user'     => 'tu_correo@gmail.com',
+   'smtp_password' => 'xxxx xxxx xxxx xxxx',  // Contraseña de aplicación Gmail
+   'from_email'    => 'tu_correo@gmail.com',
+   'from_name'     => 'Sistema PQRS',
+   ```
+   > Para obtener una contraseña de aplicación en Gmail: Cuenta Google → Seguridad → Verificación en dos pasos → Contraseñas de aplicaciones.
 
-4. Instala las dependencias con [Composer](https://getcomposer.org/) abriendo la terminal en la carpeta del proyecto:
+5. Instala las dependencias con [Composer](https://getcomposer.org/):
    ```bash
    composer install
    ```
 
-5. Abre `http://localhost/PROYECTO_PQRS/` en tu navegador para empezar a usar el sistema.
+6. Crea la base de datos e importa el esquema:
+   ```bash
+   mysql -u root -p -e "CREATE DATABASE sistema_pqrs;"
+   mysql -u root -p sistema_pqrs < BD.txt
+   ```
 
-> **Nota de Seguridad:** Se recomienda no subir al repositorio archivos de configuración (`email_config.php` o `conexion.php`) que contengan contraseñas reales o datos confidenciales.
+7. Abre `http://localhost/PROYECTO_PQRS/` en tu navegador.
+
+> **⚠️ Seguridad:** Los archivos `config/conexion.php` y `config/email_config.php` están en `.gitignore`. Nunca los subas al repositorio. Usa siempre los archivos `*_example.php` como plantilla.
