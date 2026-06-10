@@ -5,3 +5,4 @@ config/email_config.php
 pqrs/formulario.php
 pqrs/responder.php
 BD.txt
+logs/email_config
