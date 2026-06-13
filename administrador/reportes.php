@@ -82,40 +82,8 @@ $porcentaje_cumplimiento_r = $total_terminos_r > 0
     ? round(($metricas['en_tiempo'] / $total_terminos_r) * 100, 2)
     : 0;
 
-// Persistir reporte en tabla reporte (solo si se aplicó algún filtro o es carga normal)
-$tipo_reporte_r = !empty($filtro_tipo) ? strtoupper($filtro_tipo) : 'GENERAL';
-$stmt_rep = $con->prepare(
-    "INSERT INTO reporte (
-        tipo_reporte, fecha_inicio, fecha_fin,
-        total_recibidas, total_resueltas, total_pendientes, total_rechazadas,
-        tiempo_promedio_respuesta, porcentaje_cumplimiento,
-        formato_exportacion, administrador_id
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'WEB', ?)"
-);
-if ($stmt_rep) {
-    $total_resueltas_r  = (int)($metricas['por_estado']['RESUELTO']   ?? 0);
-    $total_pendientes_r = (int)(($metricas['por_estado']['PENDIENTE']  ?? 0)
-                              + ($metricas['por_estado']['EN_PROCESO'] ?? 0));
-    $total_rechazadas_r = (int)($metricas['por_estado']['RECHAZADO']  ?? 0);
-    $tiempo_prom_r      = (float)$metricas['tiempo_promedio'];
-    $total_rec_r        = (int)$metricas['total_recibidas'];
-
-    $stmt_rep->bind_param(
-        'sssiiiiddi',
-        $tipo_reporte_r,
-        $filtro_fecha_inicio,
-        $filtro_fecha_fin,
-        $total_rec_r,
-        $total_resueltas_r,
-        $total_pendientes_r,
-        $total_rechazadas_r,
-        $tiempo_prom_r,
-        $porcentaje_cumplimiento_r,
-        $adminId
-    );
-    $stmt_rep->execute();
-    $stmt_rep->close();
-}
+// NO persistir reporte en tabla al cargar la página.
+// La persistencia solo ocurre al exportar (exportar_pdf.php / exportar_excel.php).
 
 mysqli_close($con);
 

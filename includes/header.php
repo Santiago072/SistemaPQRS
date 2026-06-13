@@ -26,10 +26,6 @@ $sesionActiva = (session_status() === PHP_SESSION_ACTIVE) &&
 
         <nav class="nav-admin" aria-label="Navegación administrativa">
             <?php if ($sesionActiva): ?>
-                <a href="<?php echo $baseUrl; ?>administrador/configuracion.php" class="btn btn-outline" title="Configuración del sistema" aria-label="Configuración del sistema">
-                    <i class="bi bi-sliders" aria-hidden="true"></i>
-                    <span>Configuración</span>
-                </a>
                 <a href="<?php echo $baseUrl; ?>administrador/logout.php" class="btn btn-outline btn-cerrar-sesion">
                     <i class="bi bi-box-arrow-right" aria-hidden="true"></i>
                     <span>Cerrar Sesión</span>

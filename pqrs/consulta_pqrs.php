@@ -255,7 +255,7 @@ function progresoPorEstado(string $estado): int {
                 <span>Sistema PQRS</span>
             </a>
             <nav class="nav-admin">
-                <a href="login.php" class="btn btn-outline">
+                <a href="../administrador/login.php" class="btn btn-outline">
                     <i class="bi bi-shield-lock"></i>
                     <span>Administrador</span>
                 </a>
