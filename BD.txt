@@ -91,6 +91,7 @@ CREATE TABLE reporte (
     FOREIGN KEY (administrador_id) REFERENCES administrador(id) ON DELETE SET NULL
 );
 
--- Crear usuario administrador por defecto (admin / admin123)
+-- Crear usuario administrador por defecto (admin / admin2026!)
+-- La contraseña está hasheada con bcrypt (password_hash)
 INSERT INTO administrador (nombre_usuario, contrasena, nombre_completo, correo_electronico, rol) 
-VALUES ('admin', 'admin2026!', 'Administrador del Sistema', 'admin@pqrs.gov.co', 'ADMIN');
+VALUES ('admin', '$2y$10$DXEiMPzRoMPwYhtxyzm2T.Wn/mTIlQDCzEht0KmDiMI8/6gSrf3n2', 'Administrador del Sistema', 'admin@pqrs.gov.co', 'ADMIN');
