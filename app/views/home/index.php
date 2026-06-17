@@ -43,7 +43,7 @@
 </button>
 
                         <!-- Botón Consultar Estado -->
-                        <a href="pqrs/consulta_pqrs.php" class="btn btn-outline-white" aria-label="Consultar estado de solicitud existente">
+                        <a href="<?php echo BASE_PATH; ?>index.php?ruta=pqrs/consulta" class="btn btn-outline-white" aria-label="Consultar estado de solicitud existente">
                             <i class="bi bi-search" aria-hidden="true"></i>
                             <span>Consultar Estado</span>
                         </a>
@@ -318,7 +318,7 @@
                         <button type="button" class="btn btn-white" onclick="abrirModal()" aria-label="Crear nueva solicitud PQRS">
                             <i class="bi bi-pencil-square" aria-hidden="true"></i> Nueva Solicitud
                         </button>
-                        <a href="pqrs/consulta_pqrs.php" class="btn btn-outline-white" aria-label="Consultar estado de solicitud existente">
+                        <a href="<?php echo BASE_PATH; ?>index.php?ruta=pqrs/consulta" class="btn btn-outline-white" aria-label="Consultar estado de solicitud existente">
                             <i class="bi bi-search" aria-hidden="true"></i>
                             <span>Consultar Estado</span>
                         </a>
