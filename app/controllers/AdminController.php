@@ -24,20 +24,23 @@ class AdminController {
     public function logout() {
         require_once __DIR__ . '/../views/admin/logout.php';
     }
-    public function lista() {
+    public function pqrs() {
         require_once __DIR__ . '/../views/admin/pqrs.php';
     }
-    public function cambiar_estado() {
+    public function pqrs_cambiar_estado() {
         require_once __DIR__ . '/../views/admin/pqrs_cambiar_estado.php';
     }
-    public function historial() {
+    public function pqrs_historial() {
         require_once __DIR__ . '/../views/admin/pqrs_historial.php';
     }
-    public function responder() {
+    public function pqrs_responder() {
         require_once __DIR__ . '/../views/admin/pqrs_responder.php';
     }
-    public function ver() {
+    public function pqrs_ver() {
         require_once __DIR__ . '/../views/admin/pqrs_ver.php';
+    }
+    public function recuperar() {
+        require_once __DIR__ . '/../views/admin/recuperar_contrasena.php';
     }
     public function recuperar_contrasena() {
         require_once __DIR__ . '/../views/admin/recuperar_contrasena.php';
