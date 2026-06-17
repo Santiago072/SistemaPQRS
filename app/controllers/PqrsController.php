@@ -13,6 +13,126 @@ class PqrsController {
         require_once __DIR__ . '/../views/pqrs/formulario.php';
     }
 
+    private function logEmail(string $mensaje): void {
+        $paths = [
+            __DIR__ . '/../../logs/email_log.txt',
+            '/tmp/pqrs_email_log.txt',
+        ];
+        foreach ($paths as $path) {
+            $dir = dirname($path);
+            if (!is_dir($dir)) {
+                @mkdir($dir, 0755, true);
+            }
+            if (@file_put_contents($path, $mensaje, FILE_APPEND | LOCK_EX) !== false) {
+                break;
+            }
+        }
+    }
+
+    private function enviarCorreoPQRS(
+        string $para,
+        string $nombre,
+        string $codigo_radicado,
+        string $tipo_pqrs,
+        string $asunto_solicitud,
+        string $fecha_vencimiento,
+        string $host
+    ): bool {
+        $cfg = require __DIR__ . '/../../config/email_config.php';
+
+        try {
+            $mail = new \PHPMailer\PHPMailer\PHPMailer(true);
+            $mail->isSMTP();
+            $mail->Host       = $cfg['smtp_host'];
+            $mail->SMTPAuth   = true;
+            $mail->Username   = $cfg['smtp_user'];
+            $mail->Password   = $cfg['smtp_password'];
+            $mail->SMTPSecure = $cfg['smtp_encryption'] === 'ssl' ? \PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_SMTPS : \PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_STARTTLS;
+            $mail->Port       = $cfg['smtp_port'];
+            $mail->CharSet    = 'UTF-8';
+
+            $mail->setFrom($cfg['from_email'], $cfg['from_name']);
+            $mail->addAddress($para, $nombre ?: 'Usuario');
+            $mail->Subject = "Confirmacion de Radicacion PQRS - $codigo_radicado";
+
+            $mail->isHTML(true);
+            $mail->Body = "
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset='UTF-8'>
+                <style>
+                    body{font-family:Arial,sans-serif;line-height:1.6;color:#333;margin:0;padding:0}
+                    .wrap{max-width:600px;margin:0 auto;padding:20px}
+                    .head{background:linear-gradient(135deg,#1e40af,#1e3a8a);color:#fff;padding:30px;text-align:center;border-radius:10px 10px 0 0}
+                    .head h1{margin:0;font-size:22px}
+                    .body{background:#f9fafb;padding:30px;border:1px solid #e5e7eb;border-top:none;border-radius:0 0 10px 10px}
+                    .cbox{background:#1e40af;color:#fff;padding:20px;text-align:center;border-radius:8px;margin:20px 0}
+                    .cbox .lbl{font-size:11px;text-transform:uppercase;letter-spacing:1px;opacity:.8}
+                    .cbox .cod{font-size:26px;font-weight:700;font-family:'Courier New',monospace;margin:10px 0;letter-spacing:2px}
+                    .det{background:#fff;padding:15px 20px;border-radius:8px;margin:10px 0}
+                    .row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f3f4f6;font-size:14px}
+                    .row:last-child{border-bottom:none}
+                    .row span:first-child{color:#6b7280}
+                    .row span:last-child{font-weight:600}
+                    .btn{display:inline-block;background:#1e40af;color:#fff!important;padding:12px 32px;text-decoration:none;border-radius:6px;margin-top:20px;font-size:14px;font-weight:600}
+                    .foot{text-align:center;padding:20px 0 0;color:#9ca3af;font-size:11px}
+                </style>
+            </head>
+            <body>
+            <div class='wrap'>
+                <div class='head'>
+                    <div style='font-size:40px;margin-bottom:10px'>&#10003;</div>
+                    <h1>Solicitud Radicada Exitosamente</h1>
+                    <p style='margin:5px 0 0;opacity:.85;font-size:14px'>Sistema PQRS</p>
+                </div>
+                <div class='body'>
+                    <p>Hola <strong>" . htmlspecialchars($nombre ?: 'Usuario') . "</strong>,</p>
+                    <p>Su solicitud ha sido registrada correctamente.</p>
+                    <div class='cbox'>
+                        <div class='lbl'>Codigo de Radicado</div>
+                        <div class='cod'>" . htmlspecialchars($codigo_radicado) . "</div>
+                        <div style='font-size:13px;opacity:.85'>Guardelo para consultar el estado</div>
+                    </div>
+                    <div class='det'>
+                        <div class='row'><span>Tipo de solicitud:</span><span>" . ucfirst(htmlspecialchars($tipo_pqrs)) . "</span></div>
+                        <div class='row'><span>Asunto:</span><span>" . htmlspecialchars($asunto_solicitud) . "</span></div>
+                        <div class='row'><span>Fecha de radicacion:</span><span>" . date('d/m/Y H:i:s') . "</span></div>
+                        <div class='row'><span>Fecha limite de respuesta:</span><span>" . htmlspecialchars($fecha_vencimiento) . "</span></div>
+                        <div class='row'><span>Estado actual:</span><span style='color:#059669'>Pendiente</span></div>
+                    </div>
+                    <p style='text-align:center'>
+                        <a href='http://{$host}" . BASE_PATH . "index.php?ruta=pqrs/consulta&codigo=" . urlencode($codigo_radicado) . "' class='btn'>
+                            Consultar Estado de mi Solicitud
+                        </a>
+                    </p>
+                    <p style='font-size:12px;color:#9ca3af;margin-top:24px'>Mensaje automatico, no responda este correo.</p>
+                </div>
+                <div class='foot'>
+                    <p>&copy; " . date('Y') . " Sistema PQRS</p>
+                    <p>Ley 1755 de 2015 &middot; Ley 1437 de 2011</p>
+                </div>
+            </div>
+            </body>
+            </html>";
+
+            $mail->AltBody = "Solicitud PQRS radicada.\n\n"
+                . "Codigo: $codigo_radicado\n"
+                . "Tipo: " . ucfirst($tipo_pqrs) . "\n"
+                . "Asunto: $asunto_solicitud\n"
+                . "Radicado: " . date('d/m/Y H:i:s') . "\n"
+                . "Vencimiento: $fecha_vencimiento\n\n"
+                . "Consulte en: http://{$host}" . BASE_PATH . "index.php?ruta=pqrs/consulta&codigo=" . urlencode($codigo_radicado);
+
+            $mail->send();
+            return true;
+
+        } catch (\PHPMailer\PHPMailer\Exception $e) {
+            $this->logEmail(date('Y-m-d H:i:s') . " | FALLO-SMTP | Para: $para | Error: " . $e->getMessage() . "\n");
+            return false;
+        }
+    }
+
     public function radicar() {
         // ⚡ SESSION START PRIMERO — antes de cualquier output
         if (session_status() === PHP_SESSION_NONE) {
@@ -21,134 +141,6 @@ class PqrsController {
 
         require_once __DIR__ . '/../../config/conexion.php';
         require_once __DIR__ . '/../../vendor/autoload.php';
-
-        // ─── HELPER: Log seguro ───────────────────────────────────────────────────────
-        if (!function_exists('logEmail')) {
-            function logEmail(string $mensaje): void {
-                $paths = [
-                    __DIR__ . '/../../logs/email_log.txt',
-                    '/tmp/pqrs_email_log.txt',
-                ];
-                foreach ($paths as $path) {
-                    $dir = dirname($path);
-                    if (!is_dir($dir)) {
-                        @mkdir($dir, 0755, true);
-                    }
-                    if (@file_put_contents($path, $mensaje, FILE_APPEND | LOCK_EX) !== false) {
-                        break;
-                    }
-                }
-            }
-        }
-
-        /**
-         * Envía el correo de confirmación usando PHPMailer SMTP
-         */
-        if (!function_exists('enviarCorreoPQRS')) {
-            function enviarCorreoPQRS(
-                string $para,
-                string $nombre,
-                string $codigo_radicado,
-                string $tipo_pqrs,
-                string $asunto_solicitud,
-                string $fecha_vencimiento,
-                string $host
-            ): bool {
-                $cfg = require __DIR__ . '/../../config/email_config.php';
-
-                try {
-                    $mail = new \PHPMailer\PHPMailer\PHPMailer(true);
-                    $mail->isSMTP();
-                    $mail->Host       = $cfg['smtp_host'];
-                    $mail->SMTPAuth   = true;
-                    $mail->Username   = $cfg['smtp_user'];
-                    $mail->Password   = $cfg['smtp_password'];
-                    $mail->SMTPSecure = $cfg['smtp_encryption'] === 'ssl' ? \PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_SMTPS : \PHPMailer\PHPMailer\PHPMailer::ENCRYPTION_STARTTLS;
-                    $mail->Port       = $cfg['smtp_port'];
-                    $mail->CharSet    = 'UTF-8';
-
-                    $mail->setFrom($cfg['from_email'], $cfg['from_name']);
-                    $mail->addAddress($para, $nombre ?: 'Usuario');
-                    $mail->Subject = "Confirmacion de Radicacion PQRS - $codigo_radicado";
-
-                    $mail->isHTML(true);
-                    $mail->Body = "
-                    <!DOCTYPE html>
-                    <html>
-                    <head>
-                        <meta charset='UTF-8'>
-                        <style>
-                            body{font-family:Arial,sans-serif;line-height:1.6;color:#333;margin:0;padding:0}
-                            .wrap{max-width:600px;margin:0 auto;padding:20px}
-                            .head{background:linear-gradient(135deg,#1e40af,#1e3a8a);color:#fff;padding:30px;text-align:center;border-radius:10px 10px 0 0}
-                            .head h1{margin:0;font-size:22px}
-                            .body{background:#f9fafb;padding:30px;border:1px solid #e5e7eb;border-top:none;border-radius:0 0 10px 10px}
-                            .cbox{background:#1e40af;color:#fff;padding:20px;text-align:center;border-radius:8px;margin:20px 0}
-                            .cbox .lbl{font-size:11px;text-transform:uppercase;letter-spacing:1px;opacity:.8}
-                            .cbox .cod{font-size:26px;font-weight:700;font-family:'Courier New',monospace;margin:10px 0;letter-spacing:2px}
-                            .det{background:#fff;padding:15px 20px;border-radius:8px;margin:10px 0}
-                            .row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f3f4f6;font-size:14px}
-                            .row:last-child{border-bottom:none}
-                            .row span:first-child{color:#6b7280}
-                            .row span:last-child{font-weight:600}
-                            .btn{display:inline-block;background:#1e40af;color:#fff!important;padding:12px 32px;text-decoration:none;border-radius:6px;margin-top:20px;font-size:14px;font-weight:600}
-                            .foot{text-align:center;padding:20px 0 0;color:#9ca3af;font-size:11px}
-                        </style>
-                    </head>
-                    <body>
-                    <div class='wrap'>
-                        <div class='head'>
-                            <div style='font-size:40px;margin-bottom:10px'>&#10003;</div>
-                            <h1>Solicitud Radicada Exitosamente</h1>
-                            <p style='margin:5px 0 0;opacity:.85;font-size:14px'>Sistema PQRS</p>
-                        </div>
-                        <div class='body'>
-                            <p>Hola <strong>" . htmlspecialchars($nombre ?: 'Usuario') . "</strong>,</p>
-                            <p>Su solicitud ha sido registrada correctamente.</p>
-                            <div class='cbox'>
-                                <div class='lbl'>Codigo de Radicado</div>
-                                <div class='cod'>" . htmlspecialchars($codigo_radicado) . "</div>
-                                <div style='font-size:13px;opacity:.85'>Guardelo para consultar el estado</div>
-                            </div>
-                            <div class='det'>
-                                <div class='row'><span>Tipo de solicitud:</span><span>" . ucfirst(htmlspecialchars($tipo_pqrs)) . "</span></div>
-                                <div class='row'><span>Asunto:</span><span>" . htmlspecialchars($asunto_solicitud) . "</span></div>
-                                <div class='row'><span>Fecha de radicacion:</span><span>" . date('d/m/Y H:i:s') . "</span></div>
-                                <div class='row'><span>Fecha limite de respuesta:</span><span>" . htmlspecialchars($fecha_vencimiento) . "</span></div>
-                                <div class='row'><span>Estado actual:</span><span style='color:#059669'>Pendiente</span></div>
-                            </div>
-                            <p style='text-align:center'>
-                                <a href='http://{$host}/PROYECTO_PQRS/index.php?ruta=pqrs/consulta&codigo=" . urlencode($codigo_radicado) . "' class='btn'>
-                                    Consultar Estado de mi Solicitud
-                                </a>
-                            </p>
-                            <p style='font-size:12px;color:#9ca3af;margin-top:24px'>Mensaje automatico, no responda este correo.</p>
-                        </div>
-                        <div class='foot'>
-                            <p>&copy; " . date('Y') . " Sistema PQRS</p>
-                            <p>Ley 1755 de 2015 &middot; Ley 1437 de 2011</p>
-                        </div>
-                    </div>
-                    </body>
-                    </html>";
-
-                    $mail->AltBody = "Solicitud PQRS radicada.\n\n"
-                        . "Codigo: $codigo_radicado\n"
-                        . "Tipo: " . ucfirst($tipo_pqrs) . "\n"
-                        . "Asunto: $asunto_solicitud\n"
-                        . "Radicado: " . date('d/m/Y H:i:s') . "\n"
-                        . "Vencimiento: $fecha_vencimiento\n\n"
-                        . "Consulte en: http://{$host}/PROYECTO_PQRS/index.php?ruta=pqrs/consulta&codigo=" . urlencode($codigo_radicado);
-
-                    $mail->send();
-                    return true;
-
-                } catch (\PHPMailer\PHPMailer\Exception $e) {
-                    logEmail(date('Y-m-d H:i:s') . " | FALLO-SMTP | Para: $para | Error: " . $e->getMessage() . "\n");
-                    return false;
-                }
-            }
-        }
 
         // ===== PROCESAR POST =====
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -288,7 +280,7 @@ class PqrsController {
 
             $correoEnviado = false;
             if ($notificar && !empty($correoDestino)) {
-                $correoEnviado = enviarCorreoPQRS(
+                $correoEnviado = $this->enviarCorreoPQRS(
                     $correoDestino,
                     $nombre_completo ?? '',
                     $codigo_radicado,
@@ -297,7 +289,7 @@ class PqrsController {
                     date('d/m/Y', strtotime($fecha_vencimiento)),
                     $_SERVER['HTTP_HOST']
                 );
-                logEmail(date('Y-m-d H:i:s') . " | " . ($correoEnviado ? "ENVIADO" : "FALLO") . " | Para: $correoDestino | Codigo: $codigo_radicado\n");
+                $this->logEmail(date('Y-m-d H:i:s') . " | " . ($correoEnviado ? "ENVIADO" : "FALLO") . " | Para: $correoDestino | Codigo: $codigo_radicado\n");
             }
 
             mysqli_close($con);

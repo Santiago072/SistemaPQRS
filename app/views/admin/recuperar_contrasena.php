@@ -137,7 +137,7 @@ function enviarCorreoRecuperacion($para, $nombre, $usuario, $urlReset) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Recuperar Contraseña - Sistema PQRS</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="../css/estilos.css">
+    <link rel="stylesheet" href="<?php echo BASE_PATH; ?>public/css/estilos.css">
 </head>
 <body>
     <?php include __DIR__ . '/../layouts/header.php'; ?>
@@ -161,7 +161,7 @@ function enviarCorreoRecuperacion($para, $nombre, $usuario, $urlReset) {
                 </div>
                 <?php endif; ?>
 
-                <form action="recuperar_contrasena.php" method="POST" class="login-form">
+                <form action="<?php echo BASE_PATH; ?>index.php?ruta=admin/recuperar" method="POST" class="login-form">
                     <div class="login-grupo">
                         <label for="correo" class="login-label">
                             <i class="bi bi-envelope"></i>
