@@ -98,7 +98,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <!-- Bootstrap Icons CDN -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
     <!-- Hoja de estilos única del sistema -->  
-     <link rel="stylesheet" href="../css/estilos.css">
+     <link rel="stylesheet" href="<?php echo BASE_PATH; ?>public/css/estilos.css">
      <style>
         /* ── RECUPERAR CONTRASEÑA ────────────────────────────────────────── */
 .login-recuperar {
@@ -235,7 +235,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                     <!-- NUEVO: Enlace recuperar contraseña -->
                     <div class="login-recuperar">
-                        <a href="recuperar_contrasena.php">
+                        <a href="<?php echo BASE_PATH; ?>index.php?ruta=admin/recuperar">
                             <i class="bi bi-question-circle"></i>
                             ¿Olvidó su contraseña?
                         </a>
@@ -257,7 +257,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 <!-- Volver al inicio -->
                 <div class="login-volver">
-                    <a href="../index.php">
+                    <a href="<?php echo BASE_PATH; ?>index.php">
                         <i class="bi bi-arrow-left"></i>
                         Volver al inicio
                     </a>
