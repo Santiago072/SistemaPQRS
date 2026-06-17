@@ -4,7 +4,7 @@
  * Lee datos reales de la base de datos y muestra estado del correo
  */
 
-require_once '../config/conexion.php';
+require_once __DIR__ . '/../../config/conexion.php';
 
 $pqrs_id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 
