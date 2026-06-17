@@ -495,9 +495,9 @@ $baseUrl = $isRailway ? '/' : '/PROYECTO_PQRS/';
                             <h2><i class="bi bi-flag"></i> Cambiar Estado</h2>
                         </div>
                         <div class="detalle-card-body">
-                            <form action="pqrs_cambiar_estado.php" method="POST" class="cambio-estado-form">
+                            <form action="<?php echo BASE_PATH; ?>index.php?ruta=admin/pqrs_cambiar_estado" method="POST" class="cambio-estado-form">
                                 <input type="hidden" name="pqrs_id" value="<?php echo $id; ?>">
-                                <input type="hidden" name="redirect" value="pqrs_ver.php?id=<?php echo $id; ?>">
+                                <input type="hidden" name="redirect" value="<?php echo BASE_PATH; ?>index.php?ruta=admin/pqrs_ver&id=<?php echo $id; ?>">
 
                                 <div class="estado-actual">
                                     Estado actual: 
