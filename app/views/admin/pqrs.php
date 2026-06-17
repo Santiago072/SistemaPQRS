@@ -219,7 +219,8 @@ $baseUrl = $isRailway ? '/' : '/PROYECTO_PQRS/';
 
             <!-- Filtros - HU-Bandeja: Filtros por estado, tipo, fechas -->
             <div class="filtros-card">
-                <form method="GET" action="" class="filtros-form">
+                <form method="GET" action="<?php echo BASE_PATH; ?>index.php" class="filtros-form">
+                    <input type="hidden" name="ruta" value="admin/pqrs">
                     <div class="filtros-row">
                         <div class="filtro-grupo">
                             <label class="filtro-label">

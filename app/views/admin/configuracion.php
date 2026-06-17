@@ -404,7 +404,7 @@ $tabActiva = (isset($_POST['accion']) && $_POST['accion'] === 'sistema') ? 'sist
                 </div>
                 <?php endif; ?>
 
-                <form method="POST" action="configuracion.php">
+                <form method="POST" action="<?php echo BASE_PATH; ?>index.php?ruta=admin/configuracion">
                     <input type="hidden" name="accion" value="perfil">
 
                     <div class="cfg-grid">
@@ -509,7 +509,7 @@ $tabActiva = (isset($_POST['accion']) && $_POST['accion'] === 'sistema') ? 'sist
                 </div>
                 <?php endif; ?>
 
-                <form method="POST" action="configuracion.php" id="formSistema">
+                <form method="POST" action="<?php echo BASE_PATH; ?>index.php?ruta=admin/configuracion" id="formSistema">
                     <input type="hidden" name="accion" value="sistema">
 
                     <?php

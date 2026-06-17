@@ -137,20 +137,25 @@ $baseUrl = $isRailway ? '/' : '/PROYECTO_PQRS/';
                 </div>
                 <!-- HU-Reportes: Exportación en PDF y Excel -->
                 <div class="dashboard-meta">
-                    <a href="<?php echo BASE_PATH; ?>index.php?ruta=admin/exportar_pdf&<?php echo http_build_query($_GET); ?>" class="btn btn-sm" target="_blank">
-                        <i class="bi bi-file-pdf"></i>
-                        Exportar PDF
+                    <?php 
+                        $queryParams = $_GET;
+                        unset($queryParams['ruta']);
+                        $queryString = http_build_query($queryParams);
+                        $queryString = $queryString ? '&' . $queryString : '';
+                    ?>
+                    <a href="<?php echo BASE_PATH; ?>index.php?ruta=admin/exportar_pdf<?php echo $queryString; ?>" class="btn btn-sm" target="_blank">
+                        <i class="bi bi-file-earmark-pdf"></i> Exportar PDF
                     </a>
-                    <a href="<?php echo BASE_PATH; ?>index.php?ruta=admin/exportar_excel&<?php echo http_build_query($_GET); ?>" class="btn btn-sm btn-primary">
-                        <i class="bi bi-file-excel"></i>
-                        Exportar Excel
+                    <a href="<?php echo BASE_PATH; ?>index.php?ruta=admin/exportar_excel<?php echo $queryString; ?>" class="btn btn-sm btn-primary">
+                        <i class="bi bi-file-earmark-excel"></i> Exportar Excel
                     </a>
                 </div>
             </div>
 
             <!-- Filtros - HU-Reportes: Filtros por tipo de solicitud -->
             <div class="filtros-card">
-                <form method="GET" action="" class="filtros-form">
+                <form method="GET" action="<?php echo BASE_PATH; ?>index.php" class="filtros-form">
+                    <input type="hidden" name="ruta" value="admin/reportes">
                     <div class="filtros-row">
                         <div class="filtro-grupo">
                             <label class="filtro-label">
