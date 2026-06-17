@@ -13,3 +13,4 @@
 2026-05-14 20:53:16 | FALLO-RESPUESTA | SendGrid API Key no configurada
 2026-05-14 20:53:16 | FALLO-RESPUESTA | Para: santiagolizcanosuarez@gmail.com | Codigo: PQRS-2026-05-009
 2026-05-14 21:09:37 | ENVIADO | Para: santiagosiu07@gmail.com | Codigo: PQRS-2026-05-010
+2026-06-09 00:10:27 | ENVIADO | Para: santiagolizcanosuarez@gmail.com | Codigo: PQRS-2026-06-001
