@@ -124,7 +124,7 @@ function progresoPorEstado(string $estado): int {
     <title>Consultar Estado - Sistema PQRS</title>
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="../css/estilos.css">
+    <link rel="stylesheet" href="<?php echo BASE_PATH; ?>public/css/estilos.css">
     <style>
         /* ── Modal de Archivo Adjunto ── */
         .modal-adjunto-overlay {

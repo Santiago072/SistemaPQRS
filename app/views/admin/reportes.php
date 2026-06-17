@@ -110,7 +110,7 @@ $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
 $isRailway = (strpos($host, 'railway.app') !== false) || (getenv('RAILWAY_ENVIRONMENT') !== false);
 $baseUrl = $isRailway ? '/' : '/PROYECTO_PQRS/';
 ?>
-<link rel="stylesheet" href="<?php echo $baseUrl; ?>css/estilos.css">
+<link rel="stylesheet" href="<?php echo BASE_PATH; ?>public/css/estilos.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
