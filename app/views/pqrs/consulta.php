@@ -555,9 +555,9 @@ function progresoPorEstado(string $estado): int {
                 <div>
                     <h4 class="footer-title">Enlaces Rápidos</h4>
                     <ul class="footer-links">
-                        <li><a href="terminos.php"><i class="bi bi-pencil-square"></i> Nueva Solicitud</a></li>
-                        <li><a href="consultar.php"><i class="bi bi-search"></i> Consultar Estado</a></li>
-                        <li><a href="login.php"><i class="bi bi-shield-lock"></i> Panel Administrador</a></li>
+                        <li><a href="#"><i class="bi bi-pencil-square"></i> Nueva Solicitud</a></li>
+                        <li><a href="<?php echo BASE_PATH; ?>index.php?ruta=pqrs/consulta"><i class="bi bi-search"></i> Consultar Estado</a></li>
+                        <li><a href="<?php echo BASE_PATH; ?>index.php?ruta=admin/login"><i class="bi bi-shield-lock"></i> Panel Administrador</a></li>
                     </ul>
                 </div>
                 <div>

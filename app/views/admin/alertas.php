@@ -172,10 +172,10 @@ $baseUrl = $isRailway ? '/' : '/PROYECTO_PQRS/';
                             </div>
                         </div>
                         <div class="alerta-item-acciones">
-                            <a href="pqrs_ver.php?id=<?php echo $pqrs['id']; ?>" class="btn btn-sm">
+                            <a href="<?php echo BASE_PATH; ?>index.php?ruta=admin/pqrs_ver&id=<?php echo $pqrs["id']; ?>" class="btn btn-sm">
                                 <i class="bi bi-eye"></i> Ver
                             </a>
-                            <a href="pqrs_responder.php?id=<?php echo $pqrs['id']; ?>" class="btn btn-sm btn-primary">
+                            <a href="<?php echo BASE_PATH; ?>index.php?ruta=admin/pqrs_responder&id=<?php echo $pqrs["id']; ?>" class="btn btn-sm btn-primary">
                                 <i class="bi bi-reply"></i> Responder
                             </a>
                         </div>
@@ -216,10 +216,10 @@ $baseUrl = $isRailway ? '/' : '/PROYECTO_PQRS/';
                             </div>
                         </div>
                         <div class="alerta-item-acciones">
-                            <a href="pqrs_ver.php?id=<?php echo $pqrs['id']; ?>" class="btn btn-sm">
+                            <a href="<?php echo BASE_PATH; ?>index.php?ruta=admin/pqrs_ver&id=<?php echo $pqrs["id']; ?>" class="btn btn-sm">
                                 <i class="bi bi-eye"></i> Ver
                             </a>
-                            <a href="pqrs_responder.php?id=<?php echo $pqrs['id']; ?>" class="btn btn-sm btn-primary">
+                            <a href="<?php echo BASE_PATH; ?>index.php?ruta=admin/pqrs_responder&id=<?php echo $pqrs["id']; ?>" class="btn btn-sm btn-primary">
                                 <i class="bi bi-reply"></i> Responder
                             </a>
                         </div>
@@ -257,7 +257,7 @@ $baseUrl = $isRailway ? '/' : '/PROYECTO_PQRS/';
                             <p>Solicitante: <?php echo htmlspecialchars($pqrs['nombre_completo'] ?? 'Anónimo'); ?></p>
                         </div>
                         <div class="alerta-item-acciones">
-                            <a href="pqrs_ver.php?id=<?php echo $pqrs['id']; ?>" class="btn btn-sm">
+                            <a href="<?php echo BASE_PATH; ?>index.php?ruta=admin/pqrs_ver&id=<?php echo $pqrs["id']; ?>" class="btn btn-sm">
                                 <i class="bi bi-eye"></i> Ver
                             </a>
                         </div>
@@ -294,7 +294,7 @@ $baseUrl = $isRailway ? '/' : '/PROYECTO_PQRS/';
                             <h3><?php echo htmlspecialchars($pqrs['asunto']); ?></h3>
                         </div>
                         <div class="alerta-item-acciones">
-                            <a href="pqrs_ver.php?id=<?php echo $pqrs['id']; ?>" class="btn btn-sm">
+                            <a href="<?php echo BASE_PATH; ?>index.php?ruta=admin/pqrs_ver&id=<?php echo $pqrs["id']; ?>" class="btn btn-sm">
                                 <i class="bi bi-eye"></i> Ver
                             </a>
                         </div>

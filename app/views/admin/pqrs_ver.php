@@ -241,16 +241,16 @@ $baseUrl = $isRailway ? '/' : '/PROYECTO_PQRS/';
         <div class="container">
             <!-- Navegación -->
             <div class="detalle-nav">
-                <a href="pqrs.php" class="btn-volver-detalle">
+                <a href="<?php echo BASE_PATH; ?>index.php?ruta=admin/pqrs" class="btn-volver-detalle">
                     <i class="bi bi-arrow-left"></i>
                     Volver a la bandeja
                 </a>
                 <div class="detalle-acciones">
-                    <a href="pqrs_responder.php?id=<?php echo $id; ?>" class="btn btn-sm btn-primary">
+                    <a href="<?php echo BASE_PATH; ?>index.php?ruta=admin/pqrs_responder&id=<?php echo $id; ?>" class="btn btn-sm btn-primary">
                         <i class="bi bi-reply"></i>
                         Responder
                     </a>
-                    <a href="pqrs_historial.php?id=<?php echo $id; ?>" class="btn btn-sm">
+                    <a href="<?php echo BASE_PATH; ?>index.php?ruta=admin/pqrs_historial&id=<?php echo $id; ?>" class="btn btn-sm">
                         <i class="bi bi-clock-history"></i>
                         Historial completo
                     </a>
@@ -371,7 +371,7 @@ $baseUrl = $isRailway ? '/' : '/PROYECTO_PQRS/';
                             <div class="sin-respuestas">
                                 <i class="bi bi-chat-square"></i>
                                 <p>No hay respuesta registrada aún.</p>
-                                <a href="pqrs_responder.php?id=<?php echo $id; ?>" class="btn btn-sm">
+                                <a href="<?php echo BASE_PATH; ?>index.php?ruta=admin/pqrs_responder&id=<?php echo $id; ?>" class="btn btn-sm">
                                     <i class="bi bi-reply"></i> Agregar respuesta
                                 </a>
                             </div>
@@ -384,7 +384,7 @@ $baseUrl = $isRailway ? '/' : '/PROYECTO_PQRS/';
                     <div class="detalle-card">
                         <div class="detalle-card-header">
                             <h2><i class="bi bi-clock-history"></i> Historial Reciente</h2>
-                            <a href="pqrs_historial.php?id=<?php echo $id; ?>" class="btn-ver-mas">Ver todo</a>
+                            <a href="<?php echo BASE_PATH; ?>index.php?ruta=admin/pqrs_historial&id=<?php echo $id; ?>" class="btn-ver-mas">Ver todo</a>
                         </div>
                         <div class="detalle-card-body">
                             <div class="historial-mini">

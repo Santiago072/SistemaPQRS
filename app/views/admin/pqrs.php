@@ -183,13 +183,13 @@ $baseUrl = $isRailway ? '/' : '/PROYECTO_PQRS/';
                 </a>
                 <?php endif; ?>
                 <?php if ($alertas['urgente'] > 0): ?>
-                <a href="alertas.php" class="alerta-item alerta-urgente">
+                <a href="<?php echo BASE_PATH; ?>index.php?ruta=admin/alertas" class="alerta-item alerta-urgente">
                     <i class="bi bi-clock-fill"></i>
                     <span><strong><?php echo $alertas['urgente']; ?></strong> PQRS vencen entre 6-10 días</span>
                 </a>
                 <?php endif; ?>
                 <?php if ($alertas['moderado'] > 0): ?>
-                <a href="alertas.php" class="alerta-item alerta-moderado">
+                <a href="<?php echo BASE_PATH; ?>index.php?ruta=admin/alertas" class="alerta-item alerta-moderado">
                     <i class="bi bi-info-circle-fill"></i>
                     <span><strong><?php echo $alertas['moderado']; ?></strong> PQRS vencen entre 11-15 días</span>
                 </a>
@@ -287,7 +287,7 @@ $baseUrl = $isRailway ? '/' : '/PROYECTO_PQRS/';
                             <button type="submit" class="btn-filtrar">
                                 <i class="bi bi-funnel"></i> Filtrar
                             </button>
-                            <a href="pqrs.php" class="btn-limpiar">
+                            <a href="<?php echo BASE_PATH; ?>index.php?ruta=admin/pqrs" class="btn-limpiar">
                                 <i class="bi bi-x-circle"></i> Limpiar
                             </a>
                         </div>
@@ -365,13 +365,13 @@ $baseUrl = $isRailway ? '/' : '/PROYECTO_PQRS/';
                             </td>
                             <td>
                                 <div class="acciones-btns">
-                                    <a href="pqrs_ver.php?id=<?php echo $pqrs['id']; ?>" class="btn-icon btn-ver" title="Ver detalle">
+                                    <a href="<?php echo BASE_PATH; ?>index.php?ruta=admin/pqrs_ver&id=<?php echo $pqrs["id']; ?>" class="btn-icon btn-ver" title="Ver detalle">
                                         <i class="bi bi-eye"></i>
                                     </a>
-                                    <a href="pqrs_responder.php?id=<?php echo $pqrs['id']; ?>" class="btn-icon btn-responder" title="Responder">
+                                    <a href="<?php echo BASE_PATH; ?>index.php?ruta=admin/pqrs_responder&id=<?php echo $pqrs["id']; ?>" class="btn-icon btn-responder" title="Responder">
                                         <i class="bi bi-reply"></i>
                                     </a>
-                                    <a href="pqrs_historial.php?id=<?php echo $pqrs['id']; ?>" class="btn-icon btn-historial" title="Ver historial">
+                                    <a href="<?php echo BASE_PATH; ?>index.php?ruta=admin/pqrs_historial&id=<?php echo $pqrs["id']; ?>" class="btn-icon btn-historial" title="Ver historial">
                                         <i class="bi bi-clock-history"></i>
                                     </a>
                                 </div>
@@ -427,7 +427,7 @@ $baseUrl = $isRailway ? '/' : '/PROYECTO_PQRS/';
                 <i class="bi bi-inbox"></i>
                 <h3>No hay solicitudes</h3>
                 <p>No se encontraron PQRS con los filtros seleccionados.</p>
-                <a href="pqrs.php" class="btn btn-sm">Limpiar filtros</a>
+                <a href="<?php echo BASE_PATH; ?>index.php?ruta=admin/pqrs" class="btn btn-sm">Limpiar filtros</a>
             </div>
             <?php endif; ?>
 
