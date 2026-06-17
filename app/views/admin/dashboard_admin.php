@@ -215,10 +215,10 @@ $baseUrl = $isRailway ? '/' : '/PROYECTO_PQRS/';
                             <td><?php echo date('d/m/Y', strtotime($pqrs['fecha_radicacion'])); ?></td>
                             <td>
                                 <div class="acciones-btns">
-                                    <a href="<?php echo BASE_PATH; ?>index.php?ruta=admin/pqrs_ver&id=<?php echo $pqrs["id']; ?>" class="btn-icon btn-ver" title="Ver detalle">
+                                    <a href="<?php echo BASE_PATH; ?>index.php?ruta=admin/pqrs_ver&id=<?php echo $pqrs['id']; ?>" class="btn-icon btn-ver" title="Ver detalle">
                                         <i class="bi bi-eye"></i>
                                     </a>
-                                    <a href="<?php echo BASE_PATH; ?>index.php?ruta=admin/pqrs_responder&id=<?php echo $pqrs["id']; ?>" class="btn-icon btn-responder" title="Responder">
+                                    <a href="<?php echo BASE_PATH; ?>index.php?ruta=admin/pqrs_responder&id=<?php echo $pqrs['id']; ?>" class="btn-icon btn-responder" title="Responder">
                                         <i class="bi bi-reply"></i>
                                     </a>
                                 </div>
