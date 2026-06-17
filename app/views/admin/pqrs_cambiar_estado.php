@@ -5,7 +5,7 @@ include __DIR__ . '/../layouts/verificar_sesion.php';
 include __DIR__ . '/../../../config/conexion.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    header('Location: pqrs.php');
+    header('Location: ' . BASE_PATH . 'index.php?ruta=admin/pqrs');
     exit;
 }
 

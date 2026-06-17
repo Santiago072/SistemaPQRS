@@ -178,7 +178,7 @@ $mensaje_error = '';
 $correo_notificado = false;
 
 if (!$id) {
-    header('Location: pqrs.php');
+    header('Location: ' . BASE_PATH . 'index.php?ruta=admin/pqrs');
     exit;
 }
 
@@ -296,7 +296,7 @@ $result = $stmt->get_result();
 
 if ($result->num_rows === 0) {
     mysqli_close($con);
-    header('Location: pqrs.php?error=not_found');
+    header('Location: ' . BASE_PATH . 'index.php?ruta=admin/pqrs&error=not_found');
     exit;
 }
 
