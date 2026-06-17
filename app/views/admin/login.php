@@ -9,7 +9,7 @@ require_once __DIR__ . '/../../../config/conexion.php';
 // Si ya hay sesión activa, redirigir al dashboard
 session_start();
 if (isset($_SESSION['admin_id']) && !empty($_SESSION['admin_id'])) {
-    header('Location: dashboard_admin.php');
+    header('Location: ' . BASE_PATH . 'index.php?ruta=admin/dashboard');
     exit();
 }
 
@@ -72,7 +72,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         mysqli_close($con);
 
                         // Redirigir al dashboard
-                        header('Location: dashboard_admin.php');
+                        header('Location: ' . BASE_PATH . 'index.php?ruta=admin/dashboard');
                         exit();
                     } else {
                         $error = 'Contraseña incorrecta. Intente nuevamente.';

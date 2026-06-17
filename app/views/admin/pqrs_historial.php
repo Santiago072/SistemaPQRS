@@ -11,7 +11,7 @@ $con = conexion();
 $id = intval($_GET['id'] ?? 0);
 
 if (!$id) {
-    header('Location: pqrs.php');
+    header('Location: ' . BASE_PATH . 'index.php?ruta=admin/pqrs');
     exit;
 }
 
@@ -24,7 +24,7 @@ $pqrs = $stmt->get_result()->fetch_assoc();
 
 if (!$pqrs) {
     mysqli_close($con);
-    header('Location: pqrs.php?error=not_found');
+    header('Location: ' . BASE_PATH . 'index.php?ruta=admin/pqrs&error=not_found');
     exit;
 }
 
