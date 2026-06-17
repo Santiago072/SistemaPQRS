@@ -23,5 +23,5 @@ $isRailway = (strpos($host, 'railway.app') !== false) || (getenv('RAILWAY_ENVIRO
 $baseUrl = $isRailway ? '/' : '/PROYECTO_PQRS/';
 
 // Redirigir al login
-header('Location: ' . $baseUrl . 'administrador/login.php?logout=1');
+header('Location: ' . BASE_PATH . 'index.php?ruta=admin/login&logout=1');
 exit();
