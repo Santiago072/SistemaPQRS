@@ -9,7 +9,7 @@ require_once __DIR__ . '/../../config/conexion.php';
 $pqrs_id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 
 if ($pqrs_id === 0) {
-    header('Location: ../index.php');
+    header('Location: ' . BASE_PATH . 'index.php');
     exit();
 }
 
@@ -36,7 +36,7 @@ $result = mysqli_stmt_get_result($stmt);
 
 if (!$result || mysqli_num_rows($result) === 0) {
     mysqli_stmt_close($stmt);
-    header('Location: ../index.php');
+    header('Location: ' . BASE_PATH . 'index.php');
     exit();
 }
 
@@ -178,7 +178,7 @@ if ($pqrs['fecha_vencimiento']) {
                     <i class="bi bi-search"></i>
                     Consultar Estado
                 </a>
-                <a href="../index.php" class="btn-principal">
+                <a href="<?php echo BASE_PATH; ?>index.php" class="btn-principal">
                     <i class="bi bi-house"></i>
                     Volver al Inicio
                 </a>

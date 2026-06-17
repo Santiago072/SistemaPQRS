@@ -250,12 +250,12 @@ function progresoPorEstado(string $estado): int {
     <!-- ── HEADER ─────────────────────────────────────────────────────────── -->
     <header class="header">
         <div class="container header-container">
-            <a href="../index.php" class="logo" aria-label="Inicio - Sistema PQRS">
+            <a href="<?php echo BASE_PATH; ?>index.php" class="logo" aria-label="Inicio - Sistema PQRS">
                 <span class="logo-icon"><i class="bi bi-clipboard-data"></i></span>
                 <span>Sistema PQRS</span>
             </a>
             <nav class="nav-admin">
-                <a href="../administrador/login.php" class="btn btn-outline">
+                <a href="<?php echo BASE_PATH; ?>index.php?ruta=admin/login" class="btn btn-outline">
                     <i class="bi bi-shield-lock"></i>
                     <span>Administrador</span>
                 </a>
