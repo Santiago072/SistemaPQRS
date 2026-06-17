@@ -115,6 +115,8 @@ $tipoPersonaLabels = [
     'ANONIMA' => 'Anónimo'
 ];
 
+$adminNombre = $_SESSION['admin_nombre'] ?? 'Administrador';
+
 $estadoLabels = [
     'PENDIENTE' => 'Pendiente',
     'EN_PROCESO' => 'En Proceso',

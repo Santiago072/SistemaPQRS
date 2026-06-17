@@ -5,7 +5,7 @@ include __DIR__ . '/../layouts/verificar_sesion.php';
 include __DIR__ . '/../../../config/conexion.php';
 
 // CORREGIDO: Ruta correcta del autoload de DomPDF según tu estructura
-require_once '../vendor/autoload.php';
+require_once __DIR__ . '/../../../vendor/autoload.php';
 use Dompdf\Dompdf;
 use Dompdf\Options;
 
