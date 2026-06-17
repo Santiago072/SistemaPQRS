@@ -302,7 +302,7 @@ function progresoPorEstado(string $estado): int {
                     <p class="busqueda-panel-desc">
                         Ingresa el código único que recibiste al radicar tu solicitud. El formato es <strong>PQRS-AAAA-MM-NNN</strong>.
                     </p>
-                    <form method="POST" action="consulta_pqrs.php">
+                    <form method="POST" action="<?php echo BASE_PATH; ?>index.php?ruta=pqrs/consulta">
                         <div class="busqueda-input-wrap">
                             <input type="text" name="codigo" class="busqueda-input"
                                    placeholder="Ej: PQRS-2026-05-001"
@@ -322,7 +322,7 @@ function progresoPorEstado(string $estado): int {
                     <p class="busqueda-panel-desc">
                         Ingresa el correo con el que registraste tu solicitud para ver todas tus PQRS asociadas.
                     </p>
-                    <form method="POST" action="consulta_pqrs.php">
+                    <form method="POST" action="<?php echo BASE_PATH; ?>index.php?ruta=pqrs/consulta">
                         <div class="busqueda-input-wrap">
                             <input type="email" name="correo" class="busqueda-input"
                                    placeholder="Ej: correo@ejemplo.com"
