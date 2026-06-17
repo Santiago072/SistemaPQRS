@@ -8,7 +8,7 @@ include __DIR__ . '/../layouts/verificar_sesion.php';
 include __DIR__ . '/../../../config/conexion.php';
 include __DIR__ . '/../layouts/funciones.php';
 
-require_once __DIR__ . '/../vendor/autoload.php';
+require_once __DIR__ . '/../../../vendor/autoload.php';
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
@@ -16,7 +16,7 @@ use PHPMailer\PHPMailer\Exception;
 // ─── HELPER: Log seguro ───────────────────────────────────────────────────────
 function logEmail(string $mensaje): void {
     $paths = [
-        __DIR__ . '/../logs/email_log.txt',
+        __DIR__ . '/../../../logs/email_log.txt',
         '/tmp/pqrs_email_log.txt',
     ];
     foreach ($paths as $path) {
