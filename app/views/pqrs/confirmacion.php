@@ -174,7 +174,7 @@ if ($pqrs['fecha_vencimiento']) {
             <?php endif; ?>
 
             <div class="confirmacion-actions">
-                <a href="consulta_pqrs.php" class="btn-secundario">
+                <a href="<?php echo BASE_PATH; ?>index.php?ruta=pqrs/consulta" class="btn-secundario">
                     <i class="bi bi-search"></i>
                     Consultar Estado
                 </a>

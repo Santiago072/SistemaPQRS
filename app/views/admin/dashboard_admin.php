@@ -150,25 +150,25 @@ $baseUrl = $isRailway ? '/' : '/PROYECTO_PQRS/';
         <h2><i class="bi bi-lightning"></i> Acceso Rápido</h2>
     </div>
     <div class="acceso-grid">
-        <a href="pqrs.php" class="acceso-card">
+        <a href="<?php echo BASE_PATH; ?>index.php?ruta=admin/pqrs" class="acceso-card">
             <div class="acceso-icon acceso-inbox">
                 <i class="bi bi-inbox-fill"></i>
             </div>
             <span class="acceso-label">Bandeja PQRS</span>
         </a>
-        <a href="alertas.php" class="acceso-card">
+        <a href="<?php echo BASE_PATH; ?>index.php?ruta=admin/alertas" class="acceso-card">
             <div class="acceso-icon acceso-alertas">
                 <i class="bi bi-bell-fill"></i>
             </div>
             <span class="acceso-label">Centro de Alertas</span>
         </a>
-        <a href="reportes.php" class="acceso-card">
+        <a href="<?php echo BASE_PATH; ?>index.php?ruta=admin/reportes" class="acceso-card">
             <div class="acceso-icon acceso-reportes">
                 <i class="bi bi-bar-chart-fill"></i>
             </div>
             <span class="acceso-label">Reportes</span>
         </a>
-        <a href="configuracion.php" class="acceso-card">
+        <a href="<?php echo BASE_PATH; ?>index.php?ruta=admin/configuracion" class="acceso-card">
             <div class="acceso-icon" style="background:linear-gradient(135deg,#7c3aed,#6d28d9);">
                 <i class="bi bi-sliders"></i>
             </div>
@@ -180,7 +180,7 @@ $baseUrl = $isRailway ? '/' : '/PROYECTO_PQRS/';
             <!-- Últimas solicitudes -->
             <div class="dashboard-section-title">
                 <h2><i class="bi bi-clock-history"></i> Últimas Solicitudes</h2>
-                <a href="pqrs.php" class="btn btn-sm">Ver todas</a>
+                <a href="<?php echo BASE_PATH; ?>index.php?ruta=admin/pqrs" class="btn btn-sm">Ver todas</a>
             </div>
 
             <?php if (!empty($ultimasPQRS)): ?>
@@ -215,10 +215,10 @@ $baseUrl = $isRailway ? '/' : '/PROYECTO_PQRS/';
                             <td><?php echo date('d/m/Y', strtotime($pqrs['fecha_radicacion'])); ?></td>
                             <td>
                                 <div class="acciones-btns">
-                                    <a href="pqrs_ver.php?id=<?php echo $pqrs['id']; ?>" class="btn-icon btn-ver" title="Ver detalle">
+                                    <a href="<?php echo BASE_PATH; ?>index.php?ruta=admin/pqrs_ver&id=<?php echo $pqrs["id']; ?>" class="btn-icon btn-ver" title="Ver detalle">
                                         <i class="bi bi-eye"></i>
                                     </a>
-                                    <a href="pqrs_responder.php?id=<?php echo $pqrs['id']; ?>" class="btn-icon btn-responder" title="Responder">
+                                    <a href="<?php echo BASE_PATH; ?>index.php?ruta=admin/pqrs_responder&id=<?php echo $pqrs["id']; ?>" class="btn-icon btn-responder" title="Responder">
                                         <i class="bi bi-reply"></i>
                                     </a>
                                 </div>

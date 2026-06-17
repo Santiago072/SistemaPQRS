@@ -137,11 +137,11 @@ $baseUrl = $isRailway ? '/' : '/PROYECTO_PQRS/';
                 </div>
                 <!-- HU-Reportes: Exportación en PDF y Excel -->
                 <div class="dashboard-meta">
-                    <a href="exportar_pdf.php?<?php echo http_build_query($_GET); ?>" class="btn btn-sm" target="_blank">
+                    <a href="<?php echo BASE_PATH; ?>index.php?ruta=admin/exportar_pdf&<?php echo http_build_query($_GET); ?>" class="btn btn-sm" target="_blank">
                         <i class="bi bi-file-pdf"></i>
                         Exportar PDF
                     </a>
-                    <a href="exportar_excel.php?<?php echo http_build_query($_GET); ?>" class="btn btn-sm btn-primary">
+                    <a href="<?php echo BASE_PATH; ?>index.php?ruta=admin/exportar_excel&<?php echo http_build_query($_GET); ?>" class="btn btn-sm btn-primary">
                         <i class="bi bi-file-excel"></i>
                         Exportar Excel
                     </a>

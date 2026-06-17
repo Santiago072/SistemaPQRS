@@ -91,7 +91,7 @@ $baseUrl = $isRailway ? '/' : '/PROYECTO_PQRS/';
         <div class="container">
             <!-- Navegación -->
             <div class="detalle-nav">
-                <a href="pqrs_ver.php?id=<?php echo $id; ?>" class="btn-volver-detalle">
+                <a href="<?php echo BASE_PATH; ?>index.php?ruta=admin/pqrs_ver&id=<?php echo $id; ?>" class="btn-volver-detalle">
                     <i class="bi bi-arrow-left"></i>
                     Volver al detalle
                 </a>
