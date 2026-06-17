@@ -4,7 +4,7 @@
  * Permite consultar por código de radicado o correo electrónico
  */
 
-require_once '../config/conexion.php';
+require_once __DIR__ . '/../../config/conexion.php';
 
 $resultados    = [];
 $error         = null;

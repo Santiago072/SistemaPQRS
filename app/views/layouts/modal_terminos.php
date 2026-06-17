@@ -195,7 +195,7 @@ function continuarFormulario() {
     // Ocultar modal y mostrar formulario en la misma página
     cerrarModal();
     // Redirigir a tipos.php en la misma pestaña
-    window.location.href = 'pqrs/tipos.php';
+    window.location.href = '<?php echo BASE_PATH; ?>index.php?ruta=pqrs/tipos';
 }
 
 // Cerrar al presionar Escape
