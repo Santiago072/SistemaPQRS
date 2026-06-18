@@ -44,7 +44,7 @@ function enviarCorreoRespuesta(
     string $host
 ): bool {
 
-    $cfg = require __DIR__ . '/../config/email_config.php';
+    $cfg = require __DIR__ . '/../../../config/email_config.php';
 
     $estadoInfo = [
         'RESUELTO'   => ['texto' => 'Resuelto',   'color' => '#059669', 'icon' => '&#10003;'],
