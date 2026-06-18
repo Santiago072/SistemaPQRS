@@ -1,4 +1,7 @@
 <?php
+// Requerir el autoloader de Composer para cargar las clases de App\Models, App\Controllers, etc.
+require_once __DIR__ . '/vendor/autoload.php';
+
 // Configurar base path
 $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
 $isRailway = (strpos($host, 'railway.app') !== false) || (getenv('RAILWAY_ENVIRONMENT') !== false);
