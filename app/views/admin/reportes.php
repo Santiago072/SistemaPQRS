@@ -5,7 +5,6 @@
  * Visualización en gráficos/tabla
  */
 
-<?php
 /* HU-Generación de Reportes: Dashboard de reportes con filtros y métricas */
 
 $tipoLabels = [

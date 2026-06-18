@@ -4,7 +4,6 @@
  * — Mi Perfil (nombre, correo, contraseña)
  * — Configuración del Sistema (días vencimiento, datos institucionales)
  */
-<?php
 /* HU-09 + HU-15 / RF22 + RF24: Configuración unificada */
 ?>
 <!DOCTYPE html>
