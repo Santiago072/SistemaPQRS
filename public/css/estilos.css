@@ -1035,6 +1035,9 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 .login-error { margin: var(--space-4) var(--space-6) 0; padding: var(--space-3) var(--space-4); background: #fef2f2; border: 1px solid #fecaca; border-left: 4px solid var(--color-danger); border-radius: var(--radius-md); display: flex; align-items: center; gap: var(--space-3); color: #991b1b; font-size: var(--font-size-sm); }
 .login-error i { font-size: 1.25rem; flex-shrink: 0; }
 
+.login-exito { margin: var(--space-4) var(--space-6) 0; padding: var(--space-3) var(--space-4); background: #f0fdf4; border: 1px solid #bbf7d0; border-left: 4px solid var(--color-secondary); border-radius: var(--radius-md); display: flex; align-items: center; gap: var(--space-3); color: #065f46; font-size: var(--font-size-sm); }
+.login-exito i { font-size: 1.25rem; flex-shrink: 0; color: var(--color-secondary); }
+
 .login-form  { padding: var(--space-6); }
 .login-grupo { margin-bottom: var(--space-5); }
 .login-label { display: flex; align-items: center; gap: var(--space-2); font-size: var(--font-size-sm); font-weight: 600; color: var(--color-gray-700); margin-bottom: var(--space-2); }
@@ -1062,6 +1065,10 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 .login-recordar input { width: 16px; height: 16px; accent-color: var(--color-primary); }
 .login-olvidar  { font-size: var(--font-size-sm); color: var(--color-primary); font-weight: 500; transition: color var(--transition-fast); }
 .login-olvidar:hover { color: var(--color-primary-dark); text-decoration: underline; }
+
+.login-recuperar { text-align: right; margin: -0.25rem 0 1rem; }
+.login-recuperar a { display: inline-flex; align-items: center; gap: 0.35rem; color: var(--color-gray-500); font-size: var(--font-size-sm); font-weight: 500; transition: color var(--transition-fast); }
+.login-recuperar a:hover { color: var(--color-primary); }
 
 .login-btn {
     width: 100%;
