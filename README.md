@@ -66,7 +66,6 @@ PROYECTO_PQRS/
 │       └── pqrs/            # Vistas del portal ciudadano
 │
 ├── config/                  # Archivos de configuración del sistema
-│   ├── conexion.php         # Variables de BD
 │   └── email_config.php     # Ajustes de correo electrónico (PHPMailer SMTP)
 │
 ├── public/                  # Recursos públicos del frontend
@@ -121,20 +120,13 @@ Actualmente, el sistema está diseñado para ejecutarse de forma local. Sigue es
    * **XAMPP:** `C:\xampp\htdocs\PROYECTO_PQRS`
    * **Laragon:** `C:\laragon\www\PROYECTO_PQRS`
 
-2. **Crea los archivos de configuración** copiando los ejemplos incluidos:
+2. **Crea el archivo de configuración de correo** copiando el ejemplo incluido:
    ```bash
-   cp config/conexion_example.php    config/conexion.php
    cp config/email_config_example.php config/email_config.php
    ```
-   Luego edita cada archivo con tus credenciales reales. Estos archivos están en `.gitignore` y **nunca se subirán al repositorio**.
+   Luego edita el archivo con tus credenciales reales. Este archivo está en `.gitignore` y **nunca se subirá al repositorio**.
 
-3. Edita `config/conexion.php` con los datos de tu base de datos local:
-   ```php
-   $host = 'localhost';
-   $user = 'root';
-   $pass = '';            // En XAMPP suele estar vacío
-   $db   = 'sistema_pqrs';
-   ```
+3. La base de datos se configura internamente en `app/models/Database.php`. Por defecto asume `localhost`, usuario `root` y base de datos `sistema_pqrs`.
 
 4. Edita `config/email_config.php` con tus credenciales SMTP (opcional, solo si quieres recibir correos):
    ```php
@@ -160,4 +152,4 @@ Actualmente, el sistema está diseñado para ejecutarse de forma local. Sigue es
 
 7. Abre `http://localhost/PROYECTO_PQRS/` en tu navegador.
 
-> **⚠️ Seguridad:** Los archivos `config/conexion.php` y `config/email_config.php` están en `.gitignore`. Nunca los subas al repositorio. Usa siempre los archivos `*_example.php` como plantilla.
+> **⚠️ Seguridad:** El archivo `config/email_config.php` está en `.gitignore`. Nunca lo subas al repositorio. Usa siempre el archivo `*_example.php` como plantilla.
