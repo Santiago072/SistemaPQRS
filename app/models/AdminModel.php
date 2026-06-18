@@ -71,4 +71,11 @@ class AdminModel
             return $stmt->execute(['nombre' => $nombre, 'correo' => $correo, 'id' => $id]);
         }
     }
+
+
+    public function actualizarUltimoAcceso(int $id): bool
+    {
+        $stmt = $this->db->prepare("UPDATE administrador SET ultimo_acceso = NOW() WHERE id = :id");
+        return $stmt->execute(['id' => $id]);
+    }
 }

@@ -293,15 +293,7 @@ class AdminController
                         $_SESSION['ultima_actividad'] = time();
                         $_SESSION['tiempo_inicio']    = time();
 
-                        require_once __DIR__ . '/../../config/conexion.php';
-                        $con = conexion();
-                        $stmtUpd  = mysqli_prepare($con, "UPDATE administrador SET ultimo_acceso = NOW() WHERE id = ?");
-                        if ($stmtUpd) {
-                            mysqli_stmt_bind_param($stmtUpd, 'i', $admin['id']);
-                            mysqli_stmt_execute($stmtUpd);
-                            mysqli_stmt_close($stmtUpd);
-                        }
-                        mysqli_close($con);
+                        $this->adminModel->actualizarUltimoAcceso($admin['id']);
 
                         header('Location: ' . BASE_PATH . 'index.php?ruta=admin/dashboard');
                         exit();
@@ -470,7 +462,6 @@ class AdminController
     }
     public function pqrs_responder(): void     
     {
-        require_once __DIR__ . '/../../config/conexion.php';
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
@@ -634,8 +625,6 @@ class AdminController
 
     public function pqrs_cambiar_estado(): void
     {
-        require_once __DIR__ . '/../../config/conexion.php';
-
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
@@ -692,8 +681,6 @@ class AdminController
 
     public function guardar_respuesta(): void
     {
-        require_once __DIR__ . '/../../config/conexion.php';
-
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
