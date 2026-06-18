@@ -1,8 +1,8 @@
 # Documentación Técnica — Sistema de Gestión de PQRS
 
-**Versión:** 1.0  
+**Versión:** 1.1  
 **Fecha:** Junio 2026  
-**Tecnología:** PHP 8.2 · MySQL · Vanilla CSS · PHPMailer · DomPDF · Chart.js
+**Tecnología:** PHP 8.2 (PDO, PSR-4) · MySQL · Vanilla CSS · PHPMailer · DomPDF · Chart.js
 
 ---
 
@@ -44,7 +44,11 @@ El sistema opera en dos portales:
 
 ## 2. Arquitectura General
 
-El proyecto sigue una arquitectura **MVC (Modelo-Vista-Controlador) mediante un Controlador Frontal** (Front Controller). La lógica de negocio está centralizada en `index.php` que delega las peticiones a controladores específicos ubicados en la carpeta `app/controllers/`.
+El proyecto sigue una arquitectura **MVC (Modelo-Vista-Controlador)** robusta con **Principios SOLID**, utilizando un Controlador Frontal. 
+- Los **Controladores** coordinan el flujo.
+- Los **Modelos** manejan exclusivamente los datos mediante **PDO (PHP Data Objects)**.
+- Los **Servicios** abstraen utilidades de terceros (ej. PHPMailer).
+- Las **Vistas** solo muestran HTML.
 
 ```
 Navegador ──► index.php?ruta=... 
@@ -53,9 +57,15 @@ Navegador ──► index.php?ruta=...
                     ├── app/controllers/AdminController.php   (Panel admin)
                     ├── app/controllers/AuthController.php    (Autenticación)
                     │
-                    └── app/views/                            (Muestra la UI)
-                             ├── pqrs/                        (Vistas ciudadano)
-                             └── admin/                       (Vistas admin)
+                    ├── app/models/                           (Capa de Datos PDO)
+                    │        ├── Database.php                 (Singleton)
+                    │        ├── PqrsModel.php
+                    │        └── UsuarioModel.php
+                    │
+                    ├── app/services/                         (Capa de Servicios)
+                    │        └── EmailService.php
+                    │
+                    └── app/views/                            (UI / HTML puro)
 ```
 
 **Patrón de URLs (Enrutamiento Frontal):**
@@ -74,20 +84,24 @@ http://localhost/PROYECTO_PQRS/index.php?ruta=admin/dashboard → Dashboard
 PROYECTO_PQRS/
 │
 ├── app/                        # Arquitectura MVC
-│   ├── controllers/            # Controladores del sistema
-│   │   ├── AdminController.php # Lógica del panel administrativo
-│   │   ├── AuthController.php  # Lógica de autenticación y recuperación
-│   │   ├── HomeController.php  # Lógica de la página de inicio
-│   │   └── PqrsController.php  # Lógica del portal ciudadano
+│   ├── controllers/            # Lógica de coordinación (HTTP)
+│   │   ├── AdminController.php
+│   │   ├── AuthController.php
+│   │   ├── HomeController.php
+│   │   └── PqrsController.php
 │   │
-│   └── views/                  # Vistas separadas por módulos
-│       ├── admin/              # Vistas del dashboard, reportes y gestión
-│       ├── home/               # Vistas de la página principal
-│       ├── layouts/            # Cabeceras, pies de página, funciones y middleware
-│       └── pqrs/               # Vistas del portal ciudadano (formulario, consulta)
+│   ├── models/                 # Lógica de datos (Consultas PDO)
+│   │   ├── Database.php        # Conexión Singleton a MySQL
+│   │   ├── PqrsModel.php       # Consultas sobre PQRS
+│   │   └── UsuarioModel.php    # Consultas sobre ciudadanos
+│   │
+│   ├── services/               # Clases utilitarias aisladas (SRP)
+│   │   └── EmailService.php    # Envío de correos PHPMailer
+│   │
+│   └── views/                  # Vistas separadas por módulos (Solo HTML)
 │
 ├── config/
-│   ├── conexion.php            # Función conexion() con MySQLi
+│   ├── conexion.php            # Adaptador legacy MySQLi y autoloader
 │   └── email_config.php        # Credenciales SMTP (no commitear)
 │
 ├── public/                     # Recursos públicos
@@ -234,8 +248,9 @@ configuracion_sistema (tabla singleton, id=1)
 | `AdminController->dashboard()` | KPIs, estadísticas y acceso rápido |
 | `AdminController->pqrs()` | Bandeja con filtros por estado, tipo, fecha y búsqueda |
 | `AdminController->pqrs_ver()` | Detalle completo + historial reciente + cambio de estado |
-| `AdminController->pqrs_responder()`| Editor de respuesta + notificación por correo |
-| `AdminController->pqrs_cambiar_estado()` | Lógica para cambiar estado y registrar historial |
+| `AdminController->pqrs_responder()`| Mostrar vista del editor de respuesta |
+| `AdminController->guardar_respuesta()`| Procesa el formulario, actualiza DB y envía notificación |
+| `AdminController->pqrs_cambiar_estado()` | Procesa el POST para cambiar estado y registrar historial |
 | `AdminController->pqrs_historial()` | Timeline cronológico de todas las acciones |
 | `AdminController->reportes()` | Métricas + gráficos Chart.js + exportación |
 | `AdminController->configuracion()` | Perfil del admin + parámetros del sistema |
