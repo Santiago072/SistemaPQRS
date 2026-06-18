@@ -111,8 +111,6 @@ PROYECTO_PQRS/
 │   └── views/                  # Vistas separadas por módulos (Solo HTML)
 │
 ├── config/
-│   ├── conexion.php            # Archivo antiguo legacy
-
 │   └── email_config.php        # Credenciales SMTP (no commitear)
 │
 ├── public/                     # Recursos públicos

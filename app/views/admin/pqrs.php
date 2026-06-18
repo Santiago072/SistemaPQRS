@@ -2,8 +2,6 @@
 /* HU-Bandeja Solicitudes PQRS: Vista de todas las PQRS con filtros */
 
 include __DIR__ . '/../layouts/verificar_sesion.php';
-include __DIR__ . '/../../../config/conexion.php';
-
 /* HU-Bandeja Solicitudes PQRS: Vista de todas las PQRS con filtros */
 
 $tipoLabels = [
