@@ -10,7 +10,7 @@ class AdminModel
 
     public function __construct()
     {
-        $this->db = Database::getInstance()->getConnection();
+        $this->db = Database::getInstance();
     }
 
     public function obtenerPorUsuario(string $usuario): ?array
