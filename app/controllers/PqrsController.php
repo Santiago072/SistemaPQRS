@@ -7,6 +7,8 @@
  * Principio OCP: agregar nuevas acciones no modifica las existentes.
  */
 
+namespace App\Controllers;
+
 use App\Models\PqrsModel;
 use App\Models\UsuarioModel;
 use App\Services\EmailService;
@@ -16,10 +18,10 @@ class PqrsController
     private PqrsModel    $pqrsModel;
     private UsuarioModel $usuarioModel;
 
-    public function __construct()
+    public function __construct(PqrsModel $pqrsModel, UsuarioModel $usuarioModel)
     {
-        $this->pqrsModel    = new PqrsModel();
-        $this->usuarioModel = new UsuarioModel();
+        $this->pqrsModel    = $pqrsModel;
+        $this->usuarioModel = $usuarioModel;
     }
 
     // ─── Vista: Selección de tipo ─────────────────────────────────────────────
