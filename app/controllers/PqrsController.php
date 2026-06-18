@@ -155,6 +155,27 @@ class PqrsController
 
     public function confirmacion(): void
     {
+        $pqrsId = (int) ($_GET['id'] ?? 0);
+
+        if ($pqrsId === 0) {
+            header('Location: ' . BASE_PATH . 'index.php');
+            exit();
+        }
+
+        $pqrs = $this->pqrsModel->obtenerPorId($pqrsId);
+
+        if (!$pqrs) {
+            header('Location: ' . BASE_PATH . 'index.php');
+            exit();
+        }
+
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+
+        $correoEnviado = isset($_SESSION['correo_enviado']) ? $_SESSION['correo_enviado'] : false;
+        unset($_SESSION['correo_enviado']);
+
         require_once __DIR__ . '/../views/pqrs/confirmacion.php';
     }
 
@@ -162,6 +183,42 @@ class PqrsController
 
     public function consulta(): void
     {
+        $resultados    = [];
+        $error         = null;
+        $busqueda      = null;
+        $tipoBusqueda  = null;
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' || isset($_GET['codigo'])) {
+            $codigo = trim($_POST['codigo'] ?? $_GET['codigo'] ?? '');
+            $correo = trim($_POST['correo'] ?? '');
+
+            if (!empty($codigo)) {
+                $codigo_upper = strtoupper($codigo);
+                $pqrs = $this->pqrsModel->obtenerPorCodigo($codigo_upper);
+                
+                if ($pqrs) {
+                    $resultados[]  = $pqrs;
+                    $tipoBusqueda  = 'codigo';
+                    $busqueda      = $codigo_upper;
+                } else {
+                    $error = "No se encontró ninguna solicitud con el código <strong>" . htmlspecialchars($codigo_upper) . "</strong>. Verifique que el código sea correcto.";
+                }
+            } elseif (!empty($correo)) {
+                $correo_lower = strtolower($correo);
+                $listado = $this->pqrsModel->obtenerListadoPorCorreo($correo_lower);
+
+                if (!empty($listado)) {
+                    $resultados = $listado;
+                    $tipoBusqueda = 'correo';
+                    $busqueda     = $correo_lower;
+                } else {
+                    $error = "No se encontraron solicitudes asociadas al correo <strong>" . htmlspecialchars($correo_lower) . "</strong>.";
+                }
+            } else {
+                $error = 'Ingrese un código de radicado o un correo electrónico para buscar.';
+            }
+        }
+
         require_once __DIR__ . '/../views/pqrs/consulta.php';
     }
 }

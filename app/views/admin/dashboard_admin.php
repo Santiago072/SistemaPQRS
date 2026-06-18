@@ -1,55 +1,10 @@
 <?php
-/* HU-Dashboard: Panel de Control del Administrador 
- * Página protegida que requiere sesión activa
+/* HU-Dashboard Administrador: Panel principal de control
+ * Provee un resumen estadístico, métricas clave y acceso
+ * rápido a las funciones más importantes.
  */
 
 include __DIR__ . '/../layouts/verificar_sesion.php';
-include __DIR__ . '/../../../config/conexion.php';
-
-// Obtener estadísticas
-$con = conexion();
-$stats = [];
-
-if ($con) {
-    // Total de PQRS
-    $result = mysqli_query($con, "SELECT COUNT(*) as total FROM pqrs");
-    $stats['total'] = mysqli_fetch_assoc($result)['total'] ?? 0;
-
-    // Por estado
-    $result = mysqli_query($con, "SELECT estado, COUNT(*) as cantidad FROM pqrs GROUP BY estado");
-    while ($row = mysqli_fetch_assoc($result)) {
-        $stats['por_estado'][$row['estado']] = $row['cantidad'];
-    }
-
-    // PQRS del mes actual
-    $result = mysqli_query($con, "SELECT COUNT(*) as total FROM pqrs WHERE MONTH(fecha_radicacion) = MONTH(CURRENT_DATE()) AND YEAR(fecha_radicacion) = YEAR(CURRENT_DATE())");
-    $stats['mes_actual'] = mysqli_fetch_assoc($result)['total'] ?? 0;
-
-    // Vencidas
-    $result = mysqli_query($con, "SELECT COUNT(*) as total FROM pqrs WHERE fecha_vencimiento < CURDATE() AND estado IN ('PENDIENTE', 'EN_PROCESO')");
-    $stats['vencidas'] = mysqli_fetch_assoc($result)['total'] ?? 0;
-
-    // Alertas por urgencia (5, 10, 15 días)
-    $result = mysqli_query($con, "SELECT 
-        SUM(CASE WHEN DATEDIFF(fecha_vencimiento, CURDATE()) <= 5 AND DATEDIFF(fecha_vencimiento, CURDATE()) >= 0 AND estado IN ('PENDIENTE', 'EN_PROCESO') THEN 1 ELSE 0 END) as critico,
-        SUM(CASE WHEN DATEDIFF(fecha_vencimiento, CURDATE()) BETWEEN 6 AND 10 AND estado IN ('PENDIENTE', 'EN_PROCESO') THEN 1 ELSE 0 END) as urgente,
-        SUM(CASE WHEN DATEDIFF(fecha_vencimiento, CURDATE()) BETWEEN 11 AND 15 AND estado IN ('PENDIENTE', 'EN_PROCESO') THEN 1 ELSE 0 END) as moderado
-        FROM pqrs WHERE fecha_vencimiento IS NOT NULL");
-    $alertas = mysqli_fetch_assoc($result);
-    $stats['alertas'] = $alertas;
-
-    // Últimas 5 PQRS
-    $result = mysqli_query($con, "SELECT p.*, u.nombre_completo, u.correo_electronico 
-                                   FROM pqrs p 
-                                   LEFT JOIN usuario u ON p.usuario_id = u.id 
-                                   ORDER BY p.fecha_radicacion DESC LIMIT 5");
-    $ultimasPQRS = [];
-    while ($row = mysqli_fetch_assoc($result)) {
-        $ultimasPQRS[] = $row;
-    }
-
-    mysqli_close($con);
-}
 ?>
 <!DOCTYPE html>
 <html lang="es">

@@ -5,87 +5,8 @@
  * Visualización en gráficos/tabla
  */
 
-include __DIR__ . '/../layouts/verificar_sesion.php';
-include __DIR__ . '/../../../config/conexion.php';
-
-$con = conexion();
-
-// Obtener filtros
-$filtro_fecha_inicio = $_GET['fecha_inicio'] ?? date('Y-m-01');
-$filtro_fecha_fin = $_GET['fecha_fin'] ?? date('Y-m-d');
-$filtro_tipo = $_GET['tipo'] ?? '';
-
-// Construir where clause (sin campo 'area' ya que no existe en el SQL)
-$where_conditions = ["DATE(p.fecha_radicacion) BETWEEN '$filtro_fecha_inicio' AND '$filtro_fecha_fin'"];
-
-if (!empty($filtro_tipo)) {
-    $where_conditions[] = "p.tipo_solicitud = '" . mysqli_real_escape_string($con, $filtro_tipo) . "'";
-}
-
-$where_clause = 'WHERE ' . implode(' AND ', $where_conditions);
-
-// Métricas generales
-$metricas = [];
-
-// Total recibidas en el período
-$query = "SELECT COUNT(*) as total FROM pqrs p $where_clause";
-$metricas['total_recibidas'] = mysqli_fetch_assoc(mysqli_query($con, $query))['total'];
-
-// Por estado
-$query = "SELECT estado, COUNT(*) as cantidad FROM pqrs p $where_clause GROUP BY estado";
-$result = mysqli_query($con, $query);
-$metricas['por_estado'] = [];
-while ($row = mysqli_fetch_assoc($result)) {
-    $metricas['por_estado'][$row['estado']] = $row['cantidad'];
-}
-
-// Por tipo de solicitud
-$query = "SELECT tipo_solicitud, COUNT(*) as cantidad FROM pqrs p $where_clause GROUP BY tipo_solicitud ORDER BY cantidad DESC";
-$result = mysqli_query($con, $query);
-$metricas['por_tipo'] = [];
-while ($row = mysqli_fetch_assoc($result)) {
-    $metricas['por_tipo'][$row['tipo_solicitud']] = $row['cantidad'];
-}
-
-// Tiempo promedio de respuesta (en días) - según campos del SQL
-$query = "SELECT AVG(DATEDIFF(COALESCE(p.fecha_respuesta, p.fecha_actualizacion), p.fecha_radicacion)) as promedio
-          FROM pqrs p $where_clause AND p.estado = 'RESUELTO'";
-$result = mysqli_query($con, $query);
-$metricas['tiempo_promedio'] = round(mysqli_fetch_assoc($result)['promedio'] ?? 0, 1);
-
-// Dentro de términos vs fuera de términos
-$query = "SELECT 
-            SUM(CASE WHEN p.fecha_actualizacion <= p.fecha_vencimiento THEN 1 ELSE 0 END) as en_tiempo,
-            SUM(CASE WHEN p.fecha_actualizacion > p.fecha_vencimiento THEN 1 ELSE 0 END) as fuera_tiempo
-          FROM pqrs p $where_clause AND p.estado = 'RESUELTO' AND p.fecha_vencimiento IS NOT NULL";
-$terminos = mysqli_fetch_assoc(mysqli_query($con, $query));
-$metricas['en_tiempo'] = $terminos['en_tiempo'] ?? 0;
-$metricas['fuera_tiempo'] = $terminos['fuera_tiempo'] ?? 0;
-
-// Por mes (últimos 6 meses)
-$query = "SELECT DATE_FORMAT(p.fecha_radicacion, '%Y-%m') as mes, 
-                 COUNT(*) as total,
-                 SUM(CASE WHEN estado = 'RESUELTO' THEN 1 ELSE 0 END) as resueltas
-          FROM pqrs p 
-          WHERE p.fecha_radicacion >= DATE_SUB(CURDATE(), INTERVAL 6 MONTH)
-          GROUP BY DATE_FORMAT(p.fecha_radicacion, '%Y-%m')
-          ORDER BY mes ASC";
-$result = mysqli_query($con, $query);
-$metricas['por_mes'] = [];
-while ($row = mysqli_fetch_assoc($result)) {
-    $metricas['por_mes'][] = $row;
-}
-
-// Calcular porcentaje de cumplimiento para persistir
-$total_terminos_r = ($metricas['en_tiempo'] ?? 0) + ($metricas['fuera_tiempo'] ?? 0);
-$porcentaje_cumplimiento_r = $total_terminos_r > 0
-    ? round(($metricas['en_tiempo'] / $total_terminos_r) * 100, 2)
-    : 0;
-
-// NO persistir reporte en tabla al cargar la página.
-// La persistencia solo ocurre al exportar (exportar_pdf.php / exportar_excel.php).
-
-mysqli_close($con);
+<?php
+/* HU-Generación de Reportes: Dashboard de reportes con filtros y métricas */
 
 $tipoLabels = [
     'peticion' => 'Petición',
