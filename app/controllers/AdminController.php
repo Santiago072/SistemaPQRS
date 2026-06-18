@@ -103,7 +103,6 @@ class AdminController
         }
         exit();
     }
-    public function alertas(): void            { require_once __DIR__ . '/../views/admin/alertas.php'; }
     public function configuracion(): void      
     { 
         if (session_status() === PHP_SESSION_NONE) {
@@ -260,8 +259,6 @@ class AdminController
 
         require_once __DIR__ . '/../views/admin/dashboard_admin.php'; 
     }
-    public function exportar_excel(): void     { require_once __DIR__ . '/../views/admin/exportar_excel.php'; }
-    public function exportar_pdf(): void       { require_once __DIR__ . '/../views/admin/exportar_pdf.php'; }
     public function login(): void              
     { 
         if (session_status() === PHP_SESSION_NONE) {
