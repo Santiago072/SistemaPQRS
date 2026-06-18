@@ -51,40 +51,21 @@ El sistema cuenta con dos portales principales:
 ```text
 PROYECTO_PQRS/
 │
-├── administrador/           # Panel de control administrativo
-│   ├── dashboard_admin.php  # Tablero estadístico principal con KPIs
-│   ├── login.php            # Autenticación de administradores
-│   ├── logout.php           # Cierre de sesión
-│   ├── recuperar_contrasena.php # Interfaz para solicitar recuperación de clave
-│   ├── restablecer_contrasena.php # Funcionalidad para actualizar la nueva clave
-│   ├── pqrs.php             # Bandeja con listado y filtros de todas las PQRS
-│   ├── pqrs_cambiar_estado.php # Cambio de estado e historial
-│   ├── pqrs_historial.php   # Timeline de acciones por PQRS
-│   ├── pqrs_responder.php   # Interfaz para formular respuestas a ciudadanos
-│   ├── pqrs_ver.php         # Vista de detalle y auditoría de la PQRS
-│   ├── reportes.php         # Generador de reportes
-│   ├── exportar_excel.php   # Exportación Excel
-│   └── exportar_pdf.php     # Exportación PDF (DomPDF)
+├── app/                     # Carpeta principal de la aplicación (MVC)
+│   ├── controllers/         # Controladores (AdminController, AuthController, HomeController, PqrsController)
+│   └── views/               # Vistas separadas por módulos
+│       ├── admin/           # Vistas del panel administrativo (dashboard, pqrs, reportes, exportación)
+│       ├── home/            # Vista de inicio principal del ciudadano
+│       ├── layouts/         # Plantillas reutilizables (header, footer, funciones, verificar_sesion, modal)
+│       └── pqrs/            # Vistas del portal ciudadano (tipos, formulario, consulta, confirmacion)
 │
 ├── config/                  # Archivos de configuración del sistema
 │   ├── conexion.php         # Conexión MySQLi a base de datos
 │   └── email_config.php     # Ajustes de correo electrónico (PHPMailer SMTP)
 │
-├── css/                     # Hojas de estilo
-│   └── estilos.css          # Diseño unificado y responsive
-│
-├── includes/                # Fragmentos reutilizables y funciones de utilidad
-│   ├── header.php           # Encabezado responsive común
-│   ├── footer.php           # Pie de página informativo con enlaces
-│   ├── funciones.php        # Utilidades transversales
-│   ├── verificar_sesion.php # Middleware de seguridad para el área administrativa
-│   └── modal_terminos.php   # Modal de Términos y Condiciones
-│
-├── pqrs/                    # Módulos accesibles por el ciudadano
-│   ├── tipos.php            # Selección visual del tipo de PQRS
-│   ├── formulario.php       # Formulario dinámico de radicación
-│   ├── consulta_pqrs.php    # Buscador y rastreador de solicitudes
-│   └── confirmacion.php     # Pantalla de confirmación con radicado y resumen
+├── public/                  # Recursos públicos del frontend
+│   └── css/                 # Hojas de estilo
+│       └── estilos.css      # Diseño unificado y responsive
 │
 ├── vendor/                  # Dependencias de Composer (PHPMailer, DomPDF)
 ├── uploads/                 # Directorio de almacenamiento de archivos adjuntos
@@ -93,7 +74,7 @@ PROYECTO_PQRS/
 │   └── manual-usuario.md         # Guía de uso para ciudadanos y admins
 ├── BD.txt                   # Script SQL de la Base de Datos
 ├── composer.json            # Dependencias PHP (Composer)
-├── index.php                # Página de inicio del portal del ciudadano
+├── index.php                # Archivo principal de enrutamiento MVC (Front Controller)
 └── README.md                # Presentación y enlaces a la documentación
 ```
 
