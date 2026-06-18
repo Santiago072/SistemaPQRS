@@ -499,8 +499,7 @@ function progresoPorEstado(string $estado): int {
                 <!-- Adjunto -->
                 <?php if (!empty($pqrs['archivo_adjunto'])):
                     $nombreArch = basename($pqrs['archivo_adjunto']);
-                    // consulta_pqrs.php está en pqrs/ y los archivos en la raíz uploads/
-                    $urlArch    = '../uploads/' . rawurlencode($nombreArch);
+                    $urlArch    = BASE_PATH . 'uploads/' . rawurlencode($nombreArch);
                     $extArch    = strtolower(pathinfo($nombreArch, PATHINFO_EXTENSION));
                     $iconArch   = match(true) {
                         in_array($extArch, ['jpg','jpeg','png','gif','webp']) => 'bi-file-earmark-image',
