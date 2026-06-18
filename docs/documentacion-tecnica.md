@@ -44,26 +44,26 @@ El sistema opera en dos portales:
 
 ## 2. Arquitectura General
 
-El proyecto sigue una arquitectura **MVC simplificada** sin framework, con PHP puro orientado a procedimientos. Cada página PHP actúa como controlador y vista al mismo tiempo. La lógica de negocio compartida se centraliza en `includes/funciones.php`.
+El proyecto sigue una arquitectura **MVC (Modelo-Vista-Controlador) mediante un Controlador Frontal** (Front Controller). La lógica de negocio está centralizada en `index.php` que delega las peticiones a controladores específicos ubicados en la carpeta `app/controllers/`.
 
 ```
-Navegador ──► index.php / pqrs/*.php         (Portal ciudadano)
-           ──► administrador/*.php            (Panel admin)
+Navegador ──► index.php?ruta=... 
                     │
-                    ├── includes/verificar_sesion.php   (Middleware auth)
-                    ├── includes/funciones.php          (Utilidades)
-                    ├── config/conexion.php             (BD)
-                    └── config/email_config.php         (SMTP)
+                    ├── app/controllers/PqrsController.php    (Portal ciudadano)
+                    ├── app/controllers/AdminController.php   (Panel admin)
+                    ├── app/controllers/AuthController.php    (Autenticación)
+                    │
+                    └── app/views/                            (Muestra la UI)
+                             ├── pqrs/                        (Vistas ciudadano)
+                             └── admin/                       (Vistas admin)
 ```
 
-**Patrón de URLs:**
+**Patrón de URLs (Enrutamiento Frontal):**
 ```
 http://localhost/PROYECTO_PQRS/                          → Inicio
-http://localhost/PROYECTO_PQRS/pqrs/tipos.php            → Selección de tipo
-http://localhost/PROYECTO_PQRS/pqrs/formulario.php       → Formulario
-http://localhost/PROYECTO_PQRS/pqrs/consulta_pqrs.php    → Consulta ciudadano
-http://localhost/PROYECTO_PQRS/administrador/login.php   → Login admin
-http://localhost/PROYECTO_PQRS/administrador/dashboard_admin.php → Dashboard
+http://localhost/PROYECTO_PQRS/index.php?ruta=pqrs/tipos → Selección de tipo
+http://localhost/PROYECTO_PQRS/index.php?ruta=admin/login → Login admin
+http://localhost/PROYECTO_PQRS/index.php?ruta=admin/dashboard → Dashboard
 ```
 
 ---
@@ -73,54 +73,37 @@ http://localhost/PROYECTO_PQRS/administrador/dashboard_admin.php → Dashboard
 ```text
 PROYECTO_PQRS/
 │
-├── administrador/              # Panel de control administrativo (protegido)
-│   ├── dashboard_admin.php     # Tablero con KPIs y acceso rápido
-│   ├── login.php               # Autenticación
-│   ├── logout.php              # Cierre de sesión
-│   ├── recuperar_contrasena.php
-│   ├── restablecer_contrasena.php
-│   ├── actualizar_perfil.php   # Endpoint AJAX para perfil
-│   ├── configuracion.php       # Perfil + configuración del sistema (unificado)
-│   ├── pqrs.php                # Bandeja con filtros y paginación
-│   ├── pqrs_ver.php            # Detalle completo de una PQRS
-│   ├── pqrs_responder.php      # Responder y cambiar estado
-│   ├── pqrs_cambiar_estado.php # Cambio rápido de estado
-│   ├── pqrs_historial.php      # Timeline de acciones
-│   ├── alertas.php             # Centro de alertas de vencimiento
-│   ├── reportes.php            # Reportes con gráficos
-│   ├── exportar_pdf.php        # Exportación PDF (DomPDF)
-│   └── exportar_excel.php      # Exportación Excel (HTML→XLS)
+├── app/                        # Arquitectura MVC
+│   ├── controllers/            # Controladores del sistema
+│   │   ├── AdminController.php # Lógica del panel administrativo
+│   │   ├── AuthController.php  # Lógica de autenticación y recuperación
+│   │   ├── HomeController.php  # Lógica de la página de inicio
+│   │   └── PqrsController.php  # Lógica del portal ciudadano
+│   │
+│   └── views/                  # Vistas separadas por módulos
+│       ├── admin/              # Vistas del dashboard, reportes y gestión
+│       ├── home/               # Vistas de la página principal
+│       ├── layouts/            # Cabeceras, pies de página, funciones y middleware
+│       └── pqrs/               # Vistas del portal ciudadano (formulario, consulta)
 │
 ├── config/
 │   ├── conexion.php            # Función conexion() con MySQLi
 │   └── email_config.php        # Credenciales SMTP (no commitear)
 │
-├── css/
-│   └── estilos.css             # Estilos unificados con variables CSS
+├── public/                     # Recursos públicos
+│   └── css/                    # Estilos unificados con variables CSS
+│       └── estilos.css
 │
 ├── docs/                       # Documentación del proyecto
 │   ├── documentacion-tecnica.md
 │   └── manual-usuario.md
 │
-├── includes/
-│   ├── header.php              # Cabecera común (detecta sesión activa)
-│   ├── footer.php              # Pie de página
-│   ├── funciones.php           # registrarAccion(), obtenerConfiguracion()
-│   ├── verificar_sesion.php    # Middleware: valida sesión e inactividad (30 min)
-│   └── modal_terminos.php      # Modal con marco legal y aceptación
-│
-├── pqrs/                       # Módulos del portal ciudadano
-│   ├── tipos.php               # Tarjetas de selección de tipo
-│   ├── formulario.php          # Formulario dinámico + POST + envío de correo
-│   ├── confirmacion.php        # Pantalla de confirmación con código radicado
-│   └── consulta_pqrs.php       # Búsqueda por código o correo
-│
 ├── uploads/                    # Archivos adjuntos subidos
 ├── logs/                       # Log de correos enviados
-├── vendor/                     # Dependencias Composer
+├── vendor/                     # Dependencias Composer (PHPMailer, DomPDF)
 ├── BD.txt                      # Script SQL completo
 ├── composer.json
-└── index.php                   # Página de inicio
+└── index.php                   # Controlador Frontal principal
 ```
 
 ---
@@ -234,30 +217,30 @@ configuracion_sistema (tabla singleton, id=1)
 
 ## 5. Módulos del Sistema
 
-### 5.1 Portal Ciudadano
+### 5.1 Portal Ciudadano (app/views/pqrs/ y PqrsController)
 
-| Archivo | Función |
+| Archivo / Acción | Función |
 |---------|---------|
-| `index.php` | Página informativa con botones de acción principal |
-| `includes/modal_terminos.php` | Modal con leyes aplicables y aceptación obligatoria |
-| `pqrs/tipos.php` | 5 tarjetas visuales para seleccionar el tipo de PQRS |
-| `pqrs/formulario.php` | Formulario dinámico según tipo de persona + lógica POST |
-| `pqrs/confirmacion.php` | Muestra código radicado y estado del correo enviado |
-| `pqrs/consulta_pqrs.php` | Búsqueda por código `PQRS-AAAA-MM-NNN` o correo |
+| `HomeController->index()` | Página informativa con botones de acción principal |
+| `PqrsController->tipos()` | 5 tarjetas visuales para seleccionar el tipo de PQRS |
+| `PqrsController->formulario()` | Formulario dinámico de radicación y guardado |
+| `PqrsController->confirmacion()` | Pantalla de confirmación con código radicado |
+| `PqrsController->consulta()` | Búsqueda y visualización de PQRS por código o correo |
 
-### 5.2 Panel Administrativo
+### 5.2 Panel Administrativo (app/views/admin/ y AdminController)
 
-| Archivo | Función |
+| Archivo / Acción | Función |
 |---------|---------|
-| `dashboard_admin.php` | KPIs, estadísticas y acceso rápido |
-| `pqrs.php` | Bandeja con filtros por estado, tipo, fecha y búsqueda |
-| `pqrs_ver.php` | Detalle completo + historial reciente + cambio de estado |
-| `pqrs_responder.php` | Editor de respuesta + notificación por correo |
-| `pqrs_cambiar_estado.php` | Endpoint POST para cambiar estado y registrar historial |
-| `pqrs_historial.php` | Timeline cronológico de todas las acciones |
-| `alertas.php` | PQRS agrupadas por urgencia (0-5, 6-10, 11-15 días) |
-| `reportes.php` | Métricas + gráficos Chart.js + exportación |
-| `configuracion.php` | Perfil del admin + parámetros del sistema (tabs) |
+| `AdminController->dashboard()` | KPIs, estadísticas y acceso rápido |
+| `AdminController->pqrs()` | Bandeja con filtros por estado, tipo, fecha y búsqueda |
+| `AdminController->pqrs_ver()` | Detalle completo + historial reciente + cambio de estado |
+| `AdminController->pqrs_responder()`| Editor de respuesta + notificación por correo |
+| `AdminController->pqrs_cambiar_estado()` | Lógica para cambiar estado y registrar historial |
+| `AdminController->pqrs_historial()` | Timeline cronológico de todas las acciones |
+| `AdminController->reportes()` | Métricas + gráficos Chart.js + exportación |
+| `AdminController->configuracion()` | Perfil del admin + parámetros del sistema |
+| `AdminController->exportar_pdf()` | Exportación de reportes a PDF |
+| `AdminController->exportar_excel()`| Exportación de reportes a Excel |
 
 ---
 
@@ -266,40 +249,39 @@ configuracion_sistema (tabla singleton, id=1)
 ### Flujo ciudadano — Radicar PQRS
 
 ```
-index.php
+index.php?ruta=home/index
   → [Botón "Nueva Solicitud"]
   → modal_terminos.php (aceptación obligatoria)
-  → pqrs/tipos.php (seleccionar tipo)
-  → pqrs/formulario.php (GET: mostrar, POST: procesar)
+  → index.php?ruta=pqrs/tipos (seleccionar tipo)
+  → index.php?ruta=pqrs/formulario (GET: mostrar, POST: procesar en PqrsController)
       ├── Insertar en tabla `usuario`
       ├── Generar código PQRS-AAAA-MM-NNN
-      ├── Calcular fecha_vencimiento (desde configuracion_sistema)
+      ├── Calcular fecha_vencimiento
       ├── Guardar archivo adjunto en /uploads/
       ├── Insertar en tabla `pqrs`
-      └── Enviar correo con PHPMailer (si notificar=1)
-  → pqrs/confirmacion.php (mostrar código + estado correo)
+      └── Enviar correo con PHPMailer
+  → index.php?ruta=pqrs/confirmacion (mostrar código + estado correo)
 ```
 
 ### Flujo ciudadano — Consultar estado
 
 ```
-index.php
+index.php?ruta=home/index
   → [Botón "Consultar Estado"]
-  → pqrs/consulta_pqrs.php
-      ├── Búsqueda por código (consulta exacta)
-      └── Búsqueda por correo (lista de todas sus PQRS)
-  → Mostrar: estado, fechas, descripción, barra de progreso, respuesta del admin
+  → index.php?ruta=pqrs/consulta
+      ├── Búsqueda por código o correo
+  → Mostrar: estado, fechas, descripción, barra de progreso, respuesta
 ```
 
 ### Flujo administrador — Gestionar PQRS
 
 ```
-administrador/login.php → dashboard_admin.php
-  → pqrs.php (bandeja con filtros)
-  → pqrs_ver.php?id=X (ver detalle)
-      ├── pqrs_responder.php (redactar respuesta + notificar ciudadano)
-      └── pqrs_cambiar_estado.php (POST: cambiar estado)
-  → pqrs_historial.php?id=X (ver trazabilidad completa)
+index.php?ruta=admin/login → index.php?ruta=admin/dashboard
+  → index.php?ruta=admin/pqrs (bandeja con filtros)
+  → index.php?ruta=admin/pqrs_ver&id=X (ver detalle)
+      ├── index.php?ruta=admin/pqrs_responder (redactar respuesta + notificar ciudadano)
+      └── index.php?ruta=admin/pqrs_cambiar_estado (POST: cambiar estado)
+  → index.php?ruta=admin/pqrs_historial&id=X (ver trazabilidad completa)
 ```
 
 ### Generación del código radicado

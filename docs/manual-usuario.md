@@ -49,7 +49,7 @@ El sistema se divide en dos secciones:
 | Sección | URL | Quién la usa |
 |---------|-----|--------------|
 | Portal Ciudadano | `http://localhost/PROYECTO_PQRS/` | Ciudadanos en general |
-| Panel Admin | `http://localhost/PROYECTO_PQRS/administrador/login.php` | Gestores / Administradores |
+| Panel Admin | `http://localhost/PROYECTO_PQRS/index.php?ruta=admin/login` | Gestores / Administradores |
 
 > Si el sistema está en producción, reemplace `localhost/PROYECTO_PQRS` por la URL real que le indique el administrador.
 
@@ -165,7 +165,7 @@ Para cada solicitud encontrada:
 
 ### 4.1 Iniciar sesión
 
-Ingrese a `administrador/login.php` y complete:
+Ingrese a `index.php?ruta=admin/login` y complete:
 - **Usuario:** su nombre de usuario asignado
 - **Contraseña:** su contraseña
 
@@ -202,7 +202,7 @@ En la parte superior derecha encontrará:
 
 ### 4.3 Bandeja de Solicitudes
 
-Acceda desde el acceso rápido o la URL `administrador/pqrs.php`.
+Acceda desde el acceso rápido o la URL `index.php?ruta=admin/pqrs`.
 
 #### Filtros disponibles
 - **Buscar:** por código de radicado, asunto o nombre del solicitante
@@ -291,7 +291,7 @@ Al final siempre aparece el evento de creación de la solicitud.
 
 ### 4.7 Centro de Alertas
 
-Acceda desde el acceso rápido o `administrador/alertas.php`.
+Acceda desde el acceso rápido o `index.php?ruta=admin/alertas`.
 
 Las PQRS con estado **PENDIENTE** o **EN PROCESO** se agrupan en 4 niveles:
 
@@ -304,13 +304,13 @@ Las PQRS con estado **PENDIENTE** o **EN PROCESO** se agrupan en 4 niveles:
 
 Desde cada alerta puede ir directamente a **Ver** o **Responder** la solicitud.
 
-En la bandeja principal (`pqrs.php`) también aparecen banners de alerta en la parte superior cuando hay solicitudes próximas a vencer.
+En la bandeja principal (`index.php?ruta=admin/pqrs`) también aparecen banners de alerta en la parte superior cuando hay solicitudes próximas a vencer.
 
 ---
 
 ### 4.8 Reportes
 
-Acceda desde el acceso rápido o `administrador/reportes.php`.
+Acceda desde el acceso rápido o `index.php?ruta=admin/reportes`.
 
 #### Filtros
 - **Desde / Hasta:** rango de fechas de radicación
@@ -340,7 +340,7 @@ Muestra cuántas PQRS fueron resueltas dentro y fuera del término legal, con el
 
 ### 4.9 Configuración
 
-Acceda desde el botón **"Configuración"** en el header superior.
+Acceda desde el botón **"Configuración"** en el header superior o mediante la URL `index.php?ruta=admin/configuracion`.
 
 La página tiene dos pestañas:
 
