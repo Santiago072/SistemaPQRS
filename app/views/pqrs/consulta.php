@@ -3,7 +3,6 @@
  * HU-06: Consulta de Estado de PQRS
  * Permite consultar por código de radicado o correo electrónico
  */
-<?php
 /* HU-06: Consulta de Estado de PQRS */
 
 $estados = [
