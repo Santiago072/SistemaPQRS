@@ -41,7 +41,7 @@
                 <?php endif; ?>
 
                 <?php if ($tokenValido): ?>
-                <form action="restablecer_contrasena.php" method="POST" class="login-form" onsubmit="return validarReset()">
+                <form action="<?php echo BASE_PATH; ?>index.php?ruta=admin/restablecer_contrasena" method="POST" class="login-form" onsubmit="return validarReset()">
                     <input type="hidden" name="token" value="<?php echo htmlspecialchars($token); ?>">
 
                     <div class="login-grupo">
