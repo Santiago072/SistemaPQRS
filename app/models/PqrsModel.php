@@ -1,74 +1,204 @@
 <?php
-require_once __DIR__ . '/../../config/conexion.php';
+/**
+ * PqrsModel.php — Modelo para operaciones de la tabla `pqrs` e historial
+ *
+ * Principio: SRP - solo gestiona datos de PQRS.
+ * Principio: DIP - depende de PDO (abstracción), no de MySQLi.
+ * Principio: OCP - se pueden agregar métodos sin modificar los existentes.
+ */
 
-class PqrsModel {
-    private $con;
+namespace App\Models;
 
-    public function __construct() {
-        $this->con = conexion();
+use PDO;
+
+class PqrsModel
+{
+    private PDO $db;
+
+    public function __construct()
+    {
+        $this->db = Database::getInstance();
     }
 
-    public function crear($tipo_solicitud, $asunto, $descripcion, $usuario_id) {
-        $codigo_radicado = $this->generarCodigoRadicado();
-        
-        // Calcular fecha de vencimiento (15 días hábiles por defecto, 10 para denuncias)
-        $dias = ($tipo_solicitud === 'denuncia') ? 10 : 15;
-        // Lógica simplificada de días hábiles, asumiendo días calendario para simplificar o usando DATE_ADD
-        $query = "INSERT INTO pqrs (codigo_radicado, tipo_solicitud, asunto, descripcion, usuario_id, estado, fecha_vencimiento) 
-                  VALUES (?, ?, ?, ?, ?, 'PENDIENTE', DATE_ADD(CURDATE(), INTERVAL ? DAY))";
-        
-        $stmt = $this->con->prepare($query);
-        $stmt->bind_param("ssssii", $codigo_radicado, $tipo_solicitud, $asunto, $descripcion, $usuario_id, $dias);
-        
-        if ($stmt->execute()) {
-            return $codigo_radicado;
+    // ─── Generación de código radicado ────────────────────────────────────────
+
+    public function generarCodigoRadicado(): string
+    {
+        $anio = date('Y');
+        $mes  = date('m');
+        $stmt = $this->db->prepare(
+            "SELECT MAX(CAST(SUBSTRING(codigo_radicado, -3) AS UNSIGNED)) AS max_num
+             FROM pqrs
+             WHERE YEAR(fecha_radicacion) = :anio
+               AND MONTH(fecha_radicacion) = :mes"
+        );
+        $stmt->execute([':anio' => $anio, ':mes' => $mes]);
+        $row         = $stmt->fetch();
+        $maxNum      = $row['max_num'] ?? 0;
+        $consecutivo = str_pad(($maxNum + 1), 3, '0', STR_PAD_LEFT);
+        return "PQRS-{$anio}-{$mes}-{$consecutivo}";
+    }
+
+    // ─── Obtener días de vencimiento desde configuración ─────────────────────
+
+    public function obtenerDiasVencimiento(string $tipoPqrs): int
+    {
+        $stmt = $this->db->prepare(
+            "SELECT dias_vencimiento_{$tipoPqrs} AS dias
+             FROM configuracion_sistema WHERE id = 1"
+        );
+        $stmt->execute();
+        $row = $stmt->fetch();
+        return (int) ($row['dias'] ?? 15);
+    }
+
+    // ─── Crear nueva PQRS ─────────────────────────────────────────────────────
+
+    public function crear(array $datos): int
+    {
+        $stmt = $this->db->prepare(
+            "INSERT INTO pqrs (
+                codigo_radicado, tipo_solicitud, asunto, descripcion,
+                archivo_adjunto, estado, fecha_vencimiento,
+                desea_notificacion, usuario_id, administrador_id
+            ) VALUES (
+                :codigo_radicado, :tipo_solicitud, :asunto, :descripcion,
+                :archivo_adjunto, :estado, :fecha_vencimiento,
+                :desea_notificacion, :usuario_id, :administrador_id
+            )"
+        );
+
+        $stmt->execute([
+            ':codigo_radicado'    => $datos['codigo_radicado'],
+            ':tipo_solicitud'     => $datos['tipo_solicitud'],
+            ':asunto'             => $datos['asunto'],
+            ':descripcion'        => $datos['descripcion'],
+            ':archivo_adjunto'    => $datos['archivo_adjunto']    ?? null,
+            ':estado'             => $datos['estado']             ?? 'PENDIENTE',
+            ':fecha_vencimiento'  => $datos['fecha_vencimiento'],
+            ':desea_notificacion' => $datos['desea_notificacion'] ?? 0,
+            ':usuario_id'         => $datos['usuario_id'],
+            ':administrador_id'   => $datos['administrador_id']   ?? null,
+        ]);
+
+        return (int) $this->db->lastInsertId();
+    }
+
+    // ─── Consultas ────────────────────────────────────────────────────────────
+
+    public function obtenerPorId(int $id): ?array
+    {
+        $stmt = $this->db->prepare(
+            "SELECT p.*, u.nombre_completo, u.correo_electronico, u.tipo_persona,
+                    u.correo_corporativo, u.nombre_representante,
+                    DATEDIFF(p.fecha_vencimiento, CURDATE()) AS dias_restantes
+             FROM pqrs p
+             LEFT JOIN usuario u ON p.usuario_id = u.id
+             WHERE p.id = :id"
+        );
+        $stmt->execute([':id' => $id]);
+        return $stmt->fetch() ?: null;
+    }
+
+    public function obtenerPorCodigo(string $codigo): ?array
+    {
+        $stmt = $this->db->prepare(
+            "SELECT p.*, u.nombre_completo, u.correo_electronico, u.tipo_persona,
+                    u.correo_corporativo, u.nombre_representante
+             FROM pqrs p
+             LEFT JOIN usuario u ON p.usuario_id = u.id
+             WHERE p.codigo_radicado = :codigo"
+        );
+        $stmt->execute([':codigo' => $codigo]);
+        return $stmt->fetch() ?: null;
+    }
+
+    // ─── Actualizar estado ────────────────────────────────────────────────────
+
+    /**
+     * Valida y aplica una transición de estado.
+     * Retorna true en éxito, false si la transición no es válida.
+     */
+    public function cambiarEstado(int $id, string $nuevoEstado): bool
+    {
+        $transicionesValidas = [
+            'PENDIENTE'  => ['EN_PROCESO', 'RESUELTO', 'RECHAZADO'],
+            'EN_PROCESO' => ['RESUELTO', 'RECHAZADO'],
+            'RESUELTO'   => [],
+            'RECHAZADO'  => [],
+        ];
+
+        $pqrs = $this->obtenerPorId($id);
+        if (!$pqrs) {
+            return false;
         }
-        return false;
+
+        if (!in_array($nuevoEstado, $transicionesValidas[$pqrs['estado']] ?? [], true)) {
+            return false;
+        }
+
+        $stmt = $this->db->prepare(
+            "UPDATE pqrs SET estado = :estado, fecha_actualizacion = NOW() WHERE id = :id"
+        );
+        return $stmt->execute([':estado' => $nuevoEstado, ':id' => $id]);
     }
 
-    public function obtenerPorCodigo($codigo) {
-        $query = "SELECT p.*, u.nombre_completo, u.correo_electronico, u.tipo_persona 
-                  FROM pqrs p 
-                  LEFT JOIN usuario u ON p.usuario_id = u.id 
-                  WHERE p.codigo_radicado = ?";
-        $stmt = $this->con->prepare($query);
-        $stmt->bind_param("s", $codigo);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        return $result->fetch_assoc();
+    // ─── Guardar respuesta del administrador ──────────────────────────────────
+
+    public function guardarRespuesta(int $id, string $contenido, int $adminId): bool
+    {
+        $stmt = $this->db->prepare(
+            "UPDATE pqrs
+             SET respuesta_administrador = :contenido,
+                 fecha_respuesta = NOW(),
+                 administrador_id = :admin_id
+             WHERE id = :id"
+        );
+        return $stmt->execute([
+            ':contenido' => $contenido,
+            ':admin_id'  => $adminId,
+            ':id'        => $id,
+        ]);
     }
 
-    public function obtenerTodos($limit, $offset, $filtros = []) {
-        $where = "1=1";
-        $params = [];
-        $types = "";
+    // ─── Historial de acciones ────────────────────────────────────────────────
 
-        // Aplicar filtros aquí...
-        
-        $query = "SELECT p.*, u.nombre_completo 
-                  FROM pqrs p 
-                  LEFT JOIN usuario u ON p.usuario_id = u.id 
-                  WHERE $where 
-                  ORDER BY p.fecha_radicacion DESC 
-                  LIMIT ? OFFSET ?";
-        
-        $stmt = $this->con->prepare($query);
-        $params[] = $limit;
-        $params[] = $offset;
-        $types .= "ii";
-        
-        $stmt->bind_param($types, ...$params);
-        $stmt->execute();
-        return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
-    }
-    
-    public function contarTodos() {
-        $query = "SELECT COUNT(*) as total FROM pqrs";
-        $result = $this->con->query($query);
-        return $result->fetch_assoc()['total'];
+    public function registrarAccion(
+        int    $pqrsId,
+        int    $adminId,
+        string $accion,
+        string $descripcion,
+        string $estadoAnterior = '',
+        string $estadoNuevo = ''
+    ): void {
+        $stmt = $this->db->prepare(
+            "INSERT INTO historial_accion
+                (pqrs_id, administrador_id, accion_realizada, estado_anterior, estado_nuevo, descripcion, fecha_hora)
+             VALUES
+                (:pqrs_id, :admin_id, :accion, :estado_anterior, :estado_nuevo, :descripcion, NOW())"
+        );
+        $stmt->execute([
+            ':pqrs_id'        => $pqrsId,
+            ':admin_id'       => $adminId,
+            ':accion'         => $accion,
+            ':estado_anterior'=> $estadoAnterior,
+            ':estado_nuevo'   => $estadoNuevo,
+            ':descripcion'    => $descripcion,
+        ]);
     }
 
-    private function generarCodigoRadicado() {
-        return 'PQRS-' . date('Y') . '-' . strtoupper(substr(uniqid(), -4));
+    // ─── Historial de una PQRS ────────────────────────────────────────────────
+
+    public function obtenerHistorial(int $pqrsId): array
+    {
+        $stmt = $this->db->prepare(
+            "SELECT h.*, a.nombre AS admin_nombre
+             FROM historial_accion h
+             LEFT JOIN administrador a ON h.administrador_id = a.id
+             WHERE h.pqrs_id = :pqrs_id
+             ORDER BY h.fecha_hora DESC"
+        );
+        $stmt->execute([':pqrs_id' => $pqrsId]);
+        return $stmt->fetchAll();
     }
 }
