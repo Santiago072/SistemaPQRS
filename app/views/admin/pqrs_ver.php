@@ -3,7 +3,6 @@
 
 include __DIR__ . '/../layouts/verificar_sesion.php';
 
-<?php
 /* HU-Detalle y Respuesta a Solicitudes: Vista completa de PQRS con todos los datos */
 
 $tipoLabels = [
