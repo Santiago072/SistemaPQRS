@@ -34,11 +34,11 @@
                 </button>
                 <button type="button" class="persona-btn" onclick="cambiarPersona('juridica')" data-persona="juridica">
                     <i class="bi bi-building"></i>
-                    <span>Persona Jur├¡dica</span>
+                    <span>Persona Juridica</span>
                 </button>
                 <button type="button" class="persona-btn" onclick="cambiarPersona('anonima')" data-persona="anonima">
                     <i class="bi bi-incognito"></i>
-                    <span>An├│nima</span>
+                    <span>Anonima</span>
                 </button>
             </div>
 
@@ -52,15 +52,15 @@
                     <div class="form-row">
                         <div class="form-grupo">
                             <label class="form-label">Nombre completo <span class="requerido">*</span></label>
-                            <input type="text" name="nombre" class="form-input" placeholder="Ej: Juan P├®rez Garc├¡a" onblur="validarCampo(this, 'nombre')">
+                            <input type="text" name="nombre" class="form-input" placeholder="Ej: Juan Perez Garcia" onblur="validarCampo(this, 'nombre')">
                             <span class="error-mensaje" id="error-nombre">Ingrese su nombre completo</span>
                         </div>
                         <div class="form-grupo">
                             <label class="form-label">Tipo de documento <span class="requerido">*</span></label>
                             <select name="tipo_documento" class="form-select" onblur="validarCampo(this, 'tipo_documento')">
                                 <option value="">Seleccione...</option>
-                                <option value="CC">C├®dula de Ciudadan├¡a</option>
-                                <option value="CE">C├®dula de Extranjer├¡a</option>
+                                <option value="CC">Cedula de Ciudadania</option>
+                                <option value="CE">Cedula de Extranjeria</option>
                                 <option value="TI">Tarjeta de Identidad</option>
                                 <option value="PAS">Pasaporte</option>
                             </select>
@@ -69,30 +69,30 @@
                     </div>
                     <div class="form-row">
                         <div class="form-grupo">
-                            <label class="form-label">N├║mero de documento <span class="requerido">*</span></label>
+                            <label class="form-label">Numero de documento <span class="requerido">*</span></label>
                             <input type="text" name="numero_documento" class="form-input" placeholder="Ej: 1234567890" onblur="validarCampo(this, 'numero_documento')">
-                            <span class="error-mensaje" id="error-numero_documento">Ingrese su n├║mero de documento</span>
+                            <span class="error-mensaje" id="error-numero_documento">Ingrese su numero de documento</span>
                         </div>
                         <div class="form-grupo">
-                            <label class="form-label">Tel├®fono <span class="requerido">*</span></label>
+                            <label class="form-label">Telefono <span class="requerido">*</span></label>
                             <input type="tel" name="telefono" class="form-input" placeholder="Ej: 3001234567" onblur="validarCampo(this, 'telefono')">
-                            <span class="error-mensaje" id="error-telefono">Ingrese un n├║mero de tel├®fono v├ílido</span>
+                            <span class="error-mensaje" id="error-telefono">Ingrese un numero de telefono valido</span>
                         </div>
                     </div>
                     <div class="form-grupo">
-                        <label class="form-label">Correo electr├│nico <span class="requerido">*</span></label>
+                        <label class="form-label">Correo electronico <span class="requerido">*</span></label>
                         <input type="email" name="correo" class="form-input" placeholder="Ej: correo@ejemplo.com" onblur="validarCampo(this, 'correo')">
-                        <span class="error-mensaje" id="error-correo">Ingrese un correo electr├│nico v├ílido</span>
+                        <span class="error-mensaje" id="error-correo">Ingrese un correo electronico valido</span>
                     </div>
                 </div>
 
-                <!-- PERSONA JUR├ìDICA -->
+                <!-- PERSONA JURIDICA -->
                 <div id="seccion-juridica" class="form-body oculto">
                     <div class="form-row">
                         <div class="form-grupo">
-                            <label class="form-label">Raz├│n social <span class="requerido">*</span></label>
+                            <label class="form-label">Razon social <span class="requerido">*</span></label>
                             <input type="text" name="razon_social" class="form-input" placeholder="Ej: Empresa S.A.S." onblur="validarCampo(this, 'razon_social')">
-                            <span class="error-mensaje" id="error-razon_social">Ingrese la raz├│n social</span>
+                            <span class="error-mensaje" id="error-razon_social">Ingrese la razon social</span>
                         </div>
                         <div class="form-grupo">
                             <label class="form-label">NIT <span class="requerido">*</span></label>
@@ -102,29 +102,29 @@
                     </div>
                     <div class="form-grupo">
                         <label class="form-label">Nombre del representante legal <span class="requerido">*</span></label>
-                        <input type="text" name="representante" class="form-input" placeholder="Ej: Carlos Rodr├¡guez" onblur="validarCampo(this, 'representante')">
+                        <input type="text" name="representante" class="form-input" placeholder="Ej: Carlos Rodriguez" onblur="validarCampo(this, 'representante')">
                         <span class="error-mensaje" id="error-representante">Ingrese el nombre del representante</span>
                     </div>
                     <div class="form-row">
                         <div class="form-grupo">
                             <label class="form-label">Correo corporativo <span class="requerido">*</span></label>
                             <input type="email" name="correo_corporativo" class="form-input" placeholder="Ej: contacto@empresa.com" onblur="validarCampo(this, 'correo_corporativo')">
-                            <span class="error-mensaje" id="error-correo_corporativo">Ingrese un correo corporativo v├ílido</span>
+                            <span class="error-mensaje" id="error-correo_corporativo">Ingrese un correo corporativo valido</span>
                         </div>
                         <div class="form-grupo">
-                            <label class="form-label">Tel├®fono <span class="requerido">*</span></label>
+                            <label class="form-label">Telefono <span class="requerido">*</span></label>
                             <input type="tel" name="telefono_juridica" class="form-input" placeholder="Ej: 6011234567" onblur="validarCampo(this, 'telefono_juridica')">
-                            <span class="error-mensaje" id="error-telefono_juridica">Ingrese un n├║mero de tel├®fono v├ílido</span>
+                            <span class="error-mensaje" id="error-telefono_juridica">Ingrese un numero de telefono valido</span>
                         </div>
                     </div>
                 </div>
 
-                <!-- AN├ôNIMA -->
+                <!-- ANONIMA -->
                 <div id="seccion-anonima" class="form-body oculto">
                     <div style="padding:1rem;background:#fef3c7;border-radius:0.5rem;margin-bottom:1rem;">
                         <p style="margin:0;color:#92400e;font-size:0.875rem;">
                             <i class="bi bi-info-circle" style="margin-right:0.25rem;"></i>
-                            Al ser an├│nima, no se requieren datos personales. Solo se necesita el asunto y descripci├│n de su solicitud.
+                            Al ser anonima, no se requieren datos personales. Solo se necesita el asunto y descripcion de su solicitud.
                         </p>
                     </div>
                 </div>
@@ -137,9 +137,9 @@
                         <span class="error-mensaje" id="error-asunto">Ingrese el asunto de su solicitud</span>
                     </div>
                     <div class="form-grupo">
-                        <label class="form-label">Descripci├│n detallada <span class="requerido">*</span></label>
+                        <label class="form-label">Descripcion detallada <span class="requerido">*</span></label>
                         <textarea name="descripcion" class="form-textarea" placeholder="Describa detalladamente su solicitud..." maxlength="5000" onblur="validarCampo(this, 'descripcion')"></textarea>
-                        <span class="error-mensaje" id="error-descripcion">Ingrese la descripci├│n de su solicitud</span>
+                        <span class="error-mensaje" id="error-descripcion">Ingrese la descripcion de su solicitud</span>
                     </div>
 
                     <div id="notificacion-correo" class="form-grupo">
@@ -147,7 +147,7 @@
                             <input type="checkbox" name="notificar_correo" value="1" checked style="width:18px;height:18px;accent-color:#059669;">
                             <span style="font-size:0.875rem;color:#065f46;">
                                 <i class="bi bi-envelope-check" style="margin-right:0.25rem;color:#059669;"></i>
-                                <strong>Deseo recibir notificaci├│n por correo electr├│nico</strong> con el c├│digo de radicado y estado de mi solicitud
+                                <strong>Deseo recibir notificacion por correo electronico</strong> con el codigo de radicado y estado de mi solicitud
                             </span>
                         </label>
                     </div>
@@ -161,7 +161,7 @@
                                 <span id="nombre-archivo">Haga clic para adjuntar archivo (PDF, Word, JPG, PNG)</span>
                             </label>
                         </div>
-                        <p class="form-ayuda">Tama├▒o m├íximo: 5MB</p>
+                        <p class="form-ayuda">Tamano maximo: 5MB</p>
                     </div>
                 </div>
 
@@ -192,12 +192,12 @@
         document.querySelectorAll('.error-mensaje').forEach(e => e.classList.remove('visible'));
         document.querySelectorAll('.form-input,.form-select,.form-textarea').forEach(i => i.classList.remove('error'));
 
-        // Ocultar opci├│n de notificaci├│n por correo si es an├│nima
+        // Ocultar opcion de notificacion por correo si es anonima
         const notificacionDiv = document.getElementById('notificacion-correo');
         if (notificacionDiv) {
             if (tipo === 'anonima') {
                 notificacionDiv.style.display = 'none';
-                // Desmarcar el checkbox para que no se env├¡e al servidor
+                // Desmarcar el checkbox para que no se envie al servidor
                 const chk = notificacionDiv.querySelector('input[type="checkbox"]');
                 if (chk) chk.checked = false;
             } else {
