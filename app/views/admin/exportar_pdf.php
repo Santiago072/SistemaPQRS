@@ -24,6 +24,13 @@ $estadoLabels = [
 // CORREGIDO: Usar variable de sesión o genérica para el nombre del admin
 $adminNombre = $_SESSION['admin_nombre'] ?? 'Administrador';
 
+// Calcular distribución por tipo
+$por_tipo = [];
+foreach ($data as $d) {
+    $t = $d['tipo_solicitud'];
+    $por_tipo[$t] = ($por_tipo[$t] ?? 0) + 1;
+}
+
 // Generar HTML para PDF
 $html = '
 <!DOCTYPE html>
@@ -70,25 +77,25 @@ $html = '
     </div>
 
     <div class="info-periodo">
-        <strong>Período del reporte:</strong> ' . date('d/m/Y', strtotime($filtro_fecha_inicio)) . ' al ' . date('d/m/Y', strtotime($filtro_fecha_fin)) . '
-        ' . (!empty($filtro_tipo) ? ' | <strong>Tipo:</strong> ' . ($tipoLabels[$filtro_tipo] ?? $filtro_tipo) : '') . '
+        <strong>Período del reporte:</strong> ' . date('d/m/Y', strtotime($fechaInicio)) . ' al ' . date('d/m/Y', strtotime($fechaFin)) . '
+        ' . (!empty($tipo) ? ' | <strong>Tipo:</strong> ' . ($tipoLabels[$tipo] ?? $tipo) : '') . '
     </div>
 
     <div class="metricas">
         <div class="metrica">
-            <span class="metrica-num">' . number_format($metricas['total']) . '</span>
+            <span class="metrica-num">' . number_format($totalRecibidas) . '</span>
             <span class="metrica-label">Total Recibidas</span>
         </div>
         <div class="metrica">
-            <span class="metrica-num">' . number_format($metricas['por_estado']['RESUELTO'] ?? 0) . '</span>
+            <span class="metrica-num">' . number_format($totalResueltas) . '</span>
             <span class="metrica-label">Resueltas</span>
         </div>
         <div class="metrica">
-            <span class="metrica-num">' . number_format(($metricas['por_estado']['PENDIENTE'] ?? 0) + ($metricas['por_estado']['EN_PROCESO'] ?? 0)) . '</span>
+            <span class="metrica-num">' . number_format($totalPendientes) . '</span>
             <span class="metrica-label">Pendientes</span>
         </div>
         <div class="metrica">
-            <span class="metrica-num">' . $metricas['tiempo_promedio'] . '</span>
+            <span class="metrica-num">' . $tiempoPromedio . '</span>
             <span class="metrica-label">Días promedio</span>
         </div>
     </div>
@@ -105,11 +112,11 @@ $html = '
             </thead>
             <tbody>';
 
-foreach ($metricas['por_tipo'] as $tipo => $cantidad) {
-    $porcentaje = $metricas['total'] > 0 ? round(($cantidad / $metricas['total']) * 100, 1) : 0;
+foreach ($por_tipo as $t => $cantidad) {
+    $porcentaje = $totalRecibidas > 0 ? round(($cantidad / $totalRecibidas) * 100, 1) : 0;
     $html .= '
                 <tr>
-                    <td>' . ($tipoLabels[$tipo] ?? ucfirst($tipo)) . '</td>
+                    <td>' . ($tipoLabels[$t] ?? ucfirst($t)) . '</td>
                     <td>' . number_format($cantidad) . '</td>
                     <td>' . $porcentaje . '%</td>
                 </tr>';
@@ -132,8 +139,8 @@ $html .= '
             </thead>
             <tbody>';
 
-foreach ($metricas['por_estado'] as $estado => $cantidad) {
-    $porcentaje = $metricas['total'] > 0 ? round(($cantidad / $metricas['total']) * 100, 1) : 0;
+foreach ($estados as $estado => $cantidad) {
+    $porcentaje = $totalRecibidas > 0 ? round(($cantidad / $totalRecibidas) * 100, 1) : 0;
     $html .= '
                 <tr>
                     <td>' . ($estadoLabels[$estado] ?? $estado) . '</td>
