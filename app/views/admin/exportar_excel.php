@@ -78,7 +78,7 @@ echo "\xEF\xBB\xBF";
             <td colspan="12">Generado por: <?php echo htmlspecialchars($adminNombre); ?> | Fecha: <?php echo date('d/m/Y H:i'); ?></td>
         </tr>
         <tr>
-            <td colspan="12">Período: <?php echo date('d/m/Y', strtotime($filtro_fecha_inicio)); ?> al <?php echo date('d/m/Y', strtotime($filtro_fecha_fin)); ?></td>
+            <td colspan="12">Período: <?php echo date('d/m/Y', strtotime($fechaInicio)); ?> al <?php echo date('d/m/Y', strtotime($fechaFin)); ?></td>
         </tr>
         <tr><td colspan="12"></td></tr>
         
@@ -99,7 +99,7 @@ echo "\xEF\xBB\xBF";
         </tr>
         
         <!-- Datos -->
-        <?php while ($row = mysqli_fetch_assoc($result)): ?>
+        <?php foreach ($data as $row): ?>
         <tr>
             <td class="text-left"><?php echo htmlspecialchars($row['codigo_radicado']); ?></td>
             <td><?php echo $tipoLabels[$row['tipo_solicitud']] ?? ucfirst($row['tipo_solicitud']); ?></td>
@@ -122,7 +122,7 @@ echo "\xEF\xBB\xBF";
             ?></td>
             <td class="text-center"><?php echo $row['dentro_terminos']; ?></td>
         </tr>
-        <?php endwhile; ?>
+        <?php endforeach; ?>
     </table>
 </body>
 </html>

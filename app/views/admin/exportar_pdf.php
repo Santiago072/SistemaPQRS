@@ -162,7 +162,7 @@ $html .= '
             </thead>
             <tbody>';
 
-foreach ($pqrs_list as $pqrs) {
+foreach ($data as $pqrs) {
     $estadoClass = strtolower(str_replace('_', '-', $pqrs['estado']));
     $html .= '
                 <tr>
