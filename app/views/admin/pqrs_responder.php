@@ -723,10 +723,10 @@ $baseUrl = $isRailway ? '/' : '/PROYECTO_PQRS/';
     // ── Plantillas de respuesta ────────────────────────────────────
     const codigo = '<?php echo addslashes($pqrs['codigo_radicado']); ?>';
     const plantillas = {
-        recibido: `Estimado(a) ciudadano(a),\n\nNos permitimos informarle que su solicitud con radicado ${codigo} ha sido recibida exitosamente en nuestra entidad.\n\nSu solicitud será atendida dentro de los términos legales establecidos.\n\nCordialmente,\nSistema PQRS`,
-        proceso:  `Estimado(a) ciudadano(a),\n\nLe informamos que su solicitud con radicado ${codigo} se encuentra actualmente en proceso de gestión.\n\nNuestro equipo está trabajando para darle respuesta en el menor tiempo posible.\n\nCordialmente,\nSistema PQRS`,
-        resuelto: `Estimado(a) ciudadano(a),\n\nNos complace informarle que su solicitud con radicado ${codigo} ha sido resuelta satisfactoriamente.\n\n[Incluir aquí los detalles de la resolución]\n\nSi tiene alguna pregunta adicional, no dude en contactarnos.\n\nCordialmente,\nSistema PQRS`,
-        rechazado:`Estimado(a) ciudadano(a),\n\nLamentamos informarle que su solicitud con radicado ${codigo} no ha podido ser tramitada por las siguientes razones:\n\n[Especificar las razones del rechazo]\n\nSi considera que esta decisión es incorrecta, puede presentar una nueva solicitud con la documentación adecuada.\n\nCordialmente,\nSistema PQRS`
+        recibido: `Estimado(a) ciudadano(a),\nNos permitimos informarle que su solicitud con radicado ${codigo} ha sido recibida exitosamente en nuestra entidad.\nSu solicitud será atendida dentro de los términos legales establecidos.\nCordialmente,\nSistema PQRS`,
+        proceso:  `Estimado(a) ciudadano(a),\nLe informamos que su solicitud con radicado ${codigo} se encuentra actualmente en proceso de gestión.\nNuestro equipo está trabajando para darle respuesta en el menor tiempo posible.\nCordialmente,\nSistema PQRS`,
+        resuelto: `Estimado(a) ciudadano(a),\nNos complace informarle que su solicitud con radicado ${codigo} ha sido resuelta satisfactoriamente.\n[Incluir aquí los detalles de la resolución]\nSi tiene alguna pregunta adicional, no dude en contactarnos.\nCordialmente,\nSistema PQRS`,
+        rechazado:`Estimado(a) ciudadano(a),\nLamentamos informarle que su solicitud con radicado ${codigo} no ha podido ser tramitada por las siguientes razones:\n[Especificar las razones del rechazo]\nSi considera que esta decisión es incorrecta, puede presentar una nueva solicitud con la documentación adecuada.\nCordialmente,\nSistema PQRS`
     };
 
     function insertarPlantilla(tipo) {
