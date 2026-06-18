@@ -4,8 +4,6 @@
  * Lee datos reales de la base de datos y muestra estado del correo
  */
 
-<?php
-/* HU-05: Confirmación de Radicación */
 
 $nombresTipos = [
     'peticion' => 'Petición',
