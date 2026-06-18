@@ -278,7 +278,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             . ($correo_notificado ? ' El ciudadano ha sido notificado por correo.' : '');
 
         mysqli_close($con);
-        header("Refresh: 2; url=pqrs_ver.php?id=$id");
+        header("Refresh: 2; url=" . BASE_PATH . "index.php?ruta=admin/pqrs_ver&id=$id");
         $con = conexion();
     }
 }
