@@ -115,9 +115,9 @@
 
             </div>
 
-            <!-- Campo oculto para enviar -->
-            <input type="hidden" id="tipo_pqrs" name="tipo_pqrs"
-            <input type="hidden" name="ruta" value="pqrs/formulario"> value="">
+            <!-- Campos ocultos para enviar -->
+            <input type="hidden" id="tipo_pqrs" name="tipo_pqrs" value="">
+            <input type="hidden" name="ruta" value="pqrs/formulario">
             
             <!-- Botón continuar -->
             <div class="tipos-actions">
