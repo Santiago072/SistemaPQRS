@@ -8,12 +8,13 @@ El sistema cuenta con dos portales principales:
 
 ---
 
-## 📚 Documentación
+## 📚 Documentación y Manuales
 
 | Documento | Descripción |
 |-----------|-------------|
-| 📖 [Documentación Técnica](docs/documentacion-tecnica.md) | Arquitectura, base de datos, módulos, seguridad, API interna, requisitos implementados e instalación detallada |
-| 👤 [Manual de Usuario](docs/manual-usuario.md) | Guía paso a paso para ciudadanos y administradores: radicar PQRS, consultar estado, gestionar solicitudes, reportes y configuración |
+| 📋 [Especificación de Requisitos](docs/Especificacion_Requisitos.md) | Problemática, RF, RNF, flujo del sistema, Historias de Usuario por Sprint (Scrum), estados de PQRS y beneficios esperados |
+| 📖 [Documentación Técnica](docs/documentacion-tecnica.md) | Arquitectura MVC, base de datos, módulos, seguridad, flujos internos, requisitos funcionales implementados e instalación |
+| 👤 [Manual de Usuario](docs/Manual_de_Usuario.md) | Guía paso a paso para ciudadanos y administradores: radicar PQRS, consultar estado, gestionar solicitudes, reportes y configuración |
 
 ---
 
