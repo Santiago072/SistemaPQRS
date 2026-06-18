@@ -53,9 +53,11 @@ El proyecto sigue una arquitectura **MVC (Modelo-Vista-Controlador)** robusta co
 ```
 Navegador ──► index.php?ruta=... 
                     │
+                    ├── app/core/Container.php                (DI Container)
                     ├── app/controllers/PqrsController.php    (Portal ciudadano)
-                    ├── app/controllers/AdminController.php   (Panel admin)
-                    ├── app/controllers/AuthController.php    (Autenticación)
+                    ├── app/controllers/admin/AuthController.php    (Auth)
+                    ├── app/controllers/admin/DashboardController.php
+                    ├── app/controllers/admin/PqrsController.php
                     │
                     ├── app/models/                           (Capa de Datos PDO)
                     │        ├── Database.php                 (Singleton)
@@ -84,24 +86,33 @@ http://localhost/PROYECTO_PQRS/index.php?ruta=admin/dashboard → Dashboard
 PROYECTO_PQRS/
 │
 ├── app/                        # Arquitectura MVC
-│   ├── controllers/            # Lógica de coordinación (HTTP)
-│   │   ├── AdminController.php
-│   │   ├── AuthController.php
+│   ├── core/                   # Componentes base (Contenedor DI)
+│   │   └── Container.php       # Autowiring vía Reflection
+│   ├── controllers/            # Controladores públicos
 │   │   ├── HomeController.php
-│   │   └── PqrsController.php
+│   │   ├── PqrsController.php
+│   │   └── admin/              # Controladores privados (SRP)
+│   │       ├── AuthController.php
+│   │       ├── DashboardController.php
+│   │       ├── ConfigController.php
+│   │       ├── PqrsController.php
+│   │       └── ReportController.php
 │   │
 │   ├── models/                 # Lógica de datos (Consultas PDO)
 │   │   ├── Database.php        # Conexión Singleton a MySQL
 │   │   ├── PqrsModel.php       # Consultas sobre PQRS
+│   │   ├── AdminModel.php      # Consultas sobre admins
+│   │   ├── ConfiguracionModel.php
 │   │   └── UsuarioModel.php    # Consultas sobre ciudadanos
 │   │
-│   ├── services/               # Clases utilitarias aisladas (SRP)
+│   ├── services/               # Clases utilitarias aisladas
 │   │   └── EmailService.php    # Envío de correos PHPMailer
 │   │
 │   └── views/                  # Vistas separadas por módulos (Solo HTML)
 │
 ├── config/
-│   ├── conexion.php            # Adaptador legacy MySQLi y autoloader
+│   ├── conexion.php            # Archivo antiguo legacy
+
 │   └── email_config.php        # Credenciales SMTP (no commitear)
 │
 ├── public/                     # Recursos públicos

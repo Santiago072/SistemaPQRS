@@ -15,6 +15,7 @@ El sistema cuenta con dos portales principales:
 | 📋 [Especificación de Requisitos](docs/Especificacion_Requisitos.md) | Problemática, RF, RNF, flujo del sistema, Historias de Usuario por Sprint (Scrum), estados de PQRS y beneficios esperados |
 | 📖 [Documentación Técnica](docs/documentacion-tecnica.md) | Arquitectura MVC, base de datos, módulos, seguridad, flujos internos, requisitos funcionales implementados e instalación |
 | 👤 [Manual de Usuario](docs/Manual_de_Usuario.md) | Guía paso a paso para ciudadanos y administradores: radicar PQRS, consultar estado, gestionar solicitudes, reportes y configuración |
+| 🔐 [Arquitectura y Seguridad](docs/ARQUITECTURA_Y_SEGURIDAD.md) | Patrones de Diseño (MVC, SOLID), Inyección de Dependencias, Prevención XSS/SQL Injection y enrutador estricto |
 
 ---
 
@@ -37,8 +38,8 @@ El sistema cuenta con dos portales principales:
 
 ## 🛠️ Tecnologías Utilizadas
 
-* **Backend:** PHP 8.2 (Estructurado y modularizado)
-* **Base de Datos:** MySQL / MariaDB
+* **Backend:** PHP 8.2 (Patrón MVC Estricto, Principios SOLID, Inyección de Dependencias, Namespaces PSR-4)
+* **Base de Datos:** MySQL / MariaDB (Acceso seguro vía PDO y Sentencias Preparadas)
 * **Diseño y Estilos:** Vanilla CSS moderno (responsive, variables CSS)
 * **Iconografía:** [Bootstrap Icons](https://icons.getbootstrap.com/)
 * **Gráficos:** [Chart.js](https://www.chartjs.org/)
@@ -53,15 +54,19 @@ El sistema cuenta con dos portales principales:
 PROYECTO_PQRS/
 │
 ├── app/                     # Carpeta principal de la aplicación (MVC)
-│   ├── controllers/         # Controladores (AdminController, AuthController, HomeController, PqrsController)
+│   ├── controllers/         # Controladores Públicos (HomeController, PqrsController)
+│   │   └── admin/           # Controladores Privados (AuthController, DashboardController, etc.)
+│   ├── models/              # Modelos de Base de Datos (PDO, Consultas preparadas)
+│   ├── services/            # Servicios externos (EmailService)
+│   ├── core/                # Core de la app (Contenedor de Inyección de Dependencias)
 │   └── views/               # Vistas separadas por módulos
-│       ├── admin/           # Vistas del panel administrativo (dashboard, pqrs, reportes, exportación)
-│       ├── home/            # Vista de inicio principal del ciudadano
-│       ├── layouts/         # Plantillas reutilizables (header, footer, funciones, verificar_sesion, modal)
-│       └── pqrs/            # Vistas del portal ciudadano (tipos, formulario, consulta, confirmacion)
+│       ├── admin/           # Vistas del panel administrativo
+│       ├── home/            # Vista de inicio principal
+│       ├── layouts/         # Plantillas reutilizables (header, footer, modales)
+│       └── pqrs/            # Vistas del portal ciudadano
 │
 ├── config/                  # Archivos de configuración del sistema
-│   ├── conexion.php         # Conexión MySQLi a base de datos
+│   ├── conexion.php         # Variables de BD
 │   └── email_config.php     # Ajustes de correo electrónico (PHPMailer SMTP)
 │
 ├── public/                  # Recursos públicos del frontend
@@ -71,11 +76,13 @@ PROYECTO_PQRS/
 ├── vendor/                  # Dependencias de Composer (PHPMailer, DomPDF)
 ├── uploads/                 # Directorio de almacenamiento de archivos adjuntos
 ├── docs/                    # Documentación del proyecto
-│   ├── documentacion-tecnica.md  # Arquitectura, BD, módulos y seguridad
-│   └── manual-usuario.md         # Guía de uso para ciudadanos y admins
+│   ├── documentacion-tecnica.md
+│   ├── manual-usuario.md
+│   ├── Especificacion_Requisitos.md
+│   └── ARQUITECTURA_Y_SEGURIDAD.md
 ├── BD.txt                   # Script SQL de la Base de Datos
-├── composer.json            # Dependencias PHP (Composer)
-├── index.php                # Archivo principal de enrutamiento MVC (Front Controller)
+├── composer.json            # Dependencias PHP (PSR-4 Autoloader)
+├── index.php                # Archivo principal de enrutamiento y DI Container (Front Controller)
 └── README.md                # Presentación y enlaces a la documentación
 ```
 
