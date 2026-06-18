@@ -2,55 +2,9 @@
 /* HU-Detalle y Respuesta a Solicitudes: Vista completa de PQRS con todos los datos */
 
 include __DIR__ . '/../layouts/verificar_sesion.php';
-include __DIR__ . '/../../../config/conexion.php';
-include __DIR__ . '/../layouts/funciones.php'; // <-- CORREGIDO: Incluir funciones
 
-$con = conexion();
-
-$id = intval($_GET['id'] ?? 0);
-
-if (!$id) {
-    header('Location: ' . BASE_PATH . 'index.php?ruta=admin/pqrs');
-    exit;
-}
-
-// Obtener datos de la PQRS según esquema SQL correcto
-$query = "SELECT p.*, u.nombre_completo, u.tipo_persona, u.tipo_documento, u.documento_identidad,
-                 u.correo_electronico, u.telefono,
-                 u.razon_social, u.nit, u.nombre_representante, u.correo_corporativo,
-                 DATEDIFF(p.fecha_vencimiento, CURDATE()) as dias_restantes
-          FROM pqrs p 
-          LEFT JOIN usuario u ON p.usuario_id = u.id 
-          WHERE p.id = ?";
-$stmt = $con->prepare($query);
-$stmt->bind_param("i", $id);
-$stmt->execute();
-$result = $stmt->get_result();
-
-if ($result->num_rows === 0) {
-    mysqli_close($con);
-    header('Location: ' . BASE_PATH . 'index.php?ruta=admin/pqrs&error=not_found');
-    exit;
-}
-
-$pqrs = $result->fetch_assoc();
-
-// Obtener historial de acciones (tabla historial_accion según SQL)
-$query_historial = "SELECT h.*, a.nombre_completo as admin_nombre 
-                    FROM historial_accion h 
-                    LEFT JOIN administrador a ON h.administrador_id = a.id 
-                    WHERE h.pqrs_id = ? 
-                    ORDER BY h.fecha_hora DESC 
-                    LIMIT 10";
-$stmt_hist = $con->prepare($query_historial);
-$stmt_hist->bind_param("i", $id);
-$stmt_hist->execute();
-$historial = $stmt_hist->get_result()->fetch_all(MYSQLI_ASSOC);
-
-// Registrar visualización
-registrarAccion('VISUALIZACION', "Vista del detalle de PQRS", $id);
-
-mysqli_close($con);
+<?php
+/* HU-Detalle y Respuesta a Solicitudes: Vista completa de PQRS con todos los datos */
 
 $tipoLabels = [
     'peticion' => 'Petición',

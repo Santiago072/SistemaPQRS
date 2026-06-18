@@ -3,15 +3,9 @@
  * HU-06: Consulta de Estado de PQRS
  * Permite consultar por código de radicado o correo electrónico
  */
+<?php
+/* HU-06: Consulta de Estado de PQRS */
 
-require_once __DIR__ . '/../../../config/conexion.php';
-
-$resultados    = [];
-$error         = null;
-$busqueda      = null;
-$tipoBusqueda  = null;
-
-// ── Estados con etiqueta, color e ícono ──────────────────────────────────────
 $estados = [
     'PENDIENTE'   => ['texto' => 'Pendiente',   'color' => '#d97706', 'bg' => '#fef3c7', 'icon' => 'bi-clock'],
     'EN_PROCESO'  => ['texto' => 'En Proceso',  'color' => '#1e40af', 'bg' => '#dbeafe', 'icon' => 'bi-arrow-repeat'],
@@ -26,83 +20,6 @@ $nombresTipos = [
     'sugerencia' => 'Sugerencia',
     'denuncia'   => 'Denuncia',
 ];
-
-// ── Procesar búsqueda ─────────────────────────────────────────────────────────
-if ($_SERVER['REQUEST_METHOD'] === 'POST' || isset($_GET['codigo'])) {
-
-    $con = conexion();
-    if (!$con) {
-        $error = 'Error de conexión con la base de datos.';
-    } else {
-
-        // Determinar origen del parámetro
-        $codigo = trim($_POST['codigo'] ?? $_GET['codigo'] ?? '');
-        $correo = trim($_POST['correo'] ?? '');
-
-        if (!empty($codigo)) {
-            // ── Búsqueda por código — Prepared Statement ─────────────────────
-            $codigo_upper = strtoupper($codigo);
-            $stmt = mysqli_prepare($con,
-                "SELECT p.*, u.tipo_persona, u.nombre_completo, u.correo_electronico,
-                        u.correo_corporativo, u.nombre_representante
-                 FROM pqrs p
-                 LEFT JOIN usuario u ON p.usuario_id = u.id
-                 WHERE p.codigo_radicado = ?
-                 LIMIT 1"
-            );
-            if ($stmt) {
-                mysqli_stmt_bind_param($stmt, 's', $codigo_upper);
-                mysqli_stmt_execute($stmt);
-                $result = mysqli_stmt_get_result($stmt);
-                if ($result && mysqli_num_rows($result) > 0) {
-                    $resultados[]  = mysqli_fetch_assoc($result);
-                    $tipoBusqueda  = 'codigo';
-                    $busqueda      = $codigo_upper;
-                } else {
-                    $error = "No se encontró ninguna solicitud con el código <strong>" . htmlspecialchars($codigo_upper) . "</strong>. Verifique que el código sea correcto.";
-                }
-                mysqli_stmt_close($stmt);
-            } else {
-                $error = 'Error interno al preparar la consulta.';
-            }
-
-        } elseif (!empty($correo)) {
-            // ── Búsqueda por correo — Prepared Statement ─────────────────────
-            $correo_lower = strtolower($correo);
-            $stmt = mysqli_prepare($con,
-                "SELECT p.*, u.tipo_persona, u.nombre_completo, u.correo_electronico,
-                        u.correo_corporativo, u.nombre_representante
-                 FROM pqrs p
-                 LEFT JOIN usuario u ON p.usuario_id = u.id
-                 WHERE LOWER(u.correo_electronico) = ?
-                    OR LOWER(u.correo_corporativo) = ?
-                 ORDER BY p.fecha_radicacion DESC"
-            );
-            if ($stmt) {
-                mysqli_stmt_bind_param($stmt, 'ss', $correo_lower, $correo_lower);
-                mysqli_stmt_execute($stmt);
-                $result = mysqli_stmt_get_result($stmt);
-                if ($result && mysqli_num_rows($result) > 0) {
-                    while ($row = mysqli_fetch_assoc($result)) {
-                        $resultados[] = $row;
-                    }
-                    $tipoBusqueda = 'correo';
-                    $busqueda     = $correo_lower;
-                } else {
-                    $error = "No se encontraron solicitudes asociadas al correo <strong>" . htmlspecialchars($correo_lower) . "</strong>.";
-                }
-                mysqli_stmt_close($stmt);
-            } else {
-                $error = 'Error interno al preparar la consulta.';
-            }
-
-        } else {
-            $error = 'Ingrese un código de radicado o un correo electrónico para buscar.';
-        }
-
-        mysqli_close($con);
-    }
-}
 
 // ── Helper: calcular % de progreso según estado ───────────────────────────────
 function progresoPorEstado(string $estado): int {

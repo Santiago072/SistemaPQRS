@@ -2,7 +2,6 @@
 /* HU-Detalle y Respuesta: Formulario para responder PQRS */
 
 include __DIR__ . '/../layouts/verificar_sesion.php';
-include __DIR__ . '/../layouts/funciones.php';
 
 // Los datos de $pqrs ya están disponibles porque el AdminController los obtiene y requiere esta vista
 

@@ -244,4 +244,47 @@ class EmailService
             <div class='foot'><p>&copy; " . date('Y') . " Sistema PQRS</p><p>Ley 1755 de 2015 &middot; Ley 1437 de 2011</p></div>
         </div></body></html>";
     }
+    public function enviarCorreoRecuperacion(string $para, string $nombre, string $usuario, string $urlReset): bool
+    {
+        try {
+            $mail = $this->crearMailer();
+            $mail->addAddress($para, $nombre ?: 'Administrador');
+            $mail->Subject = 'Recuperación de Contraseña - Sistema PQRS';
+            $mail->isHTML(true);
+
+            $html = "
+            <!DOCTYPE html>
+            <html>
+            <head><meta charset='UTF-8'></head>
+            <body style='font-family:Arial,sans-serif;line-height:1.6;color:#333;margin:0;padding:0'>
+                <div style='max-width:600px;margin:0 auto;padding:20px'>
+                    <div style='background:linear-gradient(135deg,#1e40af,#1e3a8a);color:#fff;padding:30px;text-align:center;border-radius:10px 10px 0 0'>
+                        <h1 style='margin:0;font-size:22px'>Recuperación de Contraseña</h1>
+                        <p style='margin:10px 0 0;opacity:.8'>Sistema PQRS</p>
+                    </div>
+                    <div style='background:#f9fafb;padding:30px;border:1px solid #e5e7eb;border-top:none;border-radius:0 0 10px 10px'>
+                        <p>Hola <strong>" . htmlspecialchars($nombre) . "</strong>,</p>
+                        <p>Recibimos una solicitud para restablecer la contraseña de su cuenta <strong>" . htmlspecialchars($usuario) . "</strong>.</p>
+                        <p>Haga clic en el siguiente botón para crear una nueva contraseña:</p>
+                        <div style='text-align:center;margin:25px 0'>
+                            <a href='" . htmlspecialchars($urlReset) . "' style='background:#1e40af;color:#fff;padding:14px 30px;text-decoration:none;border-radius:8px;font-weight:600;display:inline-block'>Restablecer Contraseña</a>
+                        </div>
+                        <p style='font-size:13px;color:#6b7280'>Este enlace expirará en <strong>1 hora</strong>. Si no solicitó este cambio, ignore este correo.</p>
+                        <hr style='border:none;border-top:1px solid #e5e7eb;margin:20px 0'>
+                        <p style='font-size:12px;color:#9ca3af;text-align:center'>Sistema PQRS - Correo automático, no responder.</p>
+                    </div>
+                </div>
+            </body>
+            </html>";
+
+            $mail->Body = $html;
+            $mail->AltBody = "Hola $nombre,\n\nRecibimos una solicitud para restablecer su contraseña.\n\nHaga clic aquí: $urlReset\n\nEl enlace expirará en 1 hora.";
+
+            $mail->send();
+            return true;
+        } catch (Exception $e) {
+            $this->log(date('Y-m-d H:i:s') . " | FALLO-RECUPERACION | Para: $para | Error: " . $e->getMessage() . "\n");
+            return false;
+        }
+    }
 }

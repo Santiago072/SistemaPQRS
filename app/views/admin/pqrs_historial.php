@@ -4,42 +4,6 @@
  */
 
 include __DIR__ . '/../layouts/verificar_sesion.php';
-include __DIR__ . '/../../../config/conexion.php';
-
-$con = conexion();
-
-$id = intval($_GET['id'] ?? 0);
-
-if (!$id) {
-    header('Location: ' . BASE_PATH . 'index.php?ruta=admin/pqrs');
-    exit;
-}
-
-// Obtener datos básicos de la PQRS
-$query_pqrs = "SELECT codigo_radicado, tipo_solicitud, asunto, estado, fecha_radicacion FROM pqrs WHERE id = ?";
-$stmt = $con->prepare($query_pqrs);
-$stmt->bind_param("i", $id);
-$stmt->execute();
-$pqrs = $stmt->get_result()->fetch_assoc();
-
-if (!$pqrs) {
-    mysqli_close($con);
-    header('Location: ' . BASE_PATH . 'index.php?ruta=admin/pqrs&error=not_found');
-    exit;
-}
-
-// Obtener historial completo de acciones - usando tabla historial_accion (según SQL)
-$query_historial = "SELECT h.*, a.nombre_completo as admin_nombre, a.rol as admin_rol
-                    FROM historial_accion h 
-                    LEFT JOIN administrador a ON h.administrador_id = a.id 
-                    WHERE h.pqrs_id = ? 
-                    ORDER BY h.fecha_hora DESC";
-$stmt_hist = $con->prepare($query_historial);
-$stmt_hist->bind_param("i", $id);
-$stmt_hist->execute();
-$historial = $stmt_hist->get_result()->fetch_all(MYSQLI_ASSOC);
-
-mysqli_close($con);
 
 $tipoLabels = [
     'peticion' => 'Petición',

@@ -4,52 +4,6 @@
  * Indicadores visuales (colores por urgencia)
  * Notificación visual en el panel
  */
-
-include __DIR__ . '/../layouts/verificar_sesion.php';
-include __DIR__ . '/../../../config/conexion.php';
-
-$con = conexion();
-
-// Obtener PQRS próximas a vencer agrupadas por urgencia
-$query_alertas = "SELECT p.*, u.nombre_completo, u.correo_electronico,
-                         DATEDIFF(p.fecha_vencimiento, CURDATE()) as dias_restantes
-                  FROM pqrs p 
-                  LEFT JOIN usuario u ON p.usuario_id = u.id 
-                  WHERE p.estado IN ('PENDIENTE', 'EN_PROCESO')
-                  AND p.fecha_vencimiento IS NOT NULL
-                  ORDER BY p.fecha_vencimiento ASC";
-$result = mysqli_query($con, $query_alertas);
-
-$alertas_critico = [];   // 0-5 días
-$alertas_urgente = [];   // 6-10 días
-$alertas_moderado = [];  // 11-15 días
-$alertas_vencidas = [];  // Vencidas
-
-while ($row = mysqli_fetch_assoc($result)) {
-    $dias = $row['dias_restantes'];
-    
-    if ($dias < 0) {
-        $alertas_vencidas[] = $row;
-    } elseif ($dias <= 5) {
-        $alertas_critico[] = $row;
-    } elseif ($dias <= 10) {
-        $alertas_urgente[] = $row;
-    } elseif ($dias <= 15) {
-        $alertas_moderado[] = $row;
-    }
-}
-
-// Estadísticas generales
-$stats_query = "SELECT 
-    COUNT(*) as total,
-    SUM(CASE WHEN estado = 'PENDIENTE' THEN 1 ELSE 0 END) as pendientes,
-    SUM(CASE WHEN estado = 'EN_PROCESO' THEN 1 ELSE 0 END) as en_proceso
-    FROM pqrs 
-    WHERE estado IN ('PENDIENTE', 'EN_PROCESO')";
-$stats = mysqli_fetch_assoc(mysqli_query($con, $stats_query));
-
-mysqli_close($con);
-
 $tipoLabels = [
     'peticion' => 'Petición',
     'queja' => 'Queja',
