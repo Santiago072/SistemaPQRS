@@ -1,6 +1,6 @@
 # Especificación de Requisitos: Sistema de Gestión de PQRS para Empresas de Servicios
 
-> **Contexto:** Empresas de servicios en Neiva · **Plataforma:** Web (PHP 8.2 + MySQL, Patrón MVC Front Controller)
+> **Contexto:** Empresas de servicios en Neiva · **Plataforma:** Web (PHP 8.2 + MySQL, Patrón MVC Estricto con PDO y PSR-4)
 
 ---
 
@@ -83,7 +83,7 @@ Estos requisitos definen los atributos de calidad, trazabilidad y operación del
 - **RNF01 — Formato de Radicado Consecutivo:** El sistema debe generar automáticamente un número de radicado con formato `PQRS-AAAA-MM-NNN`, garantizando la unicidad e identificación cronológica de cada registro. El consecutivo reinicia en 001 al inicio de cada mes.
 - **RNF02 — Persistencia de Información:** Todos los registros de solicitudes, respuestas, estados e historial deben almacenarse en una base de datos centralizada con respaldo que garantice su disponibilidad y consulta posterior.
 - **RNF03 — Gestión de Sesión Segura:** El módulo de login del administrador debe implementar gestión de sesión activa (basada en sesiones PHP) para proteger el acceso al panel interno. La sesión expira automáticamente tras 30 minutos de inactividad.
-- **RNF04 — Protección contra Inyección SQL:** Todas las consultas a la base de datos deben utilizar sentencias preparadas (`prepared statements` con `mysqli`) para prevenir inyecciones SQL.
+- **RNF04 — Protección contra Inyección SQL:** Todas las consultas a la base de datos deben utilizar sentencias preparadas (`prepared statements` con `PDO`) abstraídas en una capa de Modelos para prevenir inyecciones SQL.
 - **RNF05 — Protección XSS:** Toda salida a HTML debe utilizar `htmlspecialchars()`. Los archivos adjuntos se renombran con timestamp y solo se guarda el nombre; su contenido nunca se ejecuta.
 - **RNF06 — Validación de Datos:** El sistema debe validar la entrada tanto en el cliente (HTML5 + JavaScript en tiempo real) como en el servidor (formato, longitud, tipo), incluyendo documentos, correos, teléfonos y archivos.
 - **RNF07 — Gestión de Archivos Adjuntos:** Solo se permiten extensiones `.pdf`, `.doc`, `.docx`, `.jpg`, `.jpeg`, `.png`. Tamaño máximo: 5 MB. Los archivos se renombran con `time()` para evitar colisiones.
