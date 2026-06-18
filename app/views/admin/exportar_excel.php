@@ -27,6 +27,11 @@ $estadoLabels = [
 // Nombre del archivo
 $filename = 'Reporte_PQRS_' . date('Y-m-d_His') . '.xls';
 
+// Limpiar cualquier buffer previo (incluyendo warnings de PHP) para no corromper el archivo
+while (ob_get_level()) {
+    ob_end_clean();
+}
+
 // Headers para Excel
 header('Content-Type: application/vnd.ms-excel; charset=utf-8');
 header('Content-Disposition: attachment; filename="' . $filename . '"');

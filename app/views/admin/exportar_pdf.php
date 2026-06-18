@@ -201,5 +201,8 @@ $dompdf->render();
 $filename = 'Reporte_PQRS_' . date('Y-m-d_His') . '.pdf';
 
 // Descargar
+while (ob_get_level()) {
+    ob_end_clean();
+}
 $dompdf->stream($filename, ['Attachment' => true]);
 exit;
