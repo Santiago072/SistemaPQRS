@@ -111,7 +111,7 @@ El sistema se compone de las siguientes páginas funcionales, todas enrutadas a 
 | 13 | Centro de Alertas | `admin/alertas` | PQRS próximas a vencer |
 | 14 | Reportes | `admin/reportes` | Métricas + gráficos + exportación |
 | 15 | Configuración | `admin/configuracion` | Perfil del admin + parámetros del sistema |
-| 16 | Recuperar Contraseña | `auth/recuperar` | Formulario de recuperación por correo |
+| 16 | Recuperar Contraseña | `admin/recuperar` | Formulario de recuperación por correo |
 
 ---
 
