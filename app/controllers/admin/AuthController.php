@@ -95,7 +95,7 @@ class AuthController
                     $protocolo = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https' : 'http';
                     $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
                     $isRailway = (strpos($host, 'railway.app') !== false) || (getenv('RAILWAY_ENVIRONMENT') !== false);
-                    $basePath = $isRailway ? '' : '/PROYECTO_PQRS';
+                    $basePath = $isRailway ? '' : '/SistemaPQRS';
                     $urlReset = "$protocolo://$host$basePath/index.php?ruta=admin/restablecer_contrasena&token=$token";
 
                     $emailService = new EmailService();

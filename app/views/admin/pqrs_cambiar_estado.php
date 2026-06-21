@@ -7,5 +7,5 @@
  *
  * Si se llega aquí directamente (sin pasar por el enrutador), redirigir al panel.
  */
-header('Location: ' . (defined('BASE_PATH') ? BASE_PATH : '/PROYECTO_PQRS/') . 'index.php?ruta=admin/pqrs');
+header('Location: ' . (defined('BASE_PATH') ? BASE_PATH : '/SistemaPQRS/') . 'index.php?ruta=admin/pqrs');
 exit;

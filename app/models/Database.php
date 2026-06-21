@@ -26,10 +26,10 @@ class Database
     public static function getInstance(): PDO
     {
         if (self::$instance === null) {
-            $host = 'localhost';
-            $db   = 'sistema_pqrs';
-            $user = 'root';
-            $pass = '';
+            $host = getenv('DB_HOST') ?: 'localhost';
+            $db   = getenv('DB_NAME') ?: 'sistema_pqrs';
+            $user = getenv('DB_USER') ?: 'root';
+            $pass = getenv('DB_PASSWORD') ?: '';
 
             try {
                 self::$instance = new PDO(

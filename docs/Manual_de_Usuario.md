@@ -37,10 +37,10 @@ El sistema está dividido en dos secciones:
 
 | Sección | URL | Quién la usa |
 |---------|-----|--------------|
-| Portal Ciudadano | `http://localhost/PROYECTO_PQRS/` | Ciudadanos en general |
-| Panel Administrador | `http://localhost/PROYECTO_PQRS/index.php?ruta=admin/login` | Gestores / Administradores |
+| Portal Ciudadano | `http://localhost/SistemaPQRS/` | Ciudadanos en general |
+| Panel Administrador | `http://localhost/SistemaPQRS/index.php?ruta=admin/login` | Gestores / Administradores |
 
-> Si el sistema está en producción, reemplace `localhost/PROYECTO_PQRS` por la URL que le indique el administrador de la plataforma.
+> Si el sistema está en producción, reemplace `localhost/SistemaPQRS` por la URL que le indique el administrador de la plataforma.
 
 Al ingresar al Portal Ciudadano verá la página de inicio con:
 - Una explicación de qué es el sistema PQRS y sus tipos.
@@ -141,7 +141,7 @@ Si el formulario fue enviado correctamente verá la pantalla de confirmación co
 ## 3. Consultar el Estado de una Solicitud
 
 Desde la página de inicio haga clic en **"Consultar Estado"** o acceda directamente a:  
-`http://localhost/PROYECTO_PQRS/index.php?ruta=pqrs/consulta`
+`http://localhost/SistemaPQRS/index.php?ruta=pqrs/consulta`
 
 Verá dos pestañas de búsqueda:
 

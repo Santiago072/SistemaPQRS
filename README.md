@@ -51,7 +51,7 @@ El sistema cuenta con dos portales principales:
 ## 📂 Estructura del Proyecto
 
 ```text
-PROYECTO_PQRS/
+SistemaPQRS/
 │
 ├── app/                     # Carpeta principal de la aplicación (MVC)
 │   ├── controllers/         # Controladores Públicos (HomeController, PqrsController)
@@ -115,10 +115,10 @@ Actualmente, el sistema está diseñado para ejecutarse de forma local. Sigue es
 
 1. Clona el repositorio en el directorio web root de tu servidor local:
    ```bash
-   git clone https://github.com/Santiago072/SistemaPQRS.git PROYECTO_PQRS
+   git clone https://github.com/Santiago072/SistemaPQRS.git SistemaPQRS
    ```
-   * **XAMPP:** `C:\xampp\htdocs\PROYECTO_PQRS`
-   * **Laragon:** `C:\laragon\www\PROYECTO_PQRS`
+   * **XAMPP:** `C:\xampp\htdocs\SistemaPQRS`
+   * **Laragon:** `C:\laragon\www\SistemaPQRS`
 
 2. **Crea el archivo de configuración de correo** copiando el ejemplo incluido:
    ```bash
@@ -150,6 +150,6 @@ Actualmente, el sistema está diseñado para ejecutarse de forma local. Sigue es
    mysql -u root -p sistema_pqrs < BD.txt
    ```
 
-7. Abre `http://localhost/PROYECTO_PQRS/` en tu navegador.
+7. Abre `http://localhost/SistemaPQRS/` en tu navegador.
 
 > **⚠️ Seguridad:** El archivo `config/email_config.php` está en `.gitignore`. Nunca lo subas al repositorio. Usa siempre el archivo `*_example.php` como plantilla.

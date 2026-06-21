@@ -20,7 +20,7 @@ session_destroy();
 // Detectar entorno para redirección correcta
 $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
 $isRailway = (strpos($host, 'railway.app') !== false) || (getenv('RAILWAY_ENVIRONMENT') !== false);
-$baseUrl = $isRailway ? '/' : '/PROYECTO_PQRS/';
+$baseUrl = $isRailway ? '/' : '/SistemaPQRS/';
 
 // Redirigir al login
 header('Location: ' . BASE_PATH . 'index.php?ruta=admin/login&logout=1');

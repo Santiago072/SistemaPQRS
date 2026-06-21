@@ -1,0 +1,56 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    container_name: pqrs_app
+    restart: always
+    environment:
+      - RAILWAY_ENVIRONMENT=${RAILWAY_ENVIRONMENT:-true}
+      - PORT=${PORT:-80}
+      - DB_HOST=${DB_HOST:-db}
+      - DB_NAME=${DB_NAME:-sistema_pqrs}
+      - DB_USER=${DB_USER:-pqrs_user}
+      - DB_PASSWORD=${DB_PASSWORD:-root}
+      - SMTP_HOST=${SMTP_HOST}
+      - SMTP_PORT=${SMTP_PORT}
+      - SMTP_ENCRYPTION=${SMTP_ENCRYPTION}
+      - SMTP_USER=${SMTP_USER}
+      - SMTP_PASSWORD=${SMTP_PASSWORD}
+      - FROM_EMAIL=${FROM_EMAIL}
+      - FROM_NAME=${FROM_NAME}
+    volumes:
+      - pqrs_uploads:/var/www/html/uploads
+      - pqrs_logs:/var/www/html/logs
+    ports:
+      - "8892:80"
+    depends_on:
+      - db
+    networks:
+      - proxy_net
+      - internal_net
+
+  db:
+    image: mariadb:10.11
+    container_name: pqrs_db
+    restart: always
+    environment:
+      MARIADB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-root}
+      MARIADB_DATABASE: ${DB_NAME:-sistema_pqrs}
+      MARIADB_USER: ${DB_USER:-pqrs_user}
+      MARIADB_PASSWORD: ${DB_PASSWORD:-root}
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./BD.txt:/docker-entrypoint-initdb.d/BD.sql
+    networks:
+      - internal_net
+
+volumes:
+  pqrs_uploads:
+  pqrs_logs:
+  db_data:
+
+networks:
+  proxy_net:
+    external: true
+  internal_net:

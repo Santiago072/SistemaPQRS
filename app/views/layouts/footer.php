@@ -2,7 +2,7 @@
 if (!defined('BASE_PATH')) {
     $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
     $isRailway = (strpos($host, 'railway.app') !== false) || (getenv('RAILWAY_ENVIRONMENT') !== false);
-    define('BASE_PATH', $isRailway ? '/' : '/PROYECTO_PQRS/');
+    define('BASE_PATH', $isRailway ? '/' : '/SistemaPQRS/');
 }
 ?>
     <footer class="footer">
