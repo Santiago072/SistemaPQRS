@@ -27,7 +27,6 @@ services:
     depends_on:
       - db
     networks:
-      - proxy_net
       - internal_net
 
   db:
@@ -51,6 +50,4 @@ volumes:
   db_data:
 
 networks:
-  proxy_net:
-    external: true
   internal_net:
