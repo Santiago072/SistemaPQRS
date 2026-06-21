@@ -27,7 +27,7 @@ services:
     depends_on:
       - db
     networks:
-      - internal_net
+      - sodicol_network
 
   db:
     image: mariadb:10.11
@@ -42,7 +42,7 @@ services:
       - db_data:/var/lib/mysql
       - ./BD.txt:/docker-entrypoint-initdb.d/BD.sql
     networks:
-      - internal_net
+      - sodicol_network
 
 volumes:
   pqrs_uploads:
@@ -50,4 +50,5 @@ volumes:
   db_data:
 
 networks:
-  internal_net:
+  sodicol_network:
+    external: true
