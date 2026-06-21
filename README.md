@@ -109,47 +109,55 @@ El script de inicialización se encuentra en `BD.txt`. Contiene la creación de 
 
 ---
 
-## 💻 Instalación y Configuración Local (XAMPP / Laragon / WampServer)
+## 🐳 Instalación y Configuración en Producción (Docker)
 
-Actualmente, el sistema está diseñado para ejecutarse de forma local. Sigue estos pasos para su configuración:
+El sistema incluye una arquitectura orquestada y lista para entornos VPS o Producción mediante **Docker Compose**.
 
-1. Clona el repositorio en el directorio web root de tu servidor local:
+1. Clona el repositorio en tu servidor:
    ```bash
-   git clone https://github.com/Santiago072/SistemaPQRS.git SistemaPQRS
+   git clone https://github.com/Santiago072/SistemaPQRS.git
+   cd SistemaPQRS
    ```
+
+2. **Variables de Entorno:**
+   Copia el archivo de ejemplo para configurar tus credenciales seguras. Este archivo (`.env`) no se subirá a GitHub.
+   ```bash
+   cp .env.example .env
+   nano .env
+   ```
+   Asegúrate de incluir `RAILWAY_ENVIRONMENT=true` para que el sistema detecte la raíz `/` en los contenedores. Configura tus puertos, base de datos y credenciales SMTP.
+
+3. Construye e inicia los servicios:
+   ```bash
+   docker-compose up -d --build
+   ```
+
+4. Para exponer el proyecto hacia Internet con un dominio, te recomendamos conectarlo a un proxy inverso como **Nginx Proxy Manager** apuntando al puerto expuesto (ej. `8892`).
+
+---
+
+## 💻 Instalación Local (XAMPP / Laragon / WampServer)
+
+Si prefieres trabajar en desarrollo de forma tradicional:
+
+1. Clona el repositorio en el directorio web root:
    * **XAMPP:** `C:\xampp\htdocs\SistemaPQRS`
    * **Laragon:** `C:\laragon\www\SistemaPQRS`
 
-2. **Crea el archivo de configuración de correo** copiando el ejemplo incluido:
+2. Configuración de Correo Electrónico (Opcional pero recomendado):
    ```bash
    cp config/email_config_example.php config/email_config.php
    ```
-   Luego edita el archivo con tus credenciales reales. Este archivo está en `.gitignore` y **nunca se subirá al repositorio**.
+   Edita tus credenciales SMTP en ese archivo.
 
-3. La base de datos se configura internamente en `app/models/Database.php`. Por defecto asume `localhost`, usuario `root` y base de datos `sistema_pqrs`.
+3. Importa el archivo `BD.txt` a tu servidor MySQL en una nueva base de datos llamada `sistema_pqrs`.
 
-4. Edita `config/email_config.php` con tus credenciales SMTP (opcional, solo si quieres recibir correos):
-   ```php
-   'smtp_host'     => 'smtp.gmail.com',
-   'smtp_port'     => 587,
-   'smtp_user'     => 'tu_correo@gmail.com',
-   'smtp_password' => 'xxxx xxxx xxxx xxxx',  // Contraseña de aplicación Gmail
-   'from_email'    => 'tu_correo@gmail.com',
-   'from_name'     => 'Sistema PQRS',
-   ```
-   > Para obtener una contraseña de aplicación en Gmail: Cuenta Google → Seguridad → Verificación en dos pasos → Contraseñas de aplicaciones.
+4. Abre `http://localhost/SistemaPQRS/` en tu navegador.
 
-5. Instala las dependencias con [Composer](https://getcomposer.org/):
-   ```bash
-   composer install
-   ```
+---
 
-6. Crea la base de datos e importa el esquema:
-   ```bash
-   mysql -u root -p -e "CREATE DATABASE sistema_pqrs;"
-   mysql -u root -p sistema_pqrs < BD.txt
-   ```
+## 📜 Versionamiento y Cambios
 
-7. Abre `http://localhost/SistemaPQRS/` en tu navegador.
+Este proyecto se adhiere al [Versionamiento Semántico](https://semver.org/lang/es/) y mantiene un registro detallado de todas sus actualizaciones de cara al cliente y al servidor.
 
-> **⚠️ Seguridad:** El archivo `config/email_config.php` está en `.gitignore`. Nunca lo subas al repositorio. Usa siempre el archivo `*_example.php` como plantilla.
+Para ver el historial detallado de las nuevas funcionalidades, correcciones de errores y actualizaciones técnicas del sistema, por favor consulta nuestro archivo [CHANGELOG.md](CHANGELOG.md).
