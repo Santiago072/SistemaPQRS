@@ -52,7 +52,7 @@ if ($pqrs['estado'] !== 'RESUELTO' && $pqrs['estado'] !== 'RECHAZADO') {
     <?php
 $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
 $isRailway = (strpos($host, 'railway.app') !== false) || (getenv('RAILWAY_ENVIRONMENT') !== false);
-$baseUrl = $isRailway ? '/' : '/PROYECTO_PQRS/';
+$baseUrl = $isRailway ? '/' : '/SistemaPQRS/';
 ?>
 <link rel="stylesheet" href="<?php echo BASE_PATH; ?>public/css/estilos.css">
     <style>

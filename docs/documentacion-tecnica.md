@@ -72,10 +72,10 @@ Navegador ──► index.php?ruta=...
 
 **Patrón de URLs (Enrutamiento Frontal):**
 ```
-http://localhost/PROYECTO_PQRS/                          → Inicio
-http://localhost/PROYECTO_PQRS/index.php?ruta=pqrs/tipos → Selección de tipo
-http://localhost/PROYECTO_PQRS/index.php?ruta=admin/login → Login admin
-http://localhost/PROYECTO_PQRS/index.php?ruta=admin/dashboard → Dashboard
+http://localhost/SistemaPQRS/                          → Inicio
+http://localhost/SistemaPQRS/index.php?ruta=pqrs/tipos → Selección de tipo
+http://localhost/SistemaPQRS/index.php?ruta=admin/login → Login admin
+http://localhost/SistemaPQRS/index.php?ruta=admin/dashboard → Dashboard
 ```
 
 ---
@@ -83,7 +83,7 @@ http://localhost/PROYECTO_PQRS/index.php?ruta=admin/dashboard → Dashboard
 ## 3. Estructura de Carpetas
 
 ```text
-PROYECTO_PQRS/
+SistemaPQRS/
 │
 ├── app/                        # Arquitectura MVC
 │   ├── core/                   # Componentes base (Contenedor DI)
@@ -444,10 +444,10 @@ El sistema genera un archivo `.xls` usando tablas HTML con cabeceras MIME espec�
 
 ```bash
 # 1. Clonar el repositorio
-git clone https://github.com/Santiago072/SistemaPQRS.git PROYECTO_PQRS
+git clone https://github.com/Santiago072/SistemaPQRS.git SistemaPQRS
 
 # 2. Mover a la carpeta web root (XAMPP)
-# C:\xampp\htdocs\PROYECTO_PQRS
+# C:\xampp\htdocs\SistemaPQRS
 
 # 3. Instalar dependencias PHP
 composer install
@@ -463,7 +463,7 @@ mysql -u root -p sistema_pqrs < BD.txt
 # Usar contraseña de aplicación de Gmail o credenciales SMTP propias
 
 # 7. Abrir en el navegador
-# http://localhost/PROYECTO_PQRS/
+# http://localhost/SistemaPQRS/
 ```
 
 ### Credenciales por defecto

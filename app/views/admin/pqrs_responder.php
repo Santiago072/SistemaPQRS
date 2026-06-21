@@ -33,7 +33,7 @@ $tienCorreo = !empty($pqrs['correo_electronico']) && $pqrs['tipo_persona'] !== '
 <?php
 $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
 $isRailway = (strpos($host, 'railway.app') !== false) || (getenv('RAILWAY_ENVIRONMENT') !== false);
-$baseUrl = $isRailway ? '/' : '/PROYECTO_PQRS/';
+$baseUrl = $isRailway ? '/' : '/SistemaPQRS/';
 ?>
 <link rel="stylesheet" href="<?php echo BASE_PATH; ?>public/css/estilos.css">    <style>
         /* ── Estilos específicos de esta vista ── */

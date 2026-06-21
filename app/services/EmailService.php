@@ -20,10 +20,25 @@ class EmailService
     public function __construct()
     {
         $cfgPath = dirname(__DIR__, 2) . '/config/email_config.php';
-        if (!file_exists($cfgPath)) {
-            throw new \RuntimeException('Archivo de configuracion SMTP no encontrado: ' . $cfgPath);
+        
+        if (file_exists($cfgPath)) {
+            $this->cfg = require $cfgPath;
+        } else {
+            // Fallback a variables de entorno (Docker / VPS)
+            $this->cfg = [
+                'smtp_host'       => getenv('SMTP_HOST') ?: 'smtp.gmail.com',
+                'smtp_port'       => getenv('SMTP_PORT') ?: 587,
+                'smtp_encryption' => getenv('SMTP_ENCRYPTION') ?: 'tls',
+                'smtp_user'       => getenv('SMTP_USER') ?: '',
+                'smtp_password'   => getenv('SMTP_PASSWORD') ?: '',
+                'from_email'      => getenv('FROM_EMAIL') ?: '',
+                'from_name'       => getenv('FROM_NAME') ?: 'Sistema PQRS',
+            ];
+            
+            if (empty($this->cfg['smtp_user']) || empty($this->cfg['smtp_password'])) {
+                throw new \RuntimeException('Configuración SMTP no encontrada. Crea config/email_config.php o configura las variables de entorno.');
+            }
         }
-        $this->cfg = require $cfgPath;
     }
 
     // ─── Método privado de log ────────────────────────────────────────────────
@@ -189,7 +204,7 @@ class EmailService
                     <div class='row'><span>Asunto:</span><span>{$asunto}</span></div>
                     <div class='row'><span>Fecha limite:</span><span>{$vencimiento}</span></div>
                 </div>
-                <p style='text-align:center'><a href='http://{$host}/PROYECTO_PQRS/index.php?ruta=pqrs/consulta' class='btn'>Consultar mi Solicitud</a></p>
+                <p style='text-align:center'><a href='http://{$host}/SistemaPQRS/index.php?ruta=pqrs/consulta' class='btn'>Consultar mi Solicitud</a></p>
                 <p style='font-size:12px;color:#9ca3af'>Guarde su codigo de radicado para consultar el estado de su solicitud.</p>
             </div>
             <div class='foot'><p>&copy; " . date('Y') . " Sistema PQRS</p><p>Ley 1755 de 2015 &middot; Ley 1437 de 2011</p></div>
@@ -239,7 +254,7 @@ class EmailService
                     <div class='row'><span>Estado:</span><span style='color:{$estado['color']};font-weight:700'>{$estado['texto']}</span></div>
                 </div>
                 <div class='resp-box'>{$respHtml}</div>
-                <p style='text-align:center'><a href='http://{$host}/PROYECTO_PQRS/index.php?ruta=pqrs/consulta' class='btn'>Ver mi Solicitud</a></p>
+                <p style='text-align:center'><a href='http://{$host}/SistemaPQRS/index.php?ruta=pqrs/consulta' class='btn'>Ver mi Solicitud</a></p>
             </div>
             <div class='foot'><p>&copy; " . date('Y') . " Sistema PQRS</p><p>Ley 1755 de 2015 &middot; Ley 1437 de 2011</p></div>
         </div></body></html>";

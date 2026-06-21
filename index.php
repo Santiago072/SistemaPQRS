@@ -7,7 +7,7 @@ use App\Core\Container;
 // Configurar base path
 $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
 $isRailway = (strpos($host, 'railway.app') !== false) || (getenv('RAILWAY_ENVIRONMENT') !== false);
-define('BASE_PATH', $isRailway ? '/' : '/PROYECTO_PQRS/');
+define('BASE_PATH', $isRailway ? '/' : '/SistemaPQRS/');
 
 // Inicializar el contenedor de Inyección de Dependencias
 $container = new Container();
