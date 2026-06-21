@@ -373,8 +373,8 @@ return [
 | Evento | Destinatario | Archivo |
 |--------|-------------|---------|
 | Confirmación de radicación | Ciudadano | `pqrs/formulario.php` |
-| Respuesta del administrador | Ciudadano | `administrador/pqrs_responder.php` |
-| Recuperación de contraseña | Administrador | `administrador/recuperar_contrasena.php` |
+| Respuesta del administrador | Ciudadano | `admin/pqrs_responder.php` |
+| Recuperación de contraseña | Administrador | `admin/recuperar_contrasena.php` |
 
 Los intentos de envío se registran en `logs/email_log.txt`.
 
@@ -419,52 +419,47 @@ El sistema genera un archivo `.xls` usando tablas HTML con cabeceras MIME espec�
 | RF10 | HU-05 | Código PQRS-AAAA-MM-NNN consecutivo mensual | `pqrs/formulario.php` |
 | RF11 | HU-05 | Confirmación + correo al ciudadano | `pqrs/confirmacion.php` |
 | RF12-14 | HU-11 | Consulta por código o correo | `pqrs/consulta_pqrs.php` |
-| RF15 | HU-06 | Login con sesión activa + expiración | `administrador/login.php` |
-| RF16 | HU-07 | Bandeja de solicitudes con tabla | `administrador/pqrs.php` |
-| RF17 | HU-07 | Filtros por estado, tipo, fechas | `administrador/pqrs.php` |
-| RF18 | HU-08 | Detalle, cambio de estado, respuesta | `administrador/pqrs_ver.php` |
-| RF19 | HU-13 | Historial cronológico de acciones | `administrador/pqrs_historial.php` |
-| RF20 | HU-14 | Reportes + gráficos + exportación | `administrador/reportes.php` |
-| RF21 | HU-12 | Alertas de vencimiento por urgencia | `administrador/alertas.php` |
-| RF22 | HU-09 | Configuración de perfil del admin | `administrador/configuracion.php` |
-| RF23 | HU-10 | Recuperación de contraseña por token | `administrador/recuperar_contrasena.php` |
-| RF24 | HU-15 | Configuración del sistema (días, empresa) | `administrador/configuracion.php` |
+| RF15 | HU-06 | Login con sesión activa + expiración | `admin/login.php` |
+| RF16 | HU-07 | Bandeja de solicitudes con tabla | `admin/pqrs.php` |
+| RF17 | HU-07 | Filtros por estado, tipo, fechas | `admin/pqrs.php` |
+| RF18 | HU-08 | Detalle, cambio de estado, respuesta | `admin/pqrs_ver.php` |
+| RF19 | HU-13 | Historial cronológico de acciones | `admin/pqrs_historial.php` |
+| RF20 | HU-14 | Reportes + gráficos + exportación | `admin/reportes.php` |
+| RF21 | HU-12 | Alertas de vencimiento por urgencia | `admin/alertas.php` |
+| RF22 | HU-09 | Configuración de perfil del admin | `admin/configuracion.php` |
+| RF23 | HU-10 | Recuperación de contraseña por token | `admin/recuperar_contrasena.php` |
+| RF24 | HU-15 | Configuración del sistema (días, empresa) | `admin/configuracion.php` |
 
 ---
 
 ## 11. Instalación
 
 ### Requisitos previos
-- PHP 8.0 o superior con extensiones: `mysqli`, `openssl`, `mbstring`, `fileinfo`
-- MySQL 5.7 / MariaDB 10.3 o superior
-- Composer
-- Servidor web: XAMPP, Laragon, WampServer o similar
+- Entorno de Producción: Docker, Docker Compose
+- Entorno de Desarrollo: PHP 8.2 con `mysqli`, `pdo`, Composer, servidor web local.
 
-### Pasos
+### Instalación en Producción (Docker)
 
 ```bash
 # 1. Clonar el repositorio
-git clone https://github.com/Santiago072/SistemaPQRS.git SistemaPQRS
+git clone https://github.com/Santiago072/SistemaPQRS.git
+cd SistemaPQRS
 
-# 2. Mover a la carpeta web root (XAMPP)
-# C:\xampp\htdocs\SistemaPQRS
+# 2. Configurar Variables de Entorno
+cp .env.example .env
+nano .env # (Configura tus contraseñas y base de datos)
 
-# 3. Instalar dependencias PHP
-composer install
-
-# 4. Crear la base de datos
-mysql -u root -p -e "CREATE DATABASE sistema_pqrs;"
-mysql -u root -p sistema_pqrs < BD.txt
-
-# 5. Configurar conexión en config/conexion.php
-# Editar $host, $user, $pass, $db según tu entorno
-
-# 6. (Opcional) Configurar correo en config/email_config.php
-# Usar contraseña de aplicación de Gmail o credenciales SMTP propias
-
-# 7. Abrir en el navegador
-# http://localhost/SistemaPQRS/
+# 3. Levantar los contenedores
+sudo docker compose up -d --build
 ```
+> La base de datos y dependencias de Composer se instalan automáticamente.
+
+### Instalación Local (XAMPP / Laragon)
+1. Clona el proyecto en tu carpeta raíz (`htdocs` o `www`).
+2. Copia `.env.example` a `.env` y ajusta `DB_HOST=localhost`.
+3. Instala dependencias: `composer install`.
+4. Importa la base de datos: `mysql -u root -p sistema_pqrs < BD.txt`.
+5. Abre `http://localhost/SistemaPQRS/`.
 
 ### Credenciales por defecto
 ```
