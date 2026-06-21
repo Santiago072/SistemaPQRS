@@ -16,6 +16,7 @@ El sistema cuenta con dos portales principales:
 | 📖 [Documentación Técnica](docs/documentacion-tecnica.md) | Arquitectura MVC, base de datos, módulos, seguridad, flujos internos, requisitos funcionales implementados e instalación |
 | 👤 [Manual de Usuario](docs/Manual_de_Usuario.md) | Guía paso a paso para ciudadanos y administradores: radicar PQRS, consultar estado, gestionar solicitudes, reportes y configuración |
 | 🔐 [Arquitectura y Seguridad](docs/ARQUITECTURA_Y_SEGURIDAD.md) | Patrones de Diseño (MVC, SOLID), Inyección de Dependencias, Prevención XSS/SQL Injection y enrutador estricto |
+| 📜 [Registro de Cambios (Changelog)](CHANGELOG.md) | Historial detallado de todas las nuevas funcionalidades, versiones, correcciones de errores y actualizaciones técnicas |
 
 ---
 
