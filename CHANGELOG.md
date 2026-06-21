@@ -5,6 +5,10 @@ Todos los cambios notables de este proyecto se documentarán en este archivo.
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/),
 y este proyecto se adhiere al [Versionamiento Semántico](https://semver.org/lang/es/).
 
+## [v1.1.1] - 2026-06-21
+### Corregido
+- **Autoloading (PSR-4)**: Se resolvió un error crítico de *Case Sensitivity* (sensibilidad a mayúsculas) al desplegar en servidores Linux. Se renombró el directorio `app/controllers/admin` a `app/controllers/Admin` para que coincida exactamente con el Namespace de Composer, eliminando el error de "Class does not exist" en el panel administrativo.
+
 ## [v1.1.0] - 2026-06-21
 ### Agregado
 - **Soporte Docker para Producción**: Implementación de orquestación con `docker-compose.yml` utilizando PHP 8.2 FPM, Caddy (servidor web interno) y MariaDB 10.11.
