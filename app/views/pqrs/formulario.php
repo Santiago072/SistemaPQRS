@@ -27,6 +27,17 @@
                 <h1 class="formulario-titulo">Complete su solicitud</h1>
             </div>
 
+            <?php if (isset($_GET['error']) && $_GET['error'] === 'rate_limit'): ?>
+            <div style="background:#fee2e2; border-left:4px solid #ef4444; color:#991b1b; padding:1rem; margin-bottom:1.5rem; border-radius:0.25rem;">
+                <h3 style="margin:0 0 0.5rem 0; font-size:1rem; display:flex; align-items:center; gap:0.5rem;">
+                    <i class="bi bi-exclamation-triangle-fill"></i> Demasiadas peticiones
+                </h3>
+                <p style="margin:0; font-size:0.875rem;">
+                    Por razones de seguridad, debes esperar <strong><?php echo htmlspecialchars($_GET['faltan'] ?? 'unos'); ?> segundos</strong> antes de poder enviar otra solicitud.
+                </p>
+            </div>
+            <?php endif; ?>
+
             <div class="persona-selector">
                 <button type="button" class="persona-btn activo" onclick="cambiarPersona('natural')" data-persona="natural">
                     <i class="bi bi-person"></i>
@@ -52,7 +63,7 @@
                     <div class="form-row">
                         <div class="form-grupo">
                             <label class="form-label">Nombre completo <span class="requerido">*</span></label>
-                            <input type="text" name="nombre" class="form-input" placeholder="Ej: Juan Perez Garcia" onblur="validarCampo(this, 'nombre')">
+                            <input type="text" name="nombre" class="form-input" placeholder="Ej: Juan Perez Garcia" maxlength="150" onblur="validarCampo(this, 'nombre')">
                             <span class="error-mensaje" id="error-nombre">Ingrese su nombre completo</span>
                         </div>
                         <div class="form-grupo">
@@ -70,18 +81,18 @@
                     <div class="form-row">
                         <div class="form-grupo">
                             <label class="form-label">Numero de documento <span class="requerido">*</span></label>
-                            <input type="text" name="numero_documento" class="form-input" placeholder="Ej: 1234567890" onblur="validarCampo(this, 'numero_documento')">
+                            <input type="text" name="numero_documento" class="form-input" placeholder="Ej: 1234567890" maxlength="50" onblur="validarCampo(this, 'numero_documento')">
                             <span class="error-mensaje" id="error-numero_documento">Ingrese su numero de documento</span>
                         </div>
                         <div class="form-grupo">
                             <label class="form-label">Telefono <span class="requerido">*</span></label>
-                            <input type="tel" name="telefono" class="form-input" placeholder="Ej: 3001234567" onblur="validarCampo(this, 'telefono')">
+                            <input type="tel" name="telefono" class="form-input" placeholder="Ej: 3001234567" maxlength="50" onblur="validarCampo(this, 'telefono')">
                             <span class="error-mensaje" id="error-telefono">Ingrese un numero de telefono valido</span>
                         </div>
                     </div>
                     <div class="form-grupo">
                         <label class="form-label">Correo electronico <span class="requerido">*</span></label>
-                        <input type="email" name="correo" class="form-input" placeholder="Ej: correo@ejemplo.com" onblur="validarCampo(this, 'correo')">
+                        <input type="email" name="correo" class="form-input" placeholder="Ej: correo@ejemplo.com" maxlength="150" onblur="validarCampo(this, 'correo')">
                         <span class="error-mensaje" id="error-correo">Ingrese un correo electronico valido</span>
                     </div>
                 </div>
@@ -91,29 +102,29 @@
                     <div class="form-row">
                         <div class="form-grupo">
                             <label class="form-label">Razon social <span class="requerido">*</span></label>
-                            <input type="text" name="razon_social" class="form-input" placeholder="Ej: Empresa S.A.S." onblur="validarCampo(this, 'razon_social')">
+                            <input type="text" name="razon_social" class="form-input" placeholder="Ej: Empresa S.A.S." maxlength="150" onblur="validarCampo(this, 'razon_social')">
                             <span class="error-mensaje" id="error-razon_social">Ingrese la razon social</span>
                         </div>
                         <div class="form-grupo">
                             <label class="form-label">NIT <span class="requerido">*</span></label>
-                            <input type="text" name="nit" class="form-input" placeholder="Ej: 900123456-7" onblur="validarCampo(this, 'nit')">
+                            <input type="text" name="nit" class="form-input" placeholder="Ej: 900123456-7" maxlength="50" onblur="validarCampo(this, 'nit')">
                             <span class="error-mensaje" id="error-nit">Ingrese el NIT</span>
                         </div>
                     </div>
                     <div class="form-grupo">
                         <label class="form-label">Nombre del representante legal <span class="requerido">*</span></label>
-                        <input type="text" name="representante" class="form-input" placeholder="Ej: Carlos Rodriguez" onblur="validarCampo(this, 'representante')">
+                        <input type="text" name="representante" class="form-input" placeholder="Ej: Carlos Rodriguez" maxlength="150" onblur="validarCampo(this, 'representante')">
                         <span class="error-mensaje" id="error-representante">Ingrese el nombre del representante</span>
                     </div>
                     <div class="form-row">
                         <div class="form-grupo">
                             <label class="form-label">Correo corporativo <span class="requerido">*</span></label>
-                            <input type="email" name="correo_corporativo" class="form-input" placeholder="Ej: contacto@empresa.com" onblur="validarCampo(this, 'correo_corporativo')">
+                            <input type="email" name="correo_corporativo" class="form-input" placeholder="Ej: contacto@empresa.com" maxlength="150" onblur="validarCampo(this, 'correo_corporativo')">
                             <span class="error-mensaje" id="error-correo_corporativo">Ingrese un correo corporativo valido</span>
                         </div>
                         <div class="form-grupo">
                             <label class="form-label">Telefono <span class="requerido">*</span></label>
-                            <input type="tel" name="telefono_juridica" class="form-input" placeholder="Ej: 6011234567" onblur="validarCampo(this, 'telefono_juridica')">
+                            <input type="tel" name="telefono_juridica" class="form-input" placeholder="Ej: 6011234567" maxlength="50" onblur="validarCampo(this, 'telefono_juridica')">
                             <span class="error-mensaje" id="error-telefono_juridica">Ingrese un numero de telefono valido</span>
                         </div>
                     </div>
