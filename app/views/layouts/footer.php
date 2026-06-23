@@ -47,19 +47,19 @@ if (!defined('BASE_PATH')) {
                     <h4 class="footer-title">Marco Legal</h4>
                     <ul class="footer-links">
                         <li>
-                            <a href="https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=62567" target="_blank" rel="noopener noreferrer">
+                            <a href="https://www.secretariasenado.gov.co/senado/basedoc/ley_1755_2015.html" target="_blank" rel="noopener noreferrer">
                                 <i class="bi bi-file-earmark-text"></i>
                                 Ley 1755 de 2015 (Regulación PQRS)
                             </a>
                         </li>
                         <li>
-                            <a href="https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=42761" target="_blank" rel="noopener noreferrer">
+                            <a href="https://www.secretariasenado.gov.co/senado/basedoc/ley_1437_2011.html" target="_blank" rel="noopener noreferrer">
                                 <i class="bi bi-file-earmark-text"></i>
                                 Ley 1437 de 2011 (CPACA)
                             </a>
                         </li>
                         <li>
-                            <a href="https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=49981" target="_blank" rel="noopener noreferrer">
+                            <a href="https://www.secretariasenado.gov.co/senado/basedoc/ley_1581_2012.html" target="_blank" rel="noopener noreferrer">
                                 <i class="bi bi-shield-check"></i>
                                 Ley 1581 de 2012 (Protección de Datos)
                             </a>
