@@ -444,6 +444,7 @@ $baseUrl = $isRailway ? '/' : '/SistemaPQRS/';
 
         // ── Cambio automático de estado ──
         const estadosAsociados = {
+            recibido: 'PENDIENTE',
             proceso: 'EN_PROCESO',
             resuelto: 'RESUELTO',
             rechazado: 'RECHAZADO'
@@ -452,9 +453,16 @@ $baseUrl = $isRailway ? '/' : '/SistemaPQRS/';
         if (estadosAsociados[tipo]) {
             const selectEstado = document.querySelector('select[name="nuevo_estado"]');
             if (selectEstado) {
-                const opcionExiste = selectEstado.querySelector(`option[value="${estadosAsociados[tipo]}"]`);
+                let opcionExiste = selectEstado.querySelector(`option[value="${estadosAsociados[tipo]}"]`);
+                
+                // Si la opción exacta no existe, pero es 'PENDIENTE' y el estado actual (opción por defecto)
+                // probablemente sea PENDIENTE, seleccionamos el valor vacío (Mantener estado actual)
+                if (!opcionExiste && estadosAsociados[tipo] === 'PENDIENTE') {
+                    opcionExiste = selectEstado.querySelector('option[value=""]');
+                }
+
                 if (opcionExiste) {
-                    selectEstado.value = estadosAsociados[tipo];
+                    selectEstado.value = opcionExiste.value;
                     // Efecto visual sutil para indicar el cambio
                     selectEstado.style.transition = 'all 0.3s ease';
                     selectEstado.style.borderColor = 'var(--color-primary)';
