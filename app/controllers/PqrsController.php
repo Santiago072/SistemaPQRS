@@ -60,6 +60,15 @@ class PqrsController
             exit;
         }
 
+        // --- RATE LIMITING (Límite de Tasa) ---
+        $cooldownSeconds = 120; // 2 minutos entre radicaciones
+        if (isset($_SESSION['ultima_pqrs']) && (time() - $_SESSION['ultima_pqrs']) < $cooldownSeconds) {
+            $faltan = $cooldownSeconds - (time() - $_SESSION['ultima_pqrs']);
+            $tipoPqrsRetorno = urlencode($_POST['tipo_pqrs'] ?? 'peticion');
+            header('Location: ' . BASE_PATH . 'index.php?ruta=pqrs/formulario&error=rate_limit&faltan=' . $faltan . '&tipo_pqrs=' . $tipoPqrsRetorno);
+            exit;
+        }
+
         // 1. Validar y sanitizar datos básicos
         $tiposPqrsValidos    = ['peticion', 'queja', 'reclamo', 'sugerencia', 'denuncia'];
         $tiposPersonaValidos = ['natural', 'juridica', 'anonima'];
@@ -78,17 +87,17 @@ class PqrsController
         // 2. Construir datos del usuario según tipo de persona
         $datosUsuario = ['tipo_persona' => $tipoPersona];
         if ($tipoPersona === 'natural') {
-            $datosUsuario['nombre_completo']     = trim($_POST['nombre']           ?? '') ?: null;
-            $datosUsuario['documento_identidad'] = trim($_POST['numero_documento'] ?? '') ?: null;
-            $datosUsuario['tipo_documento']      = trim($_POST['tipo_documento']   ?? '') ?: null;
-            $datosUsuario['correo_electronico']  = trim($_POST['correo']           ?? '') ?: null;
-            $datosUsuario['telefono']            = trim($_POST['telefono']         ?? '') ?: null;
+            $datosUsuario['nombre_completo']     = mb_substr(trim($_POST['nombre']           ?? ''), 0, 150) ?: null;
+            $datosUsuario['documento_identidad'] = mb_substr(trim($_POST['numero_documento'] ?? ''), 0, 50)  ?: null;
+            $datosUsuario['tipo_documento']      = mb_substr(trim($_POST['tipo_documento']   ?? ''), 0, 20)  ?: null;
+            $datosUsuario['correo_electronico']  = mb_substr(trim($_POST['correo']           ?? ''), 0, 150) ?: null;
+            $datosUsuario['telefono']            = mb_substr(trim($_POST['telefono']         ?? ''), 0, 50)  ?: null;
         } elseif ($tipoPersona === 'juridica') {
-            $datosUsuario['razon_social']         = trim($_POST['razon_social']       ?? '') ?: null;
-            $datosUsuario['nit']                  = trim($_POST['nit']                ?? '') ?: null;
-            $datosUsuario['nombre_representante'] = trim($_POST['representante']      ?? '') ?: null;
-            $datosUsuario['correo_corporativo']   = trim($_POST['correo_corporativo'] ?? '') ?: null;
-            $datosUsuario['telefono']             = trim($_POST['telefono_juridica']  ?? '') ?: null;
+            $datosUsuario['razon_social']         = mb_substr(trim($_POST['razon_social']       ?? ''), 0, 150) ?: null;
+            $datosUsuario['nit']                  = mb_substr(trim($_POST['nit']                ?? ''), 0, 50)  ?: null;
+            $datosUsuario['nombre_representante'] = mb_substr(trim($_POST['representante']      ?? ''), 0, 150) ?: null;
+            $datosUsuario['correo_corporativo']   = mb_substr(trim($_POST['correo_corporativo'] ?? ''), 0, 150) ?: null;
+            $datosUsuario['telefono']             = mb_substr(trim($_POST['telefono_juridica']  ?? ''), 0, 50)  ?: null;
             $datosUsuario['correo_electronico']   = $datosUsuario['correo_corporativo'];
             $datosUsuario['nombre_completo']      = $datosUsuario['nombre_representante'];
         }
@@ -125,6 +134,9 @@ class PqrsController
             'desea_notificacion' => $notificar,
             'usuario_id'         => $usuarioId,
         ]);
+
+        // Registrar hora de la radicación exitosa para el Rate Limit
+        $_SESSION['ultima_pqrs'] = time();
 
         // 7. Enviar correo de confirmación (EmailService — SRP)
         $correoEnviado = false;
