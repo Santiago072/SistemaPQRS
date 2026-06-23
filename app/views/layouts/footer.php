@@ -23,7 +23,7 @@ if (!defined('BASE_PATH')) {
                     <h4 class="footer-title">Enlaces Rápidos</h4>
                     <ul class="footer-links">
                         <li>
-                            <a href="<?php echo BASE_PATH; ?>index.php?ruta=pqrs/formulario">
+                            <a href="<?php echo BASE_PATH; ?>index.php?ruta=pqrs/tipos">
                                 <i class="bi bi-pencil-square"></i>
                                 Nueva Solicitud
                             </a>
@@ -49,13 +49,19 @@ if (!defined('BASE_PATH')) {
                         <li>
                             <a href="https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=62567" target="_blank" rel="noopener noreferrer">
                                 <i class="bi bi-file-earmark-text"></i>
-                                Ley 1755 de 2015
+                                Ley 1755 de 2015 (Regulación PQRS)
                             </a>
                         </li>
                         <li>
                             <a href="https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=42761" target="_blank" rel="noopener noreferrer">
                                 <i class="bi bi-file-earmark-text"></i>
-                                Ley 1437 de 2011
+                                Ley 1437 de 2011 (CPACA)
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://www.funcionpublica.gov.co/eva/gestornormativo/norma.php?i=49981" target="_blank" rel="noopener noreferrer">
+                                <i class="bi bi-shield-check"></i>
+                                Ley 1581 de 2012 (Protección de Datos)
                             </a>
                         </li>
                     </ul>
