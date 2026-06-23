@@ -58,6 +58,14 @@ El sistema ha sido refactorizado para cumplir con estándares empresariales medi
 ### Carga de Archivos
 La subida de evidencias soporta extensiones limitadas (PDF, JPG, PNG) y se reescriben los nombres para evitar la sobreescritura accidental o inyección de archivos ejecutables en el servidor web.
 
+### Protección contra Spam (Rate Limiting)
+- Se implementó un limitador de peticiones basado en sesiones de PHP para la creación de PQRS.
+- Impone un tiempo de espera ("cooldown") de 120 segundos entre cada solicitud enviada por un mismo usuario, mitigando ataques de denegación de servicio (DoS) a nivel de aplicación y previniendo la saturación de la base de datos por *bots* o *scripts* automatizados.
+
+### Validación y Truncamiento de Entradas (Buffer Overflow)
+- **Frontend**: Todos los campos de texto HTML cuentan con atributos `maxlength` estrictos, alineados con el esquema de la base de datos (Ej. 150 caracteres para nombres).
+- **Backend**: Los controladores utilizan la función `mb_substr()` nativa de PHP para truncar de manera forzosa y segura el texto (respetando caracteres multibyte UTF-8) a la longitud exacta que soporta el motor de base de datos antes de enviarlo. Esto protege al sistema contra peticiones forjadas que buscan generar errores de desbordamiento por *payloads* masivos enviados fuera del navegador.
+
 ## 4. Requisitos y Dependencias (Composer)
 - **PHP 8.0 o superior**
 - **PHPMailer** (para notificaciones por correo vía SMTP)
