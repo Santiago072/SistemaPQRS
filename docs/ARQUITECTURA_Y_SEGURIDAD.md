@@ -12,7 +12,8 @@ El sistema está construido bajo el patrón **Modelo-Vista-Controlador (MVC)**, 
 - **`app/views/`**: Contiene los archivos HTML/PHP de presentación.
 - **`app/services/`**: Contiene servicios externos, como `EmailService` para el envío de correos (PHPMailer).
 - **`app/core/`**: Contiene componentes base, como el Contenedor de Inyección de Dependencias.
-- **`config/`**: Archivos de configuración del sistema (base de datos, email).
+- **`config/`**: Archivos de configuración del sistema (ej. `email_config.php`).
+- **`.env`**: Archivo de variables de entorno para credenciales de base de datos y SMTP, cumpliendo con la metodología de *12-Factor App* y el principio OCP.
 
 ### Front Controller y Enrutamiento Estricto
 Todas las solicitudes web pasan por un único punto de entrada: `index.php`. Este archivo actúa como **Front Controller** e implementa un mapa estricto de rutas.
