@@ -436,9 +436,36 @@ $baseUrl = $isRailway ? '/' : '/SistemaPQRS/';
     function insertarPlantilla(tipo) {
         const textarea = document.querySelector('.respuesta-textarea');
         if (!textarea || !plantillas[tipo]) return;
+        
         if (textarea.value && !confirm('¿Desea reemplazar el contenido actual con la plantilla?')) return;
+        
         textarea.value = plantillas[tipo];
         textarea.focus();
+
+        // ── Cambio automático de estado ──
+        const estadosAsociados = {
+            proceso: 'EN_PROCESO',
+            resuelto: 'RESUELTO',
+            rechazado: 'RECHAZADO'
+        };
+
+        if (estadosAsociados[tipo]) {
+            const selectEstado = document.querySelector('select[name="nuevo_estado"]');
+            if (selectEstado) {
+                const opcionExiste = selectEstado.querySelector(`option[value="${estadosAsociados[tipo]}"]`);
+                if (opcionExiste) {
+                    selectEstado.value = estadosAsociados[tipo];
+                    // Efecto visual sutil para indicar el cambio
+                    selectEstado.style.transition = 'all 0.3s ease';
+                    selectEstado.style.borderColor = 'var(--color-primary)';
+                    selectEstado.style.boxShadow = '0 0 0 3px rgba(37, 99, 235, 0.2)';
+                    setTimeout(() => {
+                        selectEstado.style.borderColor = '';
+                        selectEstado.style.boxShadow = '';
+                    }, 1500);
+                }
+            }
+        }
     }
 
     // ── Indicador de correo según visibilidad ──────────────────────
