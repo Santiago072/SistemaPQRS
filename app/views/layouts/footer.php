@@ -23,7 +23,7 @@ if (!defined('BASE_PATH')) {
                     <h4 class="footer-title">Enlaces Rápidos</h4>
                     <ul class="footer-links">
                         <li>
-                            <a href="<?php echo BASE_PATH; ?>index.php?ruta=pqrs/tipos">
+                            <a href="#" onclick="if(typeof abrirModal === 'function'){ abrirModal(); } else { window.location.href='<?php echo BASE_PATH; ?>index.php?ruta=pqrs/tipos'; } return false;">
                                 <i class="bi bi-pencil-square"></i>
                                 Nueva Solicitud
                             </a>
@@ -76,5 +76,13 @@ if (!defined('BASE_PATH')) {
             </div>
         </div>
     </footer>
+    <?php 
+    // Incluir el modal de términos en todas las páginas si no existe aún en el DOM
+    // (Solo se mostrará si se llama a abrirModal())
+    $modalPath = __DIR__ . '/modal_terminos.php';
+    if (file_exists($modalPath)) {
+        include_once $modalPath;
+    }
+    ?>
 </body>
 </html>

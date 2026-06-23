@@ -328,6 +328,5 @@
         </section>
     </main>
     <?php include __DIR__ . '/../layouts/footer.php'; ?>
-    <?php include __DIR__ . '/../layouts/modal_terminos.php'; ?>
 </body>
 </html>
