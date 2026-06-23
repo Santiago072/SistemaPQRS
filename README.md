@@ -82,6 +82,7 @@ SistemaPQRS/
 │   └── ARQUITECTURA_Y_SEGURIDAD.md
 ├── BD.txt                   # Script SQL de la Base de Datos
 ├── composer.json            # Dependencias PHP (PSR-4 Autoloader)
+├── deploy.sh                # Script de automatización de despliegue en VPS
 ├── index.php                # Archivo principal de enrutamiento y DI Container (Front Controller)
 └── README.md                # Presentación y enlaces a la documentación
 ```
@@ -128,10 +129,12 @@ El sistema incluye una arquitectura orquestada y lista para entornos VPS o Produ
    ```
    Asegúrate de incluir `RAILWAY_ENVIRONMENT=true` para que el sistema detecte la raíz `/` en los contenedores. Configura tus puertos, base de datos y credenciales SMTP.
 
-3. Construye e inicia los servicios:
+3. Construye e inicia los servicios (o usa el script de automatización):
    ```bash
-   docker-compose up -d --build
+   chmod +x deploy.sh
+   ./deploy.sh
    ```
+   *(Este script ejecuta `git pull` y `docker compose up -d --build` por ti).*
 
 4. Para exponer el proyecto hacia Internet con un dominio, te recomendamos conectarlo a un proxy inverso como **Nginx Proxy Manager** apuntando al puerto expuesto (ej. `8892`).
 
