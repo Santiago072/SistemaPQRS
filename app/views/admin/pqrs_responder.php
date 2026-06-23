@@ -202,14 +202,14 @@ $baseUrl = $isRailway ? '/' : '/SistemaPQRS/';
             </div>
 
             <!-- Mensajes -->
-            <?php if ($mensaje_exito): ?>
+            <?php if (!empty($mensaje_exito)): ?>
             <div class="alerta alerta-exito">
                 <i class="bi bi-check-circle-fill"></i>
                 <?php echo htmlspecialchars($mensaje_exito); ?>
             </div>
             <?php endif; ?>
 
-            <?php if ($mensaje_error): ?>
+            <?php if (!empty($mensaje_error)): ?>
             <div class="alerta alerta-error">
                 <i class="bi bi-exclamation-triangle-fill"></i>
                 <?php echo htmlspecialchars($mensaje_error); ?>
