@@ -102,12 +102,19 @@ El script de inicialización se encuentra en `BD.txt`. Contiene la creación de 
 | `historial_accion` | Bitácora de auditoría de todos los cambios realizados por los gestores |
 | `reporte` | Histórico de reportes generados desde la vista web, PDF y Excel |
 
-### 📋 Pasos para la carga manual:
+### 📋 Pasos para la carga manual (Desarrollo Local):
 1. Crea una base de datos en tu servidor MySQL local (ej. `sistema_pqrs`).
 2. Importa el archivo `BD.txt` a través de tu gestor de base de datos preferido (phpMyAdmin, MySQL Workbench, etc.) o ejecuta la consulta directa:
    ```bash
    mysql -u tu_usuario -p sistema_pqrs < BD.txt
    ```
+
+### 🐳 Restaurar Base de Datos en Docker (Producción):
+Si ya tienes los contenedores corriendo y deseas importar una base de datos local hacia el VPS:
+```bash
+source .env
+docker exec -i db mariadb -u $DB_USER -p$DB_PASSWORD $DB_NAME < BD.txt
+```
 
 ---
 
@@ -129,14 +136,14 @@ El sistema incluye una arquitectura orquestada y lista para entornos VPS o Produ
    ```
    Asegúrate de incluir `RAILWAY_ENVIRONMENT=true` para que el sistema detecte la raíz `/` en los contenedores. Configura tus puertos, base de datos y credenciales SMTP.
 
-3. Construye e inicia los servicios (o usa el script de automatización):
+3. Construye e inicia los servicios utilizando el script de automatización avanzado:
    ```bash
    chmod +x deploy.sh
    ./deploy.sh
    ```
-   *(Este script ejecuta `git pull` y `docker compose up -d --build` por ti).*
+   *(Este script asegura permisos correctos locales, limpia la caché de git mediante `fetch` + `reset --hard`, y finalmente ejecuta `docker compose up -d --build` garantizando un despliegue sin conflictos).*
 
-4. Para exponer el proyecto hacia Internet con un dominio, te recomendamos conectarlo a un proxy inverso como **Nginx Proxy Manager** apuntando al puerto expuesto (ej. `8892`).
+4. Para exponer el proyecto hacia Internet con un dominio, te recomendamos conectarlo a un proxy inverso como **Nginx nativo** o Nginx Proxy Manager, apuntando al puerto expuesto (ej. `8892`).
 
 ---
 
