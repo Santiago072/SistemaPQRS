@@ -4,10 +4,13 @@ require_once __DIR__ . '/vendor/autoload.php';
 
 use App\Core\Container;
 
-// Configurar base path
-$host = $_SERVER['HTTP_HOST'] ?? 'localhost';
-$isRailway = (strpos($host, 'railway.app') !== false) || (getenv('RAILWAY_ENVIRONMENT') !== false);
-define('BASE_PATH', $isRailway ? '/' : '/SistemaPQRS/');
+// Cargar variables de entorno si existe el archivo .env (XAMPP/Local)
+require_once __DIR__ . '/config/EnvLoader.php';
+\App\Config\EnvLoader::load(__DIR__ . '/.env');
+
+// Configurar base path (Por defecto /SistemaPQRS/ para XAMPP local, o / para VPS)
+$appBase = getenv('APP_BASE') ?: '/SistemaPQRS/';
+define('BASE_PATH', $appBase);
 
 // Inicializar el contenedor de Inyección de Dependencias
 $container = new Container();
