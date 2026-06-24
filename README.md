@@ -54,37 +54,49 @@ El sistema cuenta con dos portales principales:
 ```text
 SistemaPQRS/
 │
-├── app/                     # Carpeta principal de la aplicación (MVC)
-│   ├── controllers/         # Controladores Públicos (HomeController, PqrsController)
-│   │   └── admin/           # Controladores Privados (AuthController, DashboardController, etc.)
-│   ├── models/              # Modelos de Base de Datos (PDO, Consultas preparadas)
-│   ├── services/            # Servicios externos (EmailService)
-│   ├── core/                # Core de la app (Contenedor de Inyección de Dependencias)
-│   └── views/               # Vistas separadas por módulos
-│       ├── admin/           # Vistas del panel administrativo
-│       ├── home/            # Vista de inicio principal
-│       ├── layouts/         # Plantillas reutilizables (header, footer, modales)
-│       └── pqrs/            # Vistas del portal ciudadano
+├── app/                        # Carpeta principal de la aplicación (MVC)
+│   ├── core/                   # Componentes base
+│   │   └── Container.php       # Inyección de Dependencias automática
+│   ├── controllers/            # Controladores Públicos (Portal Ciudadano)
+│   │   ├── HomeController.php  # Página de inicio
+│   │   ├── PqrsController.php  # Radicación y consulta pública de PQRS
+│   │   └── admin/              # Controladores Privados (Backoffice)
+│   │       ├── AuthController.php      # Login y recuperación de clave
+│   │       ├── DashboardController.php # Panel de estadísticas
+│   │       ├── ConfigController.php    # Configuración de días y perfil
+│   │       ├── PqrsController.php      # Bandeja, respuesta y cambio de estado
+│   │       └── ReportController.php    # Generación de métricas y Excel/PDF
+│   ├── models/                 # Modelos de Base de Datos (PDO, Consultas)
+│   │   ├── Database.php        # Conexión Singleton segura
+│   │   ├── PqrsModel.php       # Consultas relacionadas con PQRS
+│   │   ├── AdminModel.php      # Acceso a datos de administradores
+│   │   ├── ConfiguracionModel.php # Parámetros globales del sistema
+│   │   └── UsuarioModel.php    # Datos de ciudadanos/remitentes
+│   ├── services/               # Servicios externos
+│   │   └── EmailService.php    # Envío centralizado vía PHPMailer
+│   └── views/                  # Vistas separadas por módulos (HTML puro)
+│       ├── admin/              # Plantillas del panel administrativo
+│       ├── home/               # Vista de inicio principal
+│       ├── layouts/            # Plantillas maestras (header, footer, modales)
+│       └── pqrs/               # Pantallas del portal ciudadano
 │
-├── config/                  # Archivos de configuración del sistema
-│   └── email_config.php     # Ajustes de correo electrónico (PHPMailer SMTP)
+├── config/                     # Archivos de configuración del sistema
+│   ├── EnvLoader.php           # Lector nativo del archivo .env para XAMPP
+│   └── email_config.php        # Ajustes manuales de SMTP (ignorado por Git)
 │
-├── public/                  # Recursos públicos del frontend
-│   └── css/                 # Hojas de estilo
-│       └── estilos.css      # Diseño unificado y responsive
+├── public/                     # Recursos públicos del frontend
+│   └── css/                    # Hojas de estilo unificadas
+│       └── estilos.css         # Diseño responsivo y variables CSS
 │
-├── vendor/                  # Dependencias de Composer (PHPMailer, DomPDF)
-├── uploads/                 # Directorio de almacenamiento de archivos adjuntos
-├── docs/                    # Documentación del proyecto
-│   ├── documentacion-tecnica.md
-│   ├── manual-usuario.md
-│   ├── Especificacion_Requisitos.md
-│   └── ARQUITECTURA_Y_SEGURIDAD.md
-├── BD.txt                   # Script SQL de la Base de Datos
-├── composer.json            # Dependencias PHP (PSR-4 Autoloader)
-├── deploy.sh                # Script de automatización de despliegue en VPS
-├── index.php                # Archivo principal de enrutamiento y DI Container (Front Controller)
-└── README.md                # Presentación y enlaces a la documentación
+├── vendor/                     # Dependencias de Composer (PHPMailer, DomPDF)
+├── uploads/                    # Directorio protegido de archivos adjuntos
+├── docs/                       # Documentación técnica y manuales
+├── BD.txt                      # Script SQL de la Base de Datos inicial
+├── composer.json               # Lista de dependencias (PSR-4 Autoloader)
+├── deploy.sh                   # Script de actualización automática en VPS
+├── index.php                   # Front Controller (Recibe todas las peticiones)
+├── .env.example                # Plantilla base de configuración
+└── README.md                   # Presentación oficial del proyecto
 ```
 
 ---
