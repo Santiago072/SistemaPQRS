@@ -134,7 +134,7 @@ El sistema incluye una arquitectura orquestada y lista para entornos VPS o Produ
    cp .env.example .env
    nano .env
    ```
-   Asegúrate de incluir `RAILWAY_ENVIRONMENT=true` para que el sistema detecte la raíz `/` en los contenedores. Configura tus puertos, base de datos y credenciales SMTP.
+   Asegúrate de incluir `APP_BASE=/` para que el sistema detecte la raíz `/` en los contenedores. Configura tus puertos, base de datos y credenciales SMTP.
 
 3. Construye e inicia los servicios utilizando el script de automatización avanzado:
    ```bash
