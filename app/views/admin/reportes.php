@@ -342,27 +342,65 @@ $baseUrl = $isRailway ? '/' : '/SistemaPQRS/';
             type: 'line',
             data: {
                 labels: tendenciaMeses,
-                datasets: [{
-                    label: 'Total recibidas',
-                    data: tendenciaTotal,
-                    borderColor: '#1e40af',
-                    backgroundColor: 'rgba(30, 64, 175, 0.1)',
-                    fill: true,
-                    tension: 0.4
-                }, {
-                    label: 'Resueltas',
-                    data: tendenciaResueltas,
-                    borderColor: '#10b981',
-                    backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                    fill: true,
-                    tension: 0.4
-                }]
+                datasets: [
+                    {
+                        label: 'Total recibidas',
+                        data: tendenciaTotal,
+                        borderColor: '#3b82f6',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        borderWidth: 2,
+                        tension: 0.4,
+                        fill: true,
+                        pointBackgroundColor: '#3b82f6',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        pointRadius: 4,
+                        pointHoverRadius: 6
+                    },
+                    {
+                        label: 'Resueltas',
+                        data: tendenciaResueltas,
+                        borderColor: '#10b981',
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        borderWidth: 2,
+                        tension: 0.4,
+                        fill: true,
+                        pointBackgroundColor: '#10b981',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        pointRadius: 4,
+                        pointHoverRadius: 6
+                    }
+                ]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                plugins: { legend: { position: 'top' } },
-                scales: { y: { beginAtZero: true } }
+                interaction: {
+                    mode: 'index',
+                    intersect: false,
+                },
+                plugins: { 
+                    legend: { position: 'top' },
+                    tooltip: {
+                        backgroundColor: 'rgba(17, 24, 39, 0.9)',
+                        titleFont: { size: 13 },
+                        bodyFont: { size: 13 },
+                        padding: 10,
+                        cornerRadius: 8,
+                        displayColors: true
+                    }
+                },
+                scales: { 
+                    y: { 
+                        beginAtZero: true,
+                        grid: { borderDash: [4, 4], color: '#f3f4f6' },
+                        ticks: { stepSize: 1, precision: 0 }
+                    },
+                    x: {
+                        grid: { display: false }
+                    }
+                }
             }
         });
     </script>
