@@ -165,8 +165,21 @@ $baseUrl = $isRailway ? '/' : '/SistemaPQRS/';
                 </div>
             </div>
 
+            <style>
+                .graficos-grid-2col {
+                    display: grid;
+                    grid-template-columns: 1fr;
+                    gap: 1.5rem;
+                    margin-bottom: 2rem;
+                }
+                @media (min-width: 1024px) {
+                    .graficos-grid-2col {
+                        grid-template-columns: repeat(2, 1fr);
+                    }
+                }
+            </style>
             <!-- Gráficos - HU-Reportes: Visualización en gráficos -->
-            <div class="graficos-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+            <div class="graficos-grid-2col">
                 <!-- Gráfico por tipo -->
                 <div class="grafico-card" style="background: #fff; border-radius: 1rem; padding: 1.5rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); border: 1px solid #f3f4f6;">
                     <div class="grafico-header" style="margin-bottom: 1rem; border-bottom: 1px solid #f3f4f6; padding-bottom: 0.5rem;">
