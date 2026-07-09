@@ -5,6 +5,18 @@ Todos los cambios notables de este proyecto se documentarán en este archivo.
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/),
 y este proyecto se adhiere al [Versionamiento Semántico](https://semver.org/lang/es/).
 
+## [v1.3.0] - 2026-07-09
+### Agregado
+- **Métrica de Rechazadas**: Se incluyó explícitamente el conteo de solicitudes rechazadas en el panel principal de métricas del dashboard de reportes, según las historias de usuario.
+- **Soporte de Entorno Docker**: Se incluyó la variable `APP_BASE=/` dentro de `docker-compose.yml` para garantizar que los estilos (CSS) y scripts se carguen correctamente al desplegar en producción.
+
+### Modificado
+- **Rediseño de Gráficos (Dashboard)**: Los gráficos estadísticos se reestructuraron en una cuadrícula (Grid) simétrica de 2x2 para pantallas de escritorio, optimizando proporciones y tamaños. Se implementó estética mejorada para la tendencia mensual y gráfico de dona.
+- **Exportación a PDF**: Se rediseñó el formato de exportación PDF cambiando su orientación a *Landscape* (Horizontal) e integrando todas las columnas detalladas que existían en el Excel (Contacto, Fechas de radicación/vencimiento, Términos).
+
+### Corregido
+- **Fallo de Identificación en Reportes**: Se solucionó un error donde las personas jurídicas o naturales aparecían como "Anónimo" en los reportes exportados al no leer la columna correcta de la base de datos (`razon_social` o `nombre_completo`).
+
 ## [v1.2.0] - 2026-06-23
 ### Agregado
 - **Soporte Nativo Local (.env)**: Se agregó la clase `EnvLoader.php` para parsear automáticamente el archivo `.env` en entornos de desarrollo local como XAMPP, unificando la lógica con el entorno de producción.
