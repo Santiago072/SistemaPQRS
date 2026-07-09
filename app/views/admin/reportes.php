@@ -166,34 +166,34 @@ $baseUrl = $isRailway ? '/' : '/SistemaPQRS/';
             </div>
 
             <!-- Gráficos - HU-Reportes: Visualización en gráficos -->
-            <div class="graficos-grid">
+            <div class="graficos-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
                 <!-- Gráfico por tipo -->
-                <div class="grafico-card">
-                    <div class="grafico-header">
-                        <h3><i class="bi bi-pie-chart"></i> Distribución por Tipo</h3>
+                <div class="grafico-card" style="background: #fff; border-radius: 1rem; padding: 1.5rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); border: 1px solid #f3f4f6;">
+                    <div class="grafico-header" style="margin-bottom: 1rem; border-bottom: 1px solid #f3f4f6; padding-bottom: 0.5rem;">
+                        <h3 style="font-size: 1.1rem; color: #111827; margin:0;"><i class="bi bi-pie-chart" style="color: #3b82f6;"></i> Distribución por Tipo</h3>
                     </div>
-                    <div class="grafico-body">
-                        <canvas id="chartTipo" height="250"></canvas>
+                    <div class="grafico-body" style="position: relative; height: 250px; width: 100%;">
+                        <canvas id="chartTipo"></canvas>
                     </div>
                 </div>
                 
                 <!-- Gráfico por estado -->
-                <div class="grafico-card">
-                    <div class="grafico-header">
-                        <h3><i class="bi bi-bar-chart"></i> Distribución por Estado</h3>
+                <div class="grafico-card" style="background: #fff; border-radius: 1rem; padding: 1.5rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); border: 1px solid #f3f4f6;">
+                    <div class="grafico-header" style="margin-bottom: 1rem; border-bottom: 1px solid #f3f4f6; padding-bottom: 0.5rem;">
+                        <h3 style="font-size: 1.1rem; color: #111827; margin:0;"><i class="bi bi-bar-chart" style="color: #10b981;"></i> Distribución por Estado</h3>
                     </div>
-                    <div class="grafico-body">
-                        <canvas id="chartEstado" height="250"></canvas>
+                    <div class="grafico-body" style="position: relative; height: 250px; width: 100%;">
+                        <canvas id="chartEstado"></canvas>
                     </div>
                 </div>
                 
                 <!-- Gráfico tendencia mensual -->
-                <div class="grafico-card grafico-full">
-                    <div class="grafico-header">
-                        <h3><i class="bi bi-graph-up"></i> Tendencia Mensual (Últimos 6 meses)</h3>
+                <div class="grafico-card grafico-full" style="grid-column: 1 / -1; background: #fff; border-radius: 1rem; padding: 1.5rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); border: 1px solid #f3f4f6;">
+                    <div class="grafico-header" style="margin-bottom: 1rem; border-bottom: 1px solid #f3f4f6; padding-bottom: 0.5rem;">
+                        <h3 style="font-size: 1.1rem; color: #111827; margin:0;"><i class="bi bi-graph-up" style="color: #8b5cf6;"></i> Tendencia Mensual (Últimos 6 meses)</h3>
                     </div>
-                    <div class="grafico-body">
-                        <canvas id="chartTendencia" height="120"></canvas>
+                    <div class="grafico-body" style="position: relative; height: 280px; width: 100%;">
+                        <canvas id="chartTendencia"></canvas>
                     </div>
                 </div>
             </div>
@@ -310,6 +310,7 @@ $baseUrl = $isRailway ? '/' : '/SistemaPQRS/';
             },
             options: {
                 responsive: true,
+                maintainAspectRatio: false,
                 plugins: {
                     legend: { position: 'bottom' }
                 }
@@ -330,6 +331,7 @@ $baseUrl = $isRailway ? '/' : '/SistemaPQRS/';
             },
             options: {
                 responsive: true,
+                maintainAspectRatio: false,
                 plugins: { legend: { display: false } },
                 scales: { y: { beginAtZero: true } }
             }
@@ -358,6 +360,7 @@ $baseUrl = $isRailway ? '/' : '/SistemaPQRS/';
             },
             options: {
                 responsive: true,
+                maintainAspectRatio: false,
                 plugins: { legend: { position: 'top' } },
                 scales: { y: { beginAtZero: true } }
             }
