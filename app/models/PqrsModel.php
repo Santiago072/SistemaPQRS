@@ -528,7 +528,11 @@ class PqrsModel
                     p.tipo_solicitud,
                     u.tipo_persona,
                     p.asunto,
-                    u.nombre_completo as solicitante,
+                    CASE 
+                        WHEN u.tipo_persona = 'JURIDICA' THEN u.razon_social
+                        WHEN u.tipo_persona = 'NATURAL' THEN u.nombre_completo
+                        ELSE 'Anónimo'
+                    END as solicitante,
                     u.correo_electronico,
                     u.telefono,
                     p.fecha_radicacion,
