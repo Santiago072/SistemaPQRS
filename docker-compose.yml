@@ -7,6 +7,7 @@ services:
     restart: always
     environment:
       - RAILWAY_ENVIRONMENT=${RAILWAY_ENVIRONMENT:-true}
+      - APP_BASE=/
       - PORT=${PORT:-80}
       - DB_HOST=${DB_HOST:-db}
       - DB_NAME=${DB_NAME:-sistema_pqrs}
