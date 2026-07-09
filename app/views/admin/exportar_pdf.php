@@ -14,6 +14,12 @@ $tipoLabels = [
     'denuncia' => 'Denuncia'
 ];
 
+$tipoPersonaLabels = [
+    'NATURAL' => 'Persona Natural',
+    'JURIDICA' => 'Persona Jurídica',
+    'ANONIMA' => 'Anónimo'
+];
+
 $estadoLabels = [
     'PENDIENTE' => 'Pendiente',
     'EN_PROCESO' => 'En Proceso',
@@ -55,9 +61,9 @@ $html = '
         .seccion { margin-bottom: 25px; }
         .seccion h2 { font-size: 12pt; color: #1e40af; margin-bottom: 10px; border-bottom: 1px solid #e5e7eb; padding-bottom: 5px; }
 
-        table { width: 100%; border-collapse: collapse; font-size: 8pt; }
-        th { background: #1e40af; color: white; padding: 8px 5px; text-align: left; font-weight: bold; }
-        td { padding: 6px 5px; border-bottom: 1px solid #e5e7eb; }
+        table { width: 100%; border-collapse: collapse; font-size: 7.5pt; table-layout: fixed; }
+        th { background: #1e40af; color: white; padding: 6px 4px; text-align: left; font-weight: bold; }
+        td { padding: 5px 4px; border-bottom: 1px solid #e5e7eb; word-wrap: break-word; overflow-wrap: break-word; }
         tr:nth-child(even) { background: #f9fafb; }
 
         .badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 7pt; font-weight: bold; }
@@ -159,26 +165,51 @@ $html .= '
         <table>
             <thead>
                 <tr>
-                    <th>Código</th>
-                    <th>Tipo</th>
-                    <th>Asunto</th>
-                    <th>Solicitante</th>
-                    <th>Fecha</th>
-                    <th>Estado</th>
+                    <th style="width: 8%;">Código</th>
+                    <th style="width: 8%;">Tipo</th>
+                    <th style="width: 9%;">Persona</th>
+                    <th style="width: 17%;">Asunto</th>
+                    <th style="width: 12%;">Solicitante</th>
+                    <th style="width: 14%;">Contacto</th>
+                    <th style="width: 12%;">Fechas (Rad./Venc.)</th>
+                    <th style="width: 10%;">Estado</th>
+                    <th style="width: 10%;">Términos</th>
                 </tr>
             </thead>
             <tbody>';
 
 foreach ($data as $pqrs) {
     $estadoClass = strtolower(str_replace('_', '-', $pqrs['estado']));
+    
+    // Calcular días restantes / términos similar al excel
+    $diasRest = '';
+    if ($pqrs['estado'] === 'RESUELTO' || $pqrs['estado'] === 'RECHAZADO') {
+        $diasRest = 'Cerrado';
+    } elseif ($pqrs['dias_restantes'] !== null) {
+        $diasRest = $pqrs['dias_restantes'] < 0 ? 'Vencida (' . abs($pqrs['dias_restantes']) . ')' : $pqrs['dias_restantes'];
+    } else {
+        $diasRest = 'N/A';
+    }
+
+    $contacto = htmlspecialchars($pqrs['correo_electronico'] ?? 'N/A');
+    if (!empty($pqrs['telefono'])) $contacto .= '<br>' . htmlspecialchars($pqrs['telefono']);
+
+    $fechas = date('d/m/Y', strtotime($pqrs['fecha_radicacion']));
+    if ($pqrs['fecha_vencimiento']) {
+        $fechas .= '<br>' . date('d/m/Y', strtotime($pqrs['fecha_vencimiento']));
+    }
+
     $html .= '
                 <tr>
                     <td>' . htmlspecialchars($pqrs['codigo_radicado']) . '</td>
-                    <td>' . ($tipoLabels[$pqrs['tipo_solicitud']] ?? $pqrs['tipo_solicitud']) . '</td>
-                    <td>' . htmlspecialchars(mb_substr($pqrs['asunto'], 0, 40)) . '</td>
-                    <td>' . htmlspecialchars($pqrs['nombre_completo'] ?? 'Anónimo') . '</td>
-                    <td>' . date('d/m/Y', strtotime($pqrs['fecha_radicacion'])) . '</td>
+                    <td>' . ($tipoLabels[$pqrs['tipo_solicitud']] ?? ucfirst($pqrs['tipo_solicitud'])) . '</td>
+                    <td>' . ($tipoPersonaLabels[strtoupper($pqrs['tipo_persona'] ?? '')] ?? ucfirst($pqrs['tipo_persona'] ?? 'N/A')) . '</td>
+                    <td>' . htmlspecialchars(mb_substr($pqrs['asunto'], 0, 45)) . '</td>
+                    <td>' . htmlspecialchars($pqrs['solicitante'] ?? $pqrs['nombre_completo'] ?? 'Anónimo') . '</td>
+                    <td>' . $contacto . '</td>
+                    <td>' . $fechas . '</td>
                     <td><span class="badge badge-' . $estadoClass . '">' . ($estadoLabels[$pqrs['estado']] ?? $pqrs['estado']) . '</span></td>
+                    <td style="text-align:center;">' . $diasRest . '<br><small>' . $pqrs['dentro_terminos'] . '</small></td>
                 </tr>';
 }
 
@@ -201,7 +232,7 @@ $options->set('defaultFont', 'DejaVu Sans');
 
 $dompdf = new Dompdf($options);
 $dompdf->loadHtml($html);
-$dompdf->setPaper('A4', 'portrait');
+$dompdf->setPaper('A4', 'landscape');
 $dompdf->render();
 
 // Nombre del archivo

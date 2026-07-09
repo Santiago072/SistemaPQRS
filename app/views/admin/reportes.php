@@ -112,45 +112,55 @@ $baseUrl = $isRailway ? '/' : '/SistemaPQRS/';
                 </form>
             </div>
 
-            <!-- Métricas principales - HU-Reportes: total recibidas, resueltas, pendientes, tiempo promedio -->
-            <div class="metricas-grid">
-                <div class="metrica-card metrica-total">
-                    <div class="metrica-icon">
+            <!-- Métricas principales - HU-Reportes: total recibidas, resueltas, pendientes, rechazadas, tiempo promedio -->
+            <div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));">
+                <div class="stat-card stat-total">
+                    <div class="stat-icon">
                         <i class="bi bi-inbox-fill"></i>
                     </div>
-                    <div class="metrica-info">
-                        <span class="metrica-num"><?php echo number_format($metricas['total_recibidas']); ?></span>
-                        <span class="metrica-label">Total Recibidas</span>
+                    <div class="stat-info">
+                        <span class="stat-num"><?php echo number_format($metricas['total_recibidas']); ?></span>
+                        <span class="stat-label">Total Recibidas</span>
                     </div>
                 </div>
                 
-                <div class="metrica-card metrica-resueltas">
-                    <div class="metrica-icon">
+                <div class="stat-card stat-resuelto">
+                    <div class="stat-icon">
                         <i class="bi bi-check-circle-fill"></i>
                     </div>
-                    <div class="metrica-info">
-                        <span class="metrica-num"><?php echo number_format($metricas['por_estado']['RESUELTO'] ?? 0); ?></span>
-                        <span class="metrica-label">Resueltas</span>
+                    <div class="stat-info">
+                        <span class="stat-num"><?php echo number_format($metricas['por_estado']['RESUELTO'] ?? 0); ?></span>
+                        <span class="stat-label">Resueltas</span>
                     </div>
                 </div>
                 
-                <div class="metrica-card metrica-pendientes">
-                    <div class="metrica-icon">
+                <div class="stat-card stat-pendiente">
+                    <div class="stat-icon">
                         <i class="bi bi-clock-fill"></i>
                     </div>
-                    <div class="metrica-info">
-                        <span class="metrica-num"><?php echo number_format(($metricas['por_estado']['PENDIENTE'] ?? 0) + ($metricas['por_estado']['EN_PROCESO'] ?? 0)); ?></span>
-                        <span class="metrica-label">Pendientes</span>
+                    <div class="stat-info">
+                        <span class="stat-num"><?php echo number_format(($metricas['por_estado']['PENDIENTE'] ?? 0) + ($metricas['por_estado']['EN_PROCESO'] ?? 0)); ?></span>
+                        <span class="stat-label">Pendientes</span>
                     </div>
                 </div>
                 
-                <div class="metrica-card metrica-tiempo">
-                    <div class="metrica-icon">
+                <div class="stat-card stat-vencida">
+                    <div class="stat-icon">
+                        <i class="bi bi-x-circle-fill"></i>
+                    </div>
+                    <div class="stat-info">
+                        <span class="stat-num"><?php echo number_format($metricas['por_estado']['RECHAZADO'] ?? 0); ?></span>
+                        <span class="stat-label">Rechazadas</span>
+                    </div>
+                </div>
+                
+                <div class="stat-card stat-mes">
+                    <div class="stat-icon">
                         <i class="bi bi-stopwatch-fill"></i>
                     </div>
-                    <div class="metrica-info">
-                        <span class="metrica-num"><?php echo $metricas['tiempo_promedio']; ?></span>
-                        <span class="metrica-label">Días promedio respuesta</span>
+                    <div class="stat-info">
+                        <span class="stat-num"><?php echo $metricas['tiempo_promedio']; ?></span>
+                        <span class="stat-label">Días promedio</span>
                     </div>
                 </div>
             </div>
