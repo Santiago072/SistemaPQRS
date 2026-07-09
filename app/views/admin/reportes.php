@@ -188,7 +188,7 @@ $baseUrl = $isRailway ? '/' : '/SistemaPQRS/';
                 </div>
                 
                 <!-- Gráfico tendencia mensual -->
-                <div class="grafico-card grafico-full" style="grid-column: 1 / -1; background: #fff; border-radius: 1rem; padding: 1.5rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); border: 1px solid #f3f4f6;">
+                <div class="grafico-card" style="background: #fff; border-radius: 1rem; padding: 1.5rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); border: 1px solid #f3f4f6;">
                     <div class="grafico-header" style="margin-bottom: 1rem; border-bottom: 1px solid #f3f4f6; padding-bottom: 0.5rem;">
                         <h3 style="font-size: 1.1rem; color: #111827; margin:0;"><i class="bi bi-graph-up" style="color: #8b5cf6;"></i> Tendencia Mensual (Últimos 6 meses)</h3>
                     </div>
@@ -196,34 +196,36 @@ $baseUrl = $isRailway ? '/' : '/SistemaPQRS/';
                         <canvas id="chartTendencia"></canvas>
                     </div>
                 </div>
-            </div>
 
-            <!-- Cumplimiento de términos -->
-            <div class="cumplimiento-card">
-                <div class="cumplimiento-header">
-                    <h3><i class="bi bi-clipboard-check"></i> Cumplimiento de Términos Legales</h3>
-                </div>
-                <div class="cumplimiento-body">
-                    <div class="cumplimiento-stats">
-                        <div class="cumplimiento-stat cumplimiento-ok">
-                            <div class="cumplimiento-progress">
-                                <?php 
-                                $total_terminos = $metricas['en_tiempo'] + $metricas['fuera_tiempo'];
-                                $porcentaje_cumplimiento = $total_terminos > 0 ? round(($metricas['en_tiempo'] / $total_terminos) * 100) : 0;
-                                ?>
-                                <div class="progress-circle" data-percent="<?php echo $porcentaje_cumplimiento; ?>">
-                                    <span><?php echo $porcentaje_cumplimiento; ?>%</span>
+                <!-- Cumplimiento de términos -->
+                <div class="grafico-card" style="background: #fff; border-radius: 1rem; padding: 1.5rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); border: 1px solid #f3f4f6; display: flex; flex-direction: column;">
+                    <div class="grafico-header" style="margin-bottom: 1rem; border-bottom: 1px solid #f3f4f6; padding-bottom: 0.5rem;">
+                        <h3 style="font-size: 1.1rem; color: #111827; margin:0;"><i class="bi bi-clipboard-check" style="color: #10b981;"></i> Cumplimiento de Términos Legales</h3>
+                    </div>
+                    <div class="grafico-body" style="flex: 1; display: flex; align-items: center; justify-content: center; min-height: 250px;">
+                        <div class="cumplimiento-stats" style="display: flex; gap: 2rem; align-items: center; justify-content: center; width: 100%;">
+                            <div class="cumplimiento-stat cumplimiento-ok" style="text-align: center;">
+                                <div class="cumplimiento-progress" style="margin-bottom: 1rem;">
+                                    <?php 
+                                    $total_terminos = $metricas['en_tiempo'] + $metricas['fuera_tiempo'];
+                                    $porcentaje_cumplimiento = $total_terminos > 0 ? round(($metricas['en_tiempo'] / $total_terminos) * 100) : 0;
+                                    ?>
+                                    <div class="progress-circle" data-percent="<?php echo $porcentaje_cumplimiento; ?>" style="width: 100px; height: 100px; border-radius: 50%; background: conic-gradient(#10b981 <?php echo $porcentaje_cumplimiento; ?>%, #e5e7eb 0); display: flex; align-items: center; justify-content: center; margin: 0 auto; position: relative;">
+                                        <div style="width: 80px; height: 80px; border-radius: 50%; background: #fff; display: flex; align-items: center; justify-content: center;">
+                                            <span style="font-size: 1.25rem; font-weight: bold; color: #10b981;"><?php echo $porcentaje_cumplimiento; ?>%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="cumplimiento-info">
+                                    <span class="cumplimiento-num" style="font-size: 1.5rem; font-weight: bold; color: #111827; display: block;"><?php echo $metricas['en_tiempo']; ?></span>
+                                    <span class="cumplimiento-label" style="font-size: 0.875rem; color: #6b7280;">Dentro de términos</span>
                                 </div>
                             </div>
-                            <div class="cumplimiento-info">
-                                <span class="cumplimiento-num"><?php echo $metricas['en_tiempo']; ?></span>
-                                <span class="cumplimiento-label">Dentro de términos</span>
-                            </div>
-                        </div>
-                        <div class="cumplimiento-stat cumplimiento-fail">
-                            <div class="cumplimiento-info">
-                                <span class="cumplimiento-num"><?php echo $metricas['fuera_tiempo']; ?></span>
-                                <span class="cumplimiento-label">Fuera de términos</span>
+                            <div class="cumplimiento-stat cumplimiento-fail" style="text-align: center; padding-left: 2rem; border-left: 1px solid #e5e7eb;">
+                                <div class="cumplimiento-info">
+                                    <span class="cumplimiento-num" style="font-size: 2rem; font-weight: bold; color: #ef4444; display: block; margin-bottom: 0.5rem;"><?php echo $metricas['fuera_tiempo']; ?></span>
+                                    <span class="cumplimiento-label" style="font-size: 0.875rem; color: #6b7280;">Fuera de términos</span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -305,14 +307,24 @@ $baseUrl = $isRailway ? '/' : '/SistemaPQRS/';
                     data: tipoData,
                     backgroundColor: ['#3b82f6', '#ef4444', '#f59e0b', '#10b981', '#8b5cf6'],
                     borderWidth: 2,
-                    borderColor: '#fff'
+                    borderColor: '#fff',
+                    hoverOffset: 4
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
+                cutout: '65%',
                 plugins: {
-                    legend: { position: 'bottom' }
+                    legend: { 
+                        position: 'right',
+                        labels: { boxWidth: 12, padding: 15, font: { size: 12 } }
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(17, 24, 39, 0.9)',
+                        padding: 10,
+                        cornerRadius: 8
+                    }
                 }
             }
         });
@@ -326,14 +338,31 @@ $baseUrl = $isRailway ? '/' : '/SistemaPQRS/';
                     label: 'Cantidad',
                     data: estadoData,
                     backgroundColor: ['#f59e0b', '#3b82f6', '#10b981', '#ef4444'],
-                    borderRadius: 8
+                    borderRadius: 6,
+                    barPercentage: 0.5
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
-                scales: { y: { beginAtZero: true } }
+                plugins: { 
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: 'rgba(17, 24, 39, 0.9)',
+                        padding: 10,
+                        cornerRadius: 8
+                    }
+                },
+                scales: { 
+                    y: { 
+                        beginAtZero: true,
+                        grid: { borderDash: [4, 4], color: '#f3f4f6' },
+                        ticks: { stepSize: 1, precision: 0 }
+                    },
+                    x: {
+                        grid: { display: false }
+                    }
+                }
             }
         });
 
