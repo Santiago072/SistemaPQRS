@@ -12,18 +12,79 @@ Esta situación expone a las empresas a sanciones legales y al deterioro de su i
 
 ---
 
-## 2. Flujo del Sistema
+## 2. Flujo del Sistema y Ciclo de Vida de PQRS
 
-El sistema opera bajo el siguiente flujo de interacción entre el ciudadano y el administrador:
+```mermaid
+stateDiagram-v2
+    [*] --> PENDIENTE : Ciudadano radica solicitud\n(PQRS-AAAA-MM-NNN)
+    
+    PENDIENTE --> EN_PROCESO : Administrador inicia gestión\ny revisión técnica
+    
+    EN_PROCESO --> RESUELTO : Respuesta formal emitida\n(Notificación enviada al ciudadano)
+    EN_PROCESO --> RECHAZADO : Solicitud improcedente / incompleta\n(Sustentación jurídica enviada)
+    
+    PENDIENTE --> RECHAZADO : No cumple requisitos de ley
+    
+    RESUELTO --> [*] : Caso cerrado satisfactoriamente
+    RECHAZADO --> [*] : Caso archivado con registro
+```
 
-1. **El usuario crea la solicitud:** El ciudadano ingresa al formulario público y completa los datos requeridos para radicar su PQRS.
-2. **Generación de código único:** El sistema genera automáticamente un código radicado con formato `PQRS-AAAA-MM-NNN` (ejemplo: `PQRS-2026-05-001`) que identifica de forma única la solicitud.
-3. **Almacenamiento en base de datos:** La solicitud y todos sus datos se guardan en la base de datos centralizada con estado inicial **Pendiente**.
-4. **Visualización por el administrador:** El panel de administración muestra la solicitud en la bandeja de entrada para su gestión.
-5. **Respuesta del administrador:** El administrador cambia el estado de la solicitud y registra una respuesta formal dirigida al ciudadano.
-6. **Consulta del ciudadano:** El ciudadano puede consultar en cualquier momento el estado actualizado de su solicitud usando su código o correo electrónico.
+### 2.1 Diagrama Entidad-Relación (Modelo de Datos)
+
+```mermaid
+erDiagram
+    ADMINISTRADOR ||--o{ HISTORIAL_ACCION : "registra cambios"
+    ADMINISTRADOR ||--o{ PQRS : "responde y gestiona"
+    USUARIO ||--o{ PQRS : "radica solicitud"
+    CONFIGURACION_SISTEMA ||--|| PQRS : "aplica términos legales"
+    PQRS ||--o{ HISTORIAL_ACCION : "trazabilidad de auditoría"
+    
+    ADMINISTRADOR {
+        int id PK
+        string nombre_usuario
+        string contrasena_hash
+        string correo_electronico
+        string estado
+        string token_recuperacion
+        datetime token_expiracion
+    }
+
+    USUARIO {
+        int id PK
+        string tipo_persona
+        string nombre_completo
+        string razon_social
+        string numero_documento
+        string correo_electronico
+        string telefono
+    }
+
+    PQRS {
+        int id PK
+        string codigo_radicado UK
+        string tipo_pqrs
+        string asunto
+        string descripcion
+        string archivo_adjunto
+        string estado
+        date fecha_radicacion
+        date fecha_vencimiento
+        string respuesta_admin
+    }
+
+    CONFIGURACION_SISTEMA {
+        int id PK
+        int dias_vencimiento_peticion
+        int dias_vencimiento_queja
+        int dias_vencimiento_reclamo
+        int dias_vencimiento_sugerencia
+        int dias_vencimiento_denuncia
+        string nombre_empresa
+    }
+```
 
 ---
+
 
 ## 3. Requisitos Funcionales (RF)
 
