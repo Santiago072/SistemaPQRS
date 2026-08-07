@@ -1,126 +1,249 @@
-# Arquitectura y Seguridad del Sistema PQRS
+# 🏗️ Arquitectura y Seguridad del Sistema PQRS (v1.4.0)
 
-Este documento describe detalladamente la arquitectura de software, los patrones de diseño implementados y las medidas de seguridad del Sistema de Peticiones, Quejas, Reclamos, Sugerencias y Denuncias (PQRS).
+Este documento valida formalmente las decisiones de arquitectura de software, patrones de diseño, flujos de persistencia, controles de seguridad e integración continua implementados en el **Sistema de Gestión de PQRS** bajo la normativa de Colombia (Ley 1755 de 2015 y Ley 1437 de 2011).
 
-## 1. Arquitectura de Software
+---
 
-El sistema está construido bajo el patrón **Modelo-Vista-Controlador (MVC)**, garantizando una separación clara entre la lógica de negocio, la interacción con la base de datos y la interfaz de usuario.
+## 1. Diagrama de Componentes y Responsabilidades
 
-### Estructura de Directorios (PSR-4)
-- **`app/controllers/`**: Contiene los controladores que procesan las peticiones HTTP (GET/POST).
-- **`app/models/`**: Contiene las clases que interactúan con la base de datos mediante sentencias preparadas.
-- **`app/views/`**: Contiene los archivos HTML/PHP de presentación.
-- **`app/services/`**: Contiene servicios externos, como `EmailService` para el envío de correos (PHPMailer).
-- **`app/core/`**: Contiene componentes base, como el Contenedor de Inyección de Dependencias.
-- **`config/`**: Archivos de configuración del sistema (ej. `email_config.php`).
-- **`.env`**: Archivo de variables de entorno para credenciales de base de datos y SMTP, cumpliendo con la metodología de *12-Factor App* y el principio OCP.
+```mermaid
+graph TB
+    subgraph CIUDADANO["👥 Portal Ciudadano (Frontend Público)"]
+        direction TB
+        UI_HOME["🏠 Vista Principal (Hero, Tipos, CTA)\napp/views/home/"]
+        UI_FORM["📝 Formulario de Radicación\n(Natural / Jurídica / Anónima)\napp/views/pqrs/formulario.php"]
+        UI_CONSULTA["🔍 Consulta en Tiempo Real\n(Línea de tiempo de hitos)\napp/views/pqrs/consulta.php"]
+    end
 
-### Front Controller y Enrutamiento Estricto
-Todas las solicitudes web pasan por un único punto de entrada: `index.php`. Este archivo actúa como **Front Controller** e implementa un mapa estricto de rutas.
-- Las URLs mantienen el formato `?ruta=modulo/accion`, asegurando compatibilidad hacia atrás.
-- Las rutas no definidas explícitamente lanzan un error `404 Not Found`.
+    subgraph ADMIN["🛡️ Backoffice Administrativo (Frontend Privado)"]
+        direction TB
+        UI_LOGIN["🔐 Login & Recuperación\napp/views/admin/login.php"]
+        UI_DASH["📊 Dashboard de KPIs\napp/views/admin/dashboard_admin.php"]
+        UI_BANDEJA["📥 Bandeja de PQRS & Respuestas\napp/views/admin/pqrs*.php"]
+        UI_CONFIG["⚙️ Configuración & Perfil\napp/views/admin/configuracion.php"]
+        UI_REPORTES["📑 Reportes (Excel / PDF)\napp/views/admin/reportes.php"]
+    end
 
-## 2. Implementación de Principios SOLID
+    subgraph CORE["⚙️ Núcleo de Aplicación (MVC + IoC Container)"]
+        direction TB
+        ROUTER["🔀 Front Controller\nindex.php (?ruta=...)"]
+        IOC["🧩 Inversión de Control (IoC)\napp/core/Container.php (Reflection API)"]
 
-El sistema ha sido refactorizado para cumplir con estándares empresariales mediante los principios SOLID:
+        subgraph CONTROLLERS["🎮 Controladores (SRP)"]
+            CTRL_PQRS["PqrsController\nRadicación & Consulta"]
+            CTRL_AUTH["AuthController\nBcrypt & Tokens 1h"]
+            CTRL_DASH["DashboardController\nKPIs & Resumen"]
+            CTRL_CONFIG["ConfigController\nParámetros & Perfil"]
+            CTRL_REP["ReportController\nExportación Excel/PDF"]
+        end
+    end
 
-1. **[S] Single Responsibility Principle (SRP)**:
-   - El monolítico `AdminController` fue fragmentado en controladores especializados ubicados en `app/controllers/admin/`:
-     - `AuthController`: Maneja exclusivamente inicio de sesión, cierre de sesión y recuperación de contraseñas.
-     - `DashboardController`: Carga las estadísticas iniciales.
-     - `ConfigController`: Gestiona los ajustes del perfil de administrador y las variables del sistema.
-     - `PqrsController`: Administra el flujo de los tickets (ver, cambiar estado, responder).
-     - `ReportController`: Especializado en generar exportaciones (PDF y Excel).
+    subgraph SERVICES["🔌 Capa de Servicios"]
+        SRV_EMAIL["✉️ EmailService (PHPMailer)\nNotificaciones SMTP & Recuperación"]
+        SRV_PDF["📄 DomPDF Engine\nGeneración de Reportes Landscape"]
+    end
 
-2. **[O] Open/Closed Principle (OCP)**:
-   - El enrutador basado en mapas (Arrays) permite agregar nuevas rutas y controladores sin tener que modificar la lógica central de inicialización.
+    subgraph DATA["🗄️ Capa de Persistencia & Base de Datos"]
+        DB_SINGLETON["🔒 Database.php (PDO Singleton)\nSentencias Preparadas & Transacciones"]
+        MODEL_PQRS["PqrsModel\n(Radicados, Vencimientos, Estados)"]
+        MODEL_ADMIN["AdminModel\n(Usuarios, Contraseñas, Tokens)"]
+        MODEL_CONFIG["ConfiguracionModel\n(Días de Término, Datos Institución)"]
+        MODEL_USER["UsuarioModel\n(Remitentes & Datos de Contacto)"]
 
-3. **[D] Dependency Inversion Principle (DIP)**:
-   - **Inyección de Dependencias**: Los controladores ya no instancian los modelos usando `new ClassName()` internamente.
-   - En su lugar, el `Container` de `app/core/Container.php` utiliza la **API de Reflexión** de PHP para analizar los parámetros del constructor e inyectar automáticamente los objetos necesarios.
-   - *Ejemplo*: `public function __construct(PqrsModel $pqrsModel)`. Esto desacopla el código y facilita futuras pruebas unitarias (Unit Testing con Mocks).
+        MARIADB[("🛢️ MariaDB 10.11 / MySQL\nsistema_pqrs")]
+    end
 
-## 3. Seguridad Implementada
+    %% Relaciones
+    UI_HOME --> ROUTER
+    UI_FORM --> ROUTER
+    UI_CONSULTA --> ROUTER
+    UI_LOGIN --> ROUTER
+    UI_DASH --> ROUTER
+    UI_BANDEJA --> ROUTER
+    UI_CONFIG --> ROUTER
+    UI_REPORTES --> ROUTER
 
-### Prevención de Inyección SQL (CWE-89)
-- **Cero funciones obsoletas**: Se erradicó por completo el uso de funciones `mysqli_*`.
-- **PDO (PHP Data Objects)**: Todas las consultas a la base de datos se ejecutan obligatoriamente mediante sentencias preparadas y parámetros enlazados (`$stmt->execute(['param' => $value])`). Esto garantiza inmunidad total contra SQL Injection.
+    ROUTER --> IOC
+    IOC --> CONTROLLERS
 
-### Prevención de XSS (Cross-Site Scripting) (CWE-79)
-- En todas las vistas (`app/views/`), las variables provenientes de la base de datos o de peticiones de usuarios se renderizan utilizando la función `htmlspecialchars($var, ENT_QUOTES, 'UTF-8')`.
-- Esto neutraliza la inyección de etiquetas HTML maliciosas o scripts de Javascript.
+    CTRL_PQRS --> MODEL_PQRS
+    CTRL_PQRS --> MODEL_USER
+    CTRL_PQRS --> SRV_EMAIL
 
-### Seguridad en Sesiones e Inicio de Sesión
-- **Protección de Contraseñas**: Las contraseñas nunca se guardan en texto plano. Se emplea `password_hash()` con el algoritmo robusto BCRYPT. Su validación se hace con `password_verify()`.
-- **Protección contra CSRF y Secuestro de Sesión**: Las sesiones están protegidas. El acceso a rutas de administración exige la presencia del ID de sesión; si no existe, redirige inmediatamente al login.
-- **Recuperación Segura**: Los tokens de recuperación de contraseñas se generan criptográficamente mediante `random_bytes()`, con una caducidad preestablecida en la base de datos de 1 hora.
+    CTRL_AUTH --> MODEL_ADMIN
+    CTRL_AUTH --> SRV_EMAIL
 
-### Carga de Archivos
-La subida de evidencias soporta extensiones limitadas (PDF, JPG, PNG) y se reescriben los nombres para evitar la sobreescritura accidental o inyección de archivos ejecutables en el servidor web.
+    CTRL_DASH --> MODEL_PQRS
+    CTRL_CONFIG --> MODEL_CONFIG
+    CTRL_CONFIG --> MODEL_ADMIN
 
-### Protección contra Spam (Rate Limiting)
-- Se implementó un limitador de peticiones basado en sesiones de PHP para la creación de PQRS.
-- Impone un tiempo de espera ("cooldown") de 120 segundos entre cada solicitud enviada por un mismo usuario, mitigando ataques de denegación de servicio (DoS) a nivel de aplicación y previniendo la saturación de la base de datos por *bots* o *scripts* automatizados.
+    CTRL_REP --> MODEL_PQRS
+    CTRL_REP --> SRV_PDF
 
-### Validación y Truncamiento de Entradas (Buffer Overflow)
-- **Frontend**: Todos los campos de texto HTML cuentan con atributos `maxlength` estrictos, alineados con el esquema de la base de datos (Ej. 150 caracteres para nombres).
-- **Backend**: Los controladores utilizan la función `mb_substr()` nativa de PHP para truncar de manera forzosa y segura el texto (respetando caracteres multibyte UTF-8) a la longitud exacta que soporta el motor de base de datos antes de enviarlo. Esto protege al sistema contra peticiones forjadas que buscan generar errores de desbordamiento por *payloads* masivos enviados fuera del navegador.
+    MODEL_PQRS --> DB_SINGLETON
+    MODEL_ADMIN --> DB_SINGLETON
+    MODEL_CONFIG --> DB_SINGLETON
+    MODEL_USER --> DB_SINGLETON
 
-## 4. Requisitos y Dependencias (Composer)
-- **PHP 8.2 o superior**
-- **PHPMailer** (para notificaciones por correo vía SMTP)
-- **DomPDF** (para la generación de reportes en formato PDF)
-- **PHPUnit 10.5** (suite de pruebas unitarias automatizadas en entorno de desarrollo)
-
-El proyecto utiliza **PSR-4** a través de `composer.json` para la carga automática de clases. Para registrar nuevos componentes basta con ejecutar:
-```bash
-composer dump-autoload
+    DB_SINGLETON --> MARIADB
 ```
 
 ---
 
-## 5. Suite de Pruebas Automatizadas (PHPUnit 10.5)
+## 2. Matriz de Responsabilidades por Componente
 
-El sistema incluye una suite de **35 pruebas unitarias** con **80 aserciones** que validan la lógica de negocio y arquitectura sin requerir conexión a base de datos externa:
+| Capa | Componente | Principio SOLID | Responsabilidad Principal |
+|------|------------|:---------------:|---------------------------|
+| **Core** | `index.php` | OCP | Front Controller centralizado; resolución estricta de rutas |
+| **Core** | `Container.php` | DIP | Inyección de dependencias recursiva mediante Reflection API de PHP |
+| **Controlador** | `AuthController.php` | SRP | Autenticación con Bcrypt, sesiones blindadas y recuperación por tokens de 64 chars |
+| **Controlador** | `PqrsController.php` | SRP | Radicación ciudadana, sanitización de archivos y consulta en tiempo real |
+| **Controlador** | `DashboardController.php` | SRP | Cálculo de indicadores de rendimiento (KPIs), cumplimiento y estados |
+| **Controlador** | `ConfigController.php` | SRP | Parametrización de días de vencimiento (1–30 días) y actualización de perfil admin |
+| **Controlador** | `ReportController.php` | SRP | Generación y exportación de bitácoras en Excel y PDF horizontal |
+| **Modelo** | `PqrsModel.php` | SRP | Consecutivo mensual `PQRS-AAAA-MM-NNN`, ciclo de vida y cálculo de vencimientos |
+| **Modelo** | `AdminModel.php` | SRP | Consulta y actualización de credenciales, tokens temporales y último acceso |
+| **Modelo** | `Database.php` | SRP | Conexión PDO Singleton con emulación desactivada y UTF-8mb4 estricto |
+| **Servicio** | `EmailService.php` | DIP | Envío de correos SMTP (radicación, respuesta institucional y recuperación) |
 
-| Test Suite | Ubicación | Pruebas | Qué valida |
-|------------|-----------|:-------:|------------|
-| **ContainerTest** | `tests/Unit/ContainerTest.php` | 6 | Resolución de dependencias vía Reflection API, instancias Singleton, excepciones ante clases abstractas y tipos primitivos |
-| **AuthControllerTest** | `tests/Unit/AuthControllerTest.php` | 9 | Hashing y verificación con Bcrypt, unicidad y formato de tokens de recuperación (64 chars hex), expiración en 1 hora y validación de emails |
-| **PqrsModelTest** | `tests/Unit/PqrsModelTest.php` | 11 | Formato de código radicado serial `PQRS-AAAA-MM-NNN`, relleno con ceros (zero-padding), 4 estados de ciclo de vida, 5 tipos de solicitud y cálculo de vencimiento |
-| **EmailServiceTest** | `tests/Unit/EmailServiceTest.php` | 9 | Configuración segura desde variables de entorno, validación de puertos SMTP, etiquetas de tipo en español y estructura de mensajes |
+---
 
-Para ejecutar las pruebas localmente:
-```bash
-composer test          # Modo estándar
-composer test-verbose  # Modo detallado con TestDox
+## 3. Diagrama de Flujo: Radicación y Ciclo de Vida de PQRS
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor Ciudadano
+    participant Router as index.php
+    participant Ctrl as PqrsController
+    participant Model as PqrsModel
+    participant DB as MariaDB (PDO)
+    participant SMTP as EmailService (PHPMailer)
+
+    Ciudadano->>Router: POST /index.php?ruta=pqrs/guardar
+    Router->>Ctrl: guardar() con inyección de PqrsModel
+    Ctrl->>Ctrl: Sanitización de entradas (mb_substr, htmlspecialchars)
+    Ctrl->>Ctrl: Validación de adjunto (PDF, JPG, PNG)
+    Ctrl->>Model: generarCodigoRadicado()
+    Model->>DB: SELECT MAX(consecutivo) WHERE Año=Actual AND Mes=Actual
+    DB-->>Model: Último número
+    Model-->>Ctrl: Código: PQRS-2026-08-001 (Zero-Padded)
+    Ctrl->>Model: calcularFechaVencimiento(dias)
+    Ctrl->>Model: crear(datos)
+    Model->>DB: INSERT INTO pqrs (Prepared Statement)
+    DB-->>Model: ID insertado
+    
+    opt Desea Notificación y tiene correo
+        Ctrl->>SMTP: enviarConfirmacionRadicacion(correo, radicado, fecha)
+        SMTP-->>Ciudadano: Correo con Radicado y Enlace de Consulta
+    end
+
+    Ctrl-->>Ciudadano: Vista de Confirmación con Botón Copiar Código
 ```
 
 ---
 
-## 6. Integración Continua (CI/CD con GitHub Actions)
+## 4. Diagrama de Seguridad: Recuperación de Contraseña con Validación en BD
 
-El archivo `.github/workflows/ci.yml` automatiza la verificación de calidad del código en la nube:
-- **Disparadores**: Cada `push` o `pull_request` sobre las ramas `master` o `main`.
-- **Entorno**: Contenedor Ubuntu con **PHP 8.2** y extensiones (`mbstring`, `pdo`, `pdo_mysql`, `openssl`, `fileinfo`).
-- **Pipeline**:
-  1. `actions/checkout@v4` — Descarga del código fuente.
-  2. `shivammathur/setup-php@v2` — Configuración del runtime PHP 8.2.
-  3. `actions/cache@v4` — Almacenamiento en caché de dependencias `vendor/` basado en el hash de `composer.lock`.
-  4. `composer install --prefer-dist` — Instalación reproducible de dependencias.
-  5. `vendor/bin/phpunit --testdox` — Ejecución de los 35 tests automatizados.
+```mermaid
+sequenceDiagram
+    autonumber
+    actor Admin
+    participant Ctrl as AuthController
+    participant Model as AdminModel
+    participant DB as MariaDB (administrador)
+    participant SMTP as EmailService
+
+    Admin->>Ctrl: POST ?ruta=admin/recuperar (correo)
+    Ctrl->>Ctrl: filter_var(correo, FILTER_VALIDATE_EMAIL)
+    Ctrl->>Model: obtenerPorCorreo(correo)
+    Model->>DB: SELECT * FROM administrador WHERE correo_electronico=:correo AND estado='activo'
+    
+    alt Correo NO existe en la base de datos
+        DB-->>Model: null
+        Model-->>Ctrl: null
+        Ctrl-->>Admin: ❌ Error: "El correo electrónico ingresado no se encuentra registrado en el sistema."
+    else Correo existe y cuenta está activa
+        DB-->>Model: Datos del administrador
+        Model-->>Ctrl: [id, nombre, usuario, correo]
+        Ctrl->>Ctrl: Generar token bin2hex(random_bytes(32)) -> 64 chars
+        Ctrl->>Ctrl: expiracion = NOW() + 1 hora
+        Ctrl->>Model: actualizarTokenRecuperacion(id, token, expiracion)
+        Model->>DB: UPDATE administrador SET token_recuperacion, token_expiracion
+        Ctrl->>SMTP: enviarCorreoRecuperacion(correo, urlReset con token)
+        SMTP-->>Admin: Correo seguro con enlace de 1 solo uso (expira en 3600s)
+        Ctrl-->>Admin: ✅ Éxito: "Se ha enviado un enlace de recuperación a su correo."
+    end
+```
 
 ---
 
-## 7. Arquitectura Modular del Frontend (CSS)
+## 5. Diagrama de DevOps e Integración Continua (CI/CD)
 
-La hoja de estilos `public/css/estilos.css` está organizada bajo una arquitectura modular en `public/css/modules/` para facilitar el mantenimiento y eliminar la complejidad de archivos monolíticos:
+```mermaid
+graph LR
+    subgraph DEV["💻 Desarrollo Local"]
+        CODE["Código PHP 8.2\n(MVC + IoC)"]
+        TEST_LOCAL["composer test\n(37 tests / 86 assertions)"]
+        GIT_PUSH["git push origin master"]
 
-- `variables.css` — Custom properties, paleta de colores HSL/Hex, tipografía, espaciados y sombras.
-- `base.css` — Reset universal, estilos de elementos base, contenedores y utilidades globales.
-- `layout.css` — Header sticky, footer corporativo, sección Hero del portal ciudadano y banners CTA.
-- `components.css` — Botones interactivos, badges de estado, cuadrícula de cards, línea de tiempo, tabla legal y modales.
-- `forms.css` — Formulario de radicación con selector de persona, consulta pública de PQRS y login administrativo.
-- `admin.css` — Dashboard de KPIs, métricas en tiempo real, filtros avanzados de búsqueda, alertas de urgencia y reportes.
-- `responsive.css` — Breakpoints adaptativos (640px, 768px, 1024px), adaptaciones móviles y soporte para `prefers-reduced-motion`.
+        CODE --> TEST_LOCAL --> GIT_PUSH
+    end
 
+    subgraph GITHUB["☁️ GitHub Actions CI/CD (.github/workflows/ci.yml)"]
+        TRIGGER["Push / Pull Request"]
+        SETUP["🐘 Setup PHP 8.2\n(mbstring, pdo, openssl)"]
+        CACHE["🗄️ Cache Composer\n(composer.lock hash)"]
+        INSTALL["📦 composer install\n--prefer-dist"]
+        PHPUNIT["🧪 vendor/bin/phpunit\n--testdox (100% pasando)"]
+
+        TRIGGER --> SETUP --> CACHE --> INSTALL --> PHPUNIT
+    end
+
+    subgraph PROD["🖥️ VPS Producción (Docker)"]
+        DEPLOY["bash deploy.sh\n(fetch + reset + build)"]
+        CADDY["Caddy / Nginx\nProxy Inverso + SSL"]
+        CONTAINERS["Docker Compose\n(sistemapqrs_web + db)"]
+
+        PHPUNIT -.->|Badge Verde ✅| DEPLOY
+        DEPLOY --> CONTAINERS --> CADDY
+    end
+```
+
+---
+
+## 6. Suite de Pruebas Automatizadas (PHPUnit 10.5)
+
+El sistema cuenta con **37 pruebas unitarias** y **86 aserciones** ejecutadas en menos de 0.7 segundos:
+
+| Suite | Archivo | Pruebas | Alcance y Cobertura |
+|-------|---------|:-------:|---------------------|
+| **ContainerTest** | `tests/Unit/ContainerTest.php` | 6 | Inyección recursiva por Reflection API, singletons, control de clases abstractas y tipos primitivos |
+| **AuthControllerTest** | `tests/Unit/AuthControllerTest.php` | 11 | Algoritmo Bcrypt, validación estricta de correo en tabla `administrador`, rechazo de correos no registrados, tokens de 64 chars y expiración en 3600s |
+| **PqrsModelTest** | `tests/Unit/PqrsModelTest.php` | 11 | Formato `PQRS-AAAA-MM-NNN`, zero-padding, validación de 4 estados, 5 tipos de trámite y cálculo de vencimiento en días hábiles |
+| **EmailServiceTest** | `tests/Unit/EmailServiceTest.php` | 9 | Configuración segura desde variables de entorno, validación de puertos SMTP, etiquetas en español y construcción de plantillas |
+
+Para ejecutar localmente:
+```bash
+composer test          # Suite resumida
+composer test-verbose  # Suite detallada con TestDox
+```
+
+---
+
+## 7. Capa de Presentación Modular (CSS)
+
+La hoja de estilos principal `public/css/estilos.css` actúa como orquestador limpio vía `@import` integrando 7 submódulos bajo `public/css/modules/`:
+
+```text
+public/css/
+├── estilos.css           # Orquestador principal (@import)
+└── modules/
+    ├── variables.css     # Tokens de diseño, colores HSL/Hex, espaciado y sombras
+    ├── base.css          # Reset universal, tipografía base y contenedores
+    ├── layout.css        # Header sticky, footer corporativo, hero y CTA
+    ├── components.css    # Botones interactivos, badges, cards, timeline y modal
+    ├── forms.css         # Formularios de radicación, consulta y login
+    ├── admin.css         # Dashboard de KPIs, métricas, filtros y reportes
+    └── responsive.css    # Breakpoints 640px/768px/1024px y prefers-reduced-motion
+```

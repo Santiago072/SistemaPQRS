@@ -54,17 +54,81 @@ El sistema cuenta con dos portales principales:
 
 ---
 
+## 🏗️ Arquitectura y Componentes
+
+```mermaid
+graph TB
+    subgraph CIUDADANO["👥 Portal Ciudadano (Público)"]
+        UI_PUBLIC["Vistas Ciudadanas\n(Radicación, Consulta, Términos)"]
+    end
+
+    subgraph ADMIN["🛡️ Panel Admin (Privado)"]
+        UI_ADMIN["Vistas Backoffice\n(Dashboard KPIs, Bandeja, Reportes)"]
+    end
+
+    subgraph ROUTER_LAYER["🔀 Enrutamiento & IoC"]
+        ROUTER["Front Controller (index.php)"]
+        IOC["IoC Container (Container.php)\nReflection API"]
+    end
+
+    subgraph CONTROLLERS["🎮 Controladores (SRP)"]
+        C_PQRS["PqrsController"]
+        C_AUTH["AuthController (Bcrypt + Tokens)"]
+        C_DASH["DashboardController"]
+        C_CONF["ConfigController"]
+        C_REP["ReportController"]
+    end
+
+    subgraph MODELS["🗄️ Modelos & Persistencia"]
+        DB["Database.php (PDO Singleton)"]
+        M_PQRS["PqrsModel (Radicado Serial)"]
+        M_ADMIN["AdminModel (Validación BD)"]
+        M_USER["UsuarioModel"]
+        MARIADB[("MariaDB 10.11\nsistema_pqrs")]
+    end
+
+    subgraph SERVICES["🔌 Servicios"]
+        S_EMAIL["EmailService (PHPMailer)"]
+        S_PDF["DomPDF (Reportes)"]
+    end
+
+    UI_PUBLIC --> ROUTER
+    UI_ADMIN --> ROUTER
+    ROUTER --> IOC --> CONTROLLERS
+
+    C_PQRS --> M_PQRS
+    C_PQRS --> M_USER
+    C_PQRS --> S_EMAIL
+
+    C_AUTH --> M_ADMIN
+    C_AUTH --> S_EMAIL
+
+    C_DASH --> M_PQRS
+    C_CONF --> M_ADMIN
+
+    C_REP --> M_PQRS
+    C_REP --> S_PDF
+
+    M_PQRS --> DB
+    M_ADMIN --> DB
+    M_USER --> DB
+    DB --> MARIADB
+```
+
+---
+
 ## 🧪 Pruebas Automatizadas (PHPUnit 10.5)
 
-El sistema incluye una suite de **35 pruebas unitarias** con **80 aserciones** que validan el comportamiento del IoC Container, lógica de autenticación, generación de radicados y servicios SMTP:
+El sistema incluye una suite de **37 pruebas unitarias** con **86 aserciones** que validan el comportamiento del IoC Container, lógica de autenticación y validación de correo contra la tabla `administrador`, generación de radicados seriales y servicios SMTP:
 
 ```bash
-# Ejecutar la suite completa
+# Ejecutar la suite completa (37 tests / 86 assertions)
 composer test
 
 # Ejecutar con salida detallada (testdox)
 composer test-verbose
 ```
+
 
 ---
 
