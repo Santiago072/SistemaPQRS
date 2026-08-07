@@ -8,16 +8,18 @@ El sistema cuenta con dos portales principales:
 
 ---
 
-## 📚 Documentación y Manuales
-
 | Documento | Descripción |
 |-----------|-------------|
-| 📋 [Especificación de Requisitos](docs/Especificacion_Requisitos.md) | Problemática, RF, RNF, flujo del sistema, Historias de Usuario por Sprint (Scrum), estados de PQRS y beneficios esperados |
-| 📖 [Documentación Técnica](docs/documentacion-tecnica.md) | Arquitectura MVC, base de datos, módulos, seguridad, flujos internos, requisitos funcionales implementados e instalación |
-| 👤 [Manual de Usuario](docs/Manual_de_Usuario.md) | Guía paso a paso para ciudadanos y administradores: radicar PQRS, consultar estado, gestionar solicitudes, reportes y configuración |
-| 🔐 [Arquitectura y Seguridad](docs/ARQUITECTURA_Y_SEGURIDAD.md) | Patrones de Diseño (MVC, SOLID), Inyección de Dependencias (IoC Container), Prevención XSS/SQL Injection y enrutador estricto |
-| 📜 [Registro de Cambios (Changelog)](CHANGELOG.md) | Historial detallado de todas las nuevas funcionalidades, versiones, correcciones de errores y actualizaciones técnicas |
+| 👤 [Manual de Usuario](docs/Manual_de_Usuario.md) | Guía de uso de la aplicación para usuarios finales |
+| 📜 [Registro de Cambios](CHANGELOG.md) | Historial de versiones y modificaciones del sistema (v1.4.0) |
+| 📋 [Plan de Implementación](docs/PLAN_DE_IMPLEMENTACION.md) | Fases del proyecto, stack tecnológico y arquitectura de atención ciudadana |
+| 📖 [Documentación Técnica](docs/documentacion-tecnica.md) | Arquitectura MVC, base de datos, módulos, seguridad, CI/CD y flujos internos |
+| 📋 [Especificación de Requisitos](docs/Especificacion_Requisitos.md) | Problemática, RF, RNF, flujo del sistema, Historias de Usuario por Sprint (Scrum) |
+| 🚀 [Manual de Despliegue VPS](docs/DESPLIEGUE_VPS.md) | Guía paso a paso para instalar y actualizar en el VPS con Docker y Nginx |
+| 🏗️ [Arquitectura y Componentes](docs/ARQUITECTURA_Y_SEGURIDAD.md) | Diagramas y patrones: MVC, SOLID, IoC Container, seguridad y Docker |
+| 🤝 [Guía para Colaboradores](docs/CONTRIBUTING.md) | Configuración local, convenciones de commits y checklist de PR |
 | ⚖️ [Licencia MIT](LICENSE) | Términos legales de propiedad intelectual y uso abierto |
+
 
 ---
 

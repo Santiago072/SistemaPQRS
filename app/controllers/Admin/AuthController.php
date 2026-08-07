@@ -109,8 +109,8 @@ class AuthController
                         $tipo_mensaje = 'error';
                     }
                 } else {
-                    $mensaje = 'Si el correo está registrado, recibirá un enlace de recuperación.';
-                    $tipo_mensaje = 'exito';
+                    $mensaje = 'El correo electrónico ingresado no se encuentra registrado en el sistema.';
+                    $tipo_mensaje = 'error';
                 }
             }
         }

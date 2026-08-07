@@ -163,4 +163,47 @@ class AuthControllerTest extends TestCase
 
         $this->assertSame(3600, $diferencia, 'El token debe expirar exactamente en 3600 segundos (1 hora).');
     }
+
+    // ── Validación de correo contra la tabla administrador en BD ──────────────
+
+    /** @test */
+    public function recuperar_consulta_correo_en_tabla_administrador(): void
+    {
+        $correoExistente = 'admin@pqrs.gov.co';
+
+        $this->adminModelMock
+            ->expects($this->once())
+            ->method('obtenerPorCorreo')
+            ->with($this->equalTo($correoExistente))
+            ->willReturn([
+                'id'                 => 1,
+                'nombre_usuario'     => 'admin',
+                'nombre_completo'    => 'Administrador General',
+                'correo_electronico' => $correoExistente,
+                'estado'             => 'activo'
+            ]);
+
+        $resultado = $this->adminModelMock->obtenerPorCorreo($correoExistente);
+
+        $this->assertNotNull($resultado);
+        $this->assertSame($correoExistente, $resultado['correo_electronico']);
+        $this->assertSame('activo', $resultado['estado']);
+    }
+
+    /** @test */
+    public function recuperar_retorna_null_si_correo_no_existe_en_base_de_datos(): void
+    {
+        $correoNoRegistrado = 'correo_inexistente@dominio.com';
+
+        $this->adminModelMock
+            ->expects($this->once())
+            ->method('obtenerPorCorreo')
+            ->with($this->equalTo($correoNoRegistrado))
+            ->willReturn(null);
+
+        $resultado = $this->adminModelMock->obtenerPorCorreo($correoNoRegistrado);
+
+        $this->assertNull($resultado, 'Debe retornar null cuando el correo no existe en la tabla administrador.');
+    }
 }
+
