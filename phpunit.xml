@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.5/phpunit.xsd"
+         bootstrap="tests/bootstrap.php"
+         colors="true"
+         failOnWarning="false"
+         failOnRisky="false"
+         stopOnFailure="false">
+
+    <testsuites>
+        <testsuite name="SistemaPQRS Unit Tests">
+            <directory>tests/Unit</directory>
+        </testsuite>
+    </testsuites>
+
+    <source>
+        <include>
+            <directory suffix=".php">app/controllers</directory>
+            <directory suffix=".php">app/models</directory>
+            <directory suffix=".php">app/services</directory>
+            <directory suffix=".php">app/core</directory>
+        </include>
+        <exclude>
+            <directory>vendor</directory>
+            <directory>tests</directory>
+        </exclude>
+    </source>
+
+    <php>
+        <!-- Variables de entorno seguras para el entorno de pruebas -->
+        <env name="APP_ENV" value="testing"/>
+        <env name="DB_HOST" value="localhost"/>
+        <env name="DB_NAME" value="sistema_pqrs_test"/>
+        <env name="DB_USER" value="root"/>
+        <env name="DB_PASSWORD" value=""/>
+        <env name="SMTP_HOST" value="smtp.test.local"/>
+        <env name="SMTP_PORT" value="587"/>
+        <env name="SMTP_USER" value="test@test.local"/>
+        <env name="SMTP_PASSWORD" value="test_password"/>
+        <env name="FROM_EMAIL" value="noreply@test.local"/>
+        <env name="FROM_NAME" value="PQRS Test"/>
+    </php>
+
+</phpunit>
