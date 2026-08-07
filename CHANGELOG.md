@@ -5,6 +5,18 @@ Todos los cambios notables de este proyecto se documentarán en este archivo.
 El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.0.0/),
 y este proyecto se adhiere al [Versionamiento Semántico](https://semver.org/lang/es/).
 
+## [v1.4.0] - 2026-08-07
+### Agregado
+- **Suite de Pruebas Automatizadas (PHPUnit 10.5)**: Se construyó una suite de 35 pruebas unitarias con 80 aserciones (`tests/Unit/`) cubriendo el IoC Container (`ContainerTest`), autenticación con Bcrypt y tokens de recuperación (`AuthControllerTest`), reglas de negocio de radicación y consecutivo serial (`PqrsModelTest`), y configuración del servicio SMTP (`EmailServiceTest`).
+- **Scripts de Prueba en Composer**: Se añadieron los comandos `composer test` y `composer test-verbose` al archivo `composer.json` con soporte para namespaces `Tests\` en `autoload-dev`.
+- **Integración Continua (CI/CD)**: Creación del workflow de GitHub Actions (`.github/workflows/ci.yml`) que valida automáticamente cada push y pull request a las ramas `master` y `main` sobre PHP 8.2 con extensiones `mbstring`, `pdo`, `pdo_mysql`, `openssl` y `fileinfo`.
+- **Licencia MIT**: Incorporación oficial del archivo `LICENSE` en la raíz del proyecto para resolver la ambigüedad legal de uso, modificación y distribución.
+
+### Modificado
+- **Modularización Completa del CSS**: Se refactorizó la hoja de estilos monolítica `public/css/estilos.css` (1,602 líneas) en 7 módulos CSS independientes y mantenibles dentro de `public/css/modules/` (`variables.css`, `base.css`, `layout.css`, `components.css`, `forms.css`, `admin.css`, `responsive.css`). El archivo principal actúa como orquestador limpio vía `@import` con cero regresiones visuales.
+- **Control de Versiones Limpio (`.gitignore`)**: Se excluyó la carpeta `vendor/` del tracking de Git para evitar subir dependencias externas regenerables, además de ignorar `.phpunit.result.cache`, `.phpunit.cache/`, logs en tiempo de ejecución y artefactos del sistema operativo.
+- **Documentación Homogénea**: Se actualizó el `README.md` a la versión 1.4.0 incorporando el enlace oficial a la Licencia MIT en la tabla de documentación, comandos de prueba unitaria y el árbol del proyecto actualizado.
+
 ## [v1.3.0] - 2026-07-09
 ### Agregado
 - **Métrica de Rechazadas**: Se incluyó explícitamente el conteo de solicitudes rechazadas en el panel principal de métricas del dashboard de reportes, según las historias de usuario.
@@ -28,8 +40,6 @@ y este proyecto se adhiere al [Versionamiento Semántico](https://semver.org/lan
 ### Modificado
 - **Refactorización de Entorno (Agnosticismo)**: Se eliminó la dependencia *hardcoded* (`RAILWAY_ENVIRONMENT`) en favor de la variable estándar `APP_BASE`. El proyecto ahora soporta cualquier VPS de manera oficial y agnóstica.
 - **Documentación de Arquitectura**: Se amplió drásticamente el `README.md` detallando la función de cada controlador, modelo y vista dentro del patrón MVC.
-
-### Modificado
 - **UX Administrador**: Ahora, al elegir una plantilla de respuesta (Ej. Resuelto, En Proceso), el sistema auto-selecciona el estado correspondiente en la lista desplegable de forma inteligente y lo resalta visualmente.
 - **Experiencia de Usuario (Ciudadano)**: El botón "Nueva Solicitud" del footer ahora abre el modal de aceptación de términos globalmente sin importar en qué vista se encuentre el usuario.
 
