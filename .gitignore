@@ -1,9 +1,36 @@
-dompdf/
-uploads/
+# ── Dependencias PHP (Composer) ──────────────────────────────────────────────
+vendor/
+
+# ── Variables de entorno y configuración sensible ────────────────────────────
+.env
 config/conexion.php
 config/email_config.php
+
+# ── Archivos legados ignorados previamente ────────────────────────────────────
+dompdf/
 pqrs/formulario.php
 pqrs/responder.php
 BD.txt
 logs/email_config
-.env
+
+# ── Uploads (archivos de usuario, no versionables) ───────────────────────────
+uploads/*
+!uploads/.gitkeep
+
+# ── PHPUnit ──────────────────────────────────────────────────────────────────
+.phpunit.result.cache
+.phpunit.cache/
+
+# ── Logs generados en tiempo de ejecución ────────────────────────────────────
+logs/email_log.txt
+logs/*.log
+
+# ── IDEs y editores ──────────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ── Sistema operativo ─────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
