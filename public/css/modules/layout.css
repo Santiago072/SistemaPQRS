@@ -1,0 +1,257 @@
+/* ── 5. HEADER & NAVEGACIÓN ─────────────────────────────────────────────────── */
+.header {
+    background: var(--color-white);
+    box-shadow: var(--shadow-sm);
+    position: sticky;
+    top: 0;
+    z-index: var(--z-sticky);
+    border-bottom: 1px solid var(--color-gray-200);
+}
+
+.header-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    font-weight: 700;
+    font-size: var(--font-size-xl);
+    color: var(--color-primary);
+}
+
+.logo-icon {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, var(--color-primary), var(--color-primary-light));
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-white);
+}
+
+.logo-icon .bi {
+    font-size: 1.25rem;
+}
+
+.nav-admin {
+    display: flex;
+    align-items: center;
+}
+
+/* ── 6. FOOTER ─────────────────────────────────────────────────────────────── */
+.footer {
+    background: var(--color-gray-900);
+    color: var(--color-gray-400);
+    padding: var(--space-10) 0 var(--space-6);
+}
+
+.footer-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-8);
+    margin-bottom: var(--space-8);
+}
+
+.footer-brand {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    color: var(--color-white);
+    font-weight: 700;
+    font-size: var(--font-size-lg);
+    margin-bottom: var(--space-3);
+}
+
+.footer-brand .bi {
+    font-size: 1.5rem;
+    color: var(--color-primary-light);
+}
+
+.footer-text {
+    font-size: var(--font-size-sm);
+    line-height: 1.6;
+    color: var(--color-gray-500);
+}
+
+.footer-title {
+    color: var(--color-white);
+    font-weight: 600;
+    font-size: var(--font-size-sm);
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    margin-bottom: var(--space-4);
+}
+
+.footer-links {
+    list-style: none;
+}
+
+.footer-links li {
+    margin-bottom: var(--space-2);
+}
+
+.footer-links a {
+    color: var(--color-gray-500);
+    font-size: var(--font-size-sm);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    transition: color var(--transition-fast);
+}
+
+.footer-links a:hover {
+    color: var(--color-white);
+}
+
+.footer-links a .bi {
+    font-size: .875rem;
+}
+
+.footer-bottom {
+    border-top: 1px solid var(--color-gray-800);
+    padding-top: var(--space-6);
+    text-align: center;
+    font-size: var(--font-size-sm);
+    color: var(--color-gray-600);
+}
+
+/* ── 8. HERO (Portal Ciudadano) ─────────────────────────────────────────────── */
+.hero {
+    background: linear-gradient(135deg, var(--color-primary-dark), var(--color-primary) 50%, var(--color-primary-light));
+    color: var(--color-white);
+    padding: var(--space-16) 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--svg-pattern);
+    opacity: .3;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    background: rgba(255,255,255,.15);
+    backdrop-filter: blur(10px);
+    padding: var(--space-2) var(--space-4);
+    border-radius: var(--radius-full);
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    margin-bottom: var(--space-6);
+    border: 1px solid rgba(255,255,255,.2);
+}
+
+.hero-title {
+    font-size: var(--font-size-4xl);
+    font-weight: 800;
+    line-height: 1.2;
+    margin-bottom: var(--space-4);
+    text-shadow: 0 2px 4px rgba(0,0,0,.1);
+}
+
+.hero-description {
+    font-size: var(--font-size-lg);
+    opacity: .95;
+    margin-bottom: var(--space-8);
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.7;
+}
+
+.hero-actions {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    align-items: center;
+}
+
+.hero-actions .btn {
+    width: 100%;
+    max-width: 320px;
+}
+
+.hero-actions .btn .bi {
+    font-size: 1.25rem;
+}
+
+/* ── 13. CTA SECTION ───────────────────────────────────────────────────────── */
+.cta-section {
+    background: linear-gradient(135deg, var(--color-primary-dark), var(--color-primary));
+    color: var(--color-white);
+    padding: var(--space-16) 0;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.cta-section::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    right: -50%;
+    bottom: -50%;
+    background: radial-gradient(circle, rgba(255,255,255,.1), transparent 60%);
+    animation: pulse 4s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: .5; }
+    50%       { transform: scale(1.1); opacity: .8; }
+}
+
+.cta-content {
+    position: relative;
+    z-index: 1;
+}
+
+.cta-title {
+    font-size: var(--font-size-3xl);
+    font-weight: 700;
+    margin-bottom: var(--space-4);
+}
+
+.cta-description {
+    font-size: var(--font-size-lg);
+    opacity: .9;
+    margin-bottom: var(--space-8);
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.cta-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    align-items: center;
+}
+
+.cta-buttons .btn {
+    width: 100%;
+    max-width: 300px;
+}
+
+.cta-buttons .btn .bi {
+    font-size: 1.25rem;
+}

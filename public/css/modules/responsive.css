@@ -1,0 +1,104 @@
+/* ── 21. RESPONSIVE & MEDIA QUERIES ────────────────────────────────────────── */
+
+/* ── Pantallas medianas pequeñas (min-width: 640px) ────────────────────────── */
+@media (min-width: 640px) {
+    .modal-actions      { flex-direction: row; justify-content: flex-end; }
+    .btn-modal-primary, .btn-modal-secondary { width: auto; }
+    .btn-modal-primary  { order: 2; }
+    .btn-modal-secondary{ order: 1; }
+
+    .form-row           { grid-template-columns: repeat(2,1fr); }
+    .formulario-titulo  { font-size: var(--font-size-2xl); }
+
+    .confirmacion-actions { flex-direction: row; justify-content: center; }
+    .codigo-valor         { font-size: 2.5rem; }
+
+    .busqueda-input-wrap  { flex-direction: row; }
+    .resultado-grid       { grid-template-columns: 1fr 1fr; }
+
+    .stats-grid           { grid-template-columns: repeat(3,1fr); }
+    .acceso-grid          { grid-template-columns: repeat(4, 1fr); }
+}
+
+/* ── Pantallas tablets (min-width: 768px) ──────────────────────────────────── */
+@media (min-width: 768px) {
+    .hero-title         { font-size: 3.5rem; }
+    .hero-actions       { flex-direction: row; justify-content: center; }
+    .hero-actions .btn  { width: auto; }
+    .cards-grid         { grid-template-columns: repeat(2,1fr); }
+    .cta-buttons        { flex-direction: row; justify-content: center; }
+    .cta-buttons .btn   { width: auto; }
+    .footer-grid        { grid-template-columns: 2fr 1fr 1fr; }
+    .tipos-grid         { grid-template-columns: repeat(2,1fr); }
+    .tipos-title        { font-size: 2.5rem; }
+}
+
+/* ── Pantallas de escritorio (min-width: 1024px) ──────────────────────────── */
+@media (min-width: 1024px) {
+    .cards-grid         { grid-template-columns: repeat(5,1fr); }
+    .section-title      { font-size: 2.5rem; }
+    .tipos-grid         { grid-template-columns: repeat(5,1fr); }
+    .tipos-page         { padding: 3rem 0; }
+    .stats-grid         { grid-template-columns: repeat(6,1fr); }
+
+    .timeline::before   { left: 50%; transform: translateX(-50%); }
+    .timeline-item      { padding-left: 0; width: 50%; }
+    .timeline-item:nth-child(odd)  { padding-right: 64px; text-align: right; }
+    .timeline-item:nth-child(even) { padding-left: 64px; margin-left: 50%; }
+    .timeline-item:nth-child(odd)  .timeline-number { left: auto; right: -24px; }
+    .timeline-item:nth-child(even) .timeline-number { left: -24px; }
+}
+
+/* ── Adaptaciones para móviles grandes (max-width: 767px) ─────────────────── */
+@media (max-width: 767px) {
+    .hero    { padding: var(--space-10) 0; }
+    .hero-title { font-size: var(--font-size-2xl); }
+    .section { padding: var(--space-10) 0; }
+    .section-title { font-size: var(--font-size-2xl); }
+    .legal-table { font-size: var(--font-size-xs); }
+    .legal-table th, .legal-table td { padding: var(--space-3); }
+}
+
+/* ── Adaptaciones para móviles estándar (max-width: 639px) ────────────────── */
+@media (max-width: 639px) {
+    .modal-container  { max-height: 95vh; margin: .5rem; }
+    .modal-header, .modal-body, .modal-footer { padding-left: 1rem; padding-right: 1rem; }
+    .modal-title      { font-size: var(--font-size-xl); }
+
+    .persona-selector { grid-template-columns: 1fr; }
+    .form-actions     { flex-direction: column; }
+
+    .confirmacion-header { padding: 1.5rem 1rem 1rem; }
+    .confirmacion-titulo { font-size: var(--font-size-xl); }
+    .codigo-valor        { font-size: var(--font-size-2xl); }
+    .confirmacion-body   { padding: 1.5rem 1rem; }
+
+    .busqueda-input-wrap { flex-direction: column; }
+    .busqueda-btn        { width: 100%; justify-content: center; }
+    .consulta-hero h1    { font-size: var(--font-size-2xl); }
+    .resultado-head      { flex-direction: column; }
+
+    .login-header  { padding: var(--space-6) var(--space-4) var(--space-4); }
+    .login-form, .login-seguridad { padding-left: var(--space-4); padding-right: var(--space-4); }
+    .login-opciones { flex-direction: column; align-items: flex-start; }
+
+    .dashboard-welcome { flex-direction: column; }
+    .dashboard-meta    { width: 100%; }
+    .stats-grid        { grid-template-columns: 1fr; }
+    .dashboard-table   { font-size: var(--font-size-xs); }
+    .dashboard-table th, .dashboard-table td { padding: var(--space-2) var(--space-3); }
+
+    .tipos-title       { font-size: var(--font-size-2xl); }
+    .tipo-card-header  { padding: 1rem; }
+}
+
+/* ── Accesibilidad: Reducción de animaciones ──────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: .01ms !important;
+        transition-duration: .01ms !important;
+    }
+    html {
+        scroll-behavior: auto;
+    }
+}
