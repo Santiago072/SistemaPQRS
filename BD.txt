@@ -24,7 +24,7 @@ CREATE TABLE configuracion_sistema (
     nombre_empresa VARCHAR(150) NULL
 );
 
-INSERT INTO configuracion_sistema (id, dias_vencimiento_peticion, dias_vencimiento_queja, dias_vencimiento_reclamo, dias_vencimiento_sugerencia, dias_vencimiento_denuncia, correo_notificaciones, nombre_empresa) VALUES (1, 15, 15, 15, 15, 15, 'admin@pqrs.gov.co', 'Sistema PQRS');
+INSERT INTO configuracion_sistema (id, dias_vencimiento_peticion, dias_vencimiento_queja, dias_vencimiento_reclamo, dias_vencimiento_sugerencia, dias_vencimiento_denuncia, correo_notificaciones, nombre_empresa) VALUES (1, 15, 15, 15, 15, 15, 'notificaciones@pqrs.gov.co', 'Sistema PQRS Institucional');
 
 CREATE TABLE usuario (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
@@ -91,7 +91,7 @@ CREATE TABLE reporte (
     FOREIGN KEY (administrador_id) REFERENCES administrador(id) ON DELETE SET NULL
 );
 
--- Crear usuario administrador por defecto (admin / admin2026!)
+-- Crear usuario administrador por defecto (admin)
 -- La contraseña está hasheada con bcrypt (password_hash)
 INSERT INTO administrador (nombre_usuario, contrasena, nombre_completo, correo_electronico, rol) 
 VALUES ('admin', '$2y$10$DXEiMPzRoMPwYhtxyzm2T.Wn/mTIlQDCzEht0KmDiMI8/6gSrf3n2', 'Administrador del Sistema', 'admin@pqrs.gov.co', 'ADMIN');

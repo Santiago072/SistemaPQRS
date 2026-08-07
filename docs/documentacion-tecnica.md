@@ -464,7 +464,7 @@ sudo docker compose up -d --build
 ### Credenciales por defecto
 ```
 Usuario: admin
-Contraseña: admin2026!
+Contraseña: [Hasheada con Bcrypt en BD.txt - Cambiar inmediatamente en primer login]
 ```
 > ⚠️ Cambia estas credenciales inmediatamente desde `Configuración > Mi Perfil` al iniciar por primera vez.
 
