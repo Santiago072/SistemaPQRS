@@ -1,0 +1,65 @@
+name: CI — SistemaPQRS
+
+on:
+  push:
+    branches: [ "master", "main" ]
+  pull_request:
+    branches: [ "master", "main" ]
+
+jobs:
+  tests:
+    name: PHPUnit Tests (PHP ${{ matrix.php-version }})
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        php-version: [ "8.2" ]
+
+    steps:
+      # ── 1. Clonar el repositorio ────────────────────────────────────────────
+      - name: 📥 Checkout del código
+        uses: actions/checkout@v4
+
+      # ── 2. Configurar PHP con extensiones requeridas ────────────────────────
+      - name: 🐘 Configurar PHP ${{ matrix.php-version }}
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-version }}
+          extensions: mbstring, pdo, pdo_mysql, openssl, fileinfo
+          coverage: none
+
+      # ── 3. Caché de dependencias Composer ──────────────────────────────────
+      - name: 🗄️ Caché de Composer
+        id: composer-cache
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-
+
+      # ── 4. Instalar dependencias ────────────────────────────────────────────
+      - name: 📦 Instalar dependencias (composer install)
+        run: composer install --no-interaction --no-progress --prefer-dist
+
+      # ── 5. Verificar que PHPUnit fue instalado ──────────────────────────────
+      - name: ✅ Verificar PHPUnit
+        run: vendor/bin/phpunit --version
+
+      # ── 6. Ejecutar la suite de pruebas ────────────────────────────────────
+      - name: 🧪 Ejecutar pruebas unitarias
+        run: vendor/bin/phpunit --testdox
+        env:
+          APP_ENV:        testing
+          DB_HOST:        localhost
+          DB_NAME:        sistema_pqrs_test
+          DB_USER:        root
+          DB_PASSWORD:    ""
+          SMTP_HOST:      smtp.test.local
+          SMTP_PORT:      "587"
+          SMTP_ENCRYPTION: tls
+          SMTP_USER:      test@test.local
+          SMTP_PASSWORD:  test_password
+          FROM_EMAIL:     noreply@test.local
+          FROM_NAME:      "PQRS Test"
