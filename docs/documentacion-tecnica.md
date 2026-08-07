@@ -499,6 +499,38 @@ La página tiene dos pestañas:
 - Días de vencimiento por tipo de solicitud (1–30 días)
 - Nombre de la empresa o entidad
 - Correo de notificaciones internas
-- Vista previa en tiempo real de los términos al editar
-
 Los cambios se persisten en la tabla `configuracion_sistema` (registro único `id=1`).
+
+---
+
+## 14. Pruebas Automatizadas (PHPUnit 10.5)
+
+El proyecto cuenta con una suite unitaria de 35 pruebas automatizadas bajo el directorio `tests/Unit/`, diseñadas para ejecutarse tanto localmente como en el pipeline de GitHub Actions:
+
+```bash
+composer test          # Ejecución rápida
+composer test-verbose  # Visualización detallada de aserciones por clase
+```
+
+### Cobertura de Pruebas:
+- **`ContainerTest`**: Inyección de dependencias por Reflection API, gestión de singletons y control de tipos primitivos/abstractos.
+- **`AuthControllerTest`**: Verificación de algoritmo Bcrypt, generación criptográfica de tokens y expiración en 1 hora.
+- **`PqrsModelTest`**: Lógica de formato `PQRS-AAAA-MM-NNN`, ciclo de vida de los 4 estados, 5 tipos de trámite y cálculo de vencimientos.
+- **`EmailServiceTest`**: Validación de parámetros SMTP, configuración desde variables de entorno y formato de asuntos.
+
+---
+
+## 15. Arquitectura CSS Modular
+
+La capa de presentación en `public/css/estilos.css` está dividida en 7 módulos especializados ubicados en `public/css/modules/`:
+
+| Módulo | Finalidad |
+|--------|-----------|
+| `variables.css` | Variables CSS personalizadas (colores, sombras, espaciado) |
+| `base.css` | Normalización, reset y utilidades de maquetación |
+| `layout.css` | Estructura general: Header, Footer, Hero y CTA |
+| `components.css` | Botones, modales, cards, línea de tiempo y tablas |
+| `forms.css` | Formularios de radicación, consulta y autenticación |
+| `admin.css` | Bandeja de gestión, KPIs, gráficos de reportes y filtros |
+| `responsive.css` | Media queries adaptativas y accesibilidad (motion) |
+

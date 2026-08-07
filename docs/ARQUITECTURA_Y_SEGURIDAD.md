@@ -67,11 +67,60 @@ La subida de evidencias soporta extensiones limitadas (PDF, JPG, PNG) y se reesc
 - **Backend**: Los controladores utilizan la función `mb_substr()` nativa de PHP para truncar de manera forzosa y segura el texto (respetando caracteres multibyte UTF-8) a la longitud exacta que soporta el motor de base de datos antes de enviarlo. Esto protege al sistema contra peticiones forjadas que buscan generar errores de desbordamiento por *payloads* masivos enviados fuera del navegador.
 
 ## 4. Requisitos y Dependencias (Composer)
-- **PHP 8.0 o superior**
+- **PHP 8.2 o superior**
 - **PHPMailer** (para notificaciones por correo vía SMTP)
 - **DomPDF** (para la generación de reportes en formato PDF)
+- **PHPUnit 10.5** (suite de pruebas unitarias automatizadas en entorno de desarrollo)
 
 El proyecto utiliza **PSR-4** a través de `composer.json` para la carga automática de clases. Para registrar nuevos componentes basta con ejecutar:
 ```bash
 composer dump-autoload
 ```
+
+---
+
+## 5. Suite de Pruebas Automatizadas (PHPUnit 10.5)
+
+El sistema incluye una suite de **35 pruebas unitarias** con **80 aserciones** que validan la lógica de negocio y arquitectura sin requerir conexión a base de datos externa:
+
+| Test Suite | Ubicación | Pruebas | Qué valida |
+|------------|-----------|:-------:|------------|
+| **ContainerTest** | `tests/Unit/ContainerTest.php` | 6 | Resolución de dependencias vía Reflection API, instancias Singleton, excepciones ante clases abstractas y tipos primitivos |
+| **AuthControllerTest** | `tests/Unit/AuthControllerTest.php` | 9 | Hashing y verificación con Bcrypt, unicidad y formato de tokens de recuperación (64 chars hex), expiración en 1 hora y validación de emails |
+| **PqrsModelTest** | `tests/Unit/PqrsModelTest.php` | 11 | Formato de código radicado serial `PQRS-AAAA-MM-NNN`, relleno con ceros (zero-padding), 4 estados de ciclo de vida, 5 tipos de solicitud y cálculo de vencimiento |
+| **EmailServiceTest** | `tests/Unit/EmailServiceTest.php` | 9 | Configuración segura desde variables de entorno, validación de puertos SMTP, etiquetas de tipo en español y estructura de mensajes |
+
+Para ejecutar las pruebas localmente:
+```bash
+composer test          # Modo estándar
+composer test-verbose  # Modo detallado con TestDox
+```
+
+---
+
+## 6. Integración Continua (CI/CD con GitHub Actions)
+
+El archivo `.github/workflows/ci.yml` automatiza la verificación de calidad del código en la nube:
+- **Disparadores**: Cada `push` o `pull_request` sobre las ramas `master` o `main`.
+- **Entorno**: Contenedor Ubuntu con **PHP 8.2** y extensiones (`mbstring`, `pdo`, `pdo_mysql`, `openssl`, `fileinfo`).
+- **Pipeline**:
+  1. `actions/checkout@v4` — Descarga del código fuente.
+  2. `shivammathur/setup-php@v2` — Configuración del runtime PHP 8.2.
+  3. `actions/cache@v4` — Almacenamiento en caché de dependencias `vendor/` basado en el hash de `composer.lock`.
+  4. `composer install --prefer-dist` — Instalación reproducible de dependencias.
+  5. `vendor/bin/phpunit --testdox` — Ejecución de los 35 tests automatizados.
+
+---
+
+## 7. Arquitectura Modular del Frontend (CSS)
+
+La hoja de estilos `public/css/estilos.css` está organizada bajo una arquitectura modular en `public/css/modules/` para facilitar el mantenimiento y eliminar la complejidad de archivos monolíticos:
+
+- `variables.css` — Custom properties, paleta de colores HSL/Hex, tipografía, espaciados y sombras.
+- `base.css` — Reset universal, estilos de elementos base, contenedores y utilidades globales.
+- `layout.css` — Header sticky, footer corporativo, sección Hero del portal ciudadano y banners CTA.
+- `components.css` — Botones interactivos, badges de estado, cuadrícula de cards, línea de tiempo, tabla legal y modales.
+- `forms.css` — Formulario de radicación con selector de persona, consulta pública de PQRS y login administrativo.
+- `admin.css` — Dashboard de KPIs, métricas en tiempo real, filtros avanzados de búsqueda, alertas de urgencia y reportes.
+- `responsive.css` — Breakpoints adaptativos (640px, 768px, 1024px), adaptaciones móviles y soporte para `prefers-reduced-motion`.
+
