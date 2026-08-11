@@ -12,31 +12,32 @@ Esta situación expone a las empresas a sanciones legales y al deterioro de su i
 
 ---
 
-## 2. Flujo del Sistema y Ciclo de Vida de PQRS
+## 2. Flujo del Sistema y Ciclo de Vida de PQRS (Mapeo a Historias de Usuario)
 
 ```mermaid
 graph LR
-    subgraph RADICACION["📝 1. Radicación Ciudadana"]
+    subgraph RADICACION["📝 1. Radicación Ciudadana (HU-01 a HU-05)"]
         direction TB
-        E1["📥 PENDIENTE<br/><i>(Radicado PQRS-AAAA-MM-NNN generado)</i>"]
+        E1["📥 PENDIENTE<br/><i>(Radicado PQRS-AAAA-MM-NNN generado automáticamente)</i>"]
     end
 
-    subgraph GESTION["⚙️ 2. Gestión Administrativa"]
+    subgraph GESTION["⚙️ 2. Gestión Administrativa (HU-07 / HU-08)"]
         direction TB
-        E2["🔍 EN PROCESO<br/><i>(Revisión técnica, análisis y trámite)</i>"]
+        E2["🔍 EN PROCESO<br/><i>(Análisis técnico, asignación interna y trámite)</i>"]
     end
 
-    subgraph CIERRE["🏁 3. Resolución Formal"]
+    subgraph CIERRE["🏁 3. Resolución Formal (HU-08 / HU-09)"]
         direction TB
-        E3["✅ RESUELTO<br/><i>(Respuesta emitida y notificada por correo)</i>"]
-        E4["❌ RECHAZADO<br/><i>(Improcedente / Incompleto con sustento legal)</i>"]
+        E3["✅ RESUELTO<br/><i>(Respuesta formal emitida y notificada por correo)</i>"]
+        E4["❌ RECHAZADO<br/><i>(Solicitud improcedente / Fuera de competencia según Ley 1755)</i>"]
     end
 
-    E1 -->|"Admin inicia gestión"| E2
-    E1 -->|"No cumple requisitos"| E4
-    E2 -->|"Emite respuesta oficial"| E3
-    E2 -->|"Sustentación jurídica"| E4
+    E1 -->|"HU-08: Admin toma caso para trámite"| E2
+    E1 -->|"HU-08: Fuera de competencia institucional"| E4
+    E2 -->|"HU-09: Emite respuesta formal satisfactoria"| E3
+    E2 -->|"HU-08: Sustentación jurídica de improcedencia"| E4
 ```
+
 
 ---
 
