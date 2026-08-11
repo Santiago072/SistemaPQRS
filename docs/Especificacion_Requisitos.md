@@ -12,31 +12,36 @@ Esta situación expone a las empresas a sanciones legales y al deterioro de su i
 
 ---
 
-## 2. Flujo del Sistema y Ciclo de Vida de PQRS (Mapeo a Historias de Usuario)
+## 2. Flujo del Sistema y Ciclo de Vida de PQRS
 
 ```mermaid
-graph LR
-    subgraph RADICACION["📝 1. Radicación Ciudadana (HU-01 a HU-05)"]
-        direction TB
-        E1["📥 PENDIENTE<br/><i>(Radicado PQRS-AAAA-MM-NNN generado automáticamente)</i>"]
+flowchart TD
+    subgraph S1["1. RADICACIÓN CIUDADANA"]
+        A["📥 PENDIENTE\n(Radicado generado)"]
     end
 
-    subgraph GESTION["⚙️ 2. Gestión Administrativa (HU-07 / HU-08)"]
-        direction TB
-        E2["🔍 EN PROCESO<br/><i>(Análisis técnico, asignación interna y trámite)</i>"]
+    subgraph S2["2. GESTIÓN ADMINISTRATIVA"]
+        B["🔍 EN PROCESO\n(Análisis y trámite)"]
     end
 
-    subgraph CIERRE["🏁 3. Resolución Formal (HU-08 / HU-09)"]
-        direction TB
-        E3["✅ RESUELTO<br/><i>(Respuesta formal emitida y notificada por correo)</i>"]
-        E4["❌ RECHAZADO<br/><i>(Solicitud improcedente / Fuera de competencia según Ley 1755)</i>"]
+    subgraph S3["3. RESOLUCIÓN FINAL"]
+        C["✅ RESUELTO\n(Respuesta emitida)"]
+        D["❌ RECHAZADO\n(Improcedente sustentado)"]
     end
 
-    E1 -->|"HU-08: Admin toma caso para trámite"| E2
-    E1 -->|"HU-08: Fuera de competencia institucional"| E4
-    E2 -->|"HU-09: Emite respuesta formal satisfactoria"| E3
-    E2 -->|"HU-08: Sustentación jurídica de improcedencia"| E4
+    A -->|"Admin toma el caso (HU-08)"| B
+    A -->|"Fuera de competencia (HU-08)"| D
+    B -->|"Respuesta favorable (HU-09)"| C
+    B -->|"Respuesta improcedente (HU-08)"| D
 ```
+
+| Estado | Historia de Usuario | Descripción del Flujo |
+|---|---|---|
+| **📥 PENDIENTE** | `HU-01 a HU-05` | El ciudadano radica la solicitud (Natural, Jurídica o Anónima) y recibe su número único serial `PQRS-AAAA-MM-NNN`. |
+| **🔍 EN PROCESO** | `HU-07 / HU-08` | El administrador abre el caso desde su bandeja de entrada, evalúa los anexos e inicia la investigación técnica. |
+| **✅ RESUELTO** | `HU-09` | Se emite la respuesta formal oficial, notificando al ciudadano por correo electrónico y actualizando la consulta pública. |
+| **❌ RECHAZADO** | `HU-08` | Solicitud improcedente según la Ley 1755 (por ejemplo: fuera de competencia de la entidad o con falta de sustento legal). |
+
 
 
 ---
