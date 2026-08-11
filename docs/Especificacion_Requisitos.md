@@ -17,19 +17,19 @@ Esta situación expone a las empresas a sanciones legales y al deterioro de su i
 ```mermaid
 graph TB
     subgraph S1["📝 1. RADICACIÓN CIUDADANA"]
-        E1["📥 <b>PENDIENTE</b><br>Radicado único PQRS generado"]
+        E1["📥 PENDIENTE"]
     end
 
     subgraph S2["⚙️ 2. GESTIÓN ADMINISTRATIVA"]
-        E2["🔍 <b>EN PROCESO</b><br>Revisión técnica y análisis"]
+        E2["🔍 EN PROCESO"]
     end
 
     subgraph S3["🏁 3. RESOLUCIÓN FORMAL"]
-        E3["✅ <b>RESUELTO</b><br>Respuesta emitida y notificada"]
-        E4["❌ <b>RECHAZADO</b><br>Improcedente con sustento legal"]
+        E3["✅ RESUELTO"]
+        E4["❌ RECHAZADO"]
     end
 
-    E1 -->|"Admin toma el caso"| E2
+    E1 -->|"Admin abre caso"| E2
     E1 -->|"Fuera de competencia"| E4
     E2 -->|"Respuesta favorable"| E3
     E2 -->|"Respuesta improcedente"| E4
