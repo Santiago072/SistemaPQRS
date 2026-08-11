@@ -15,28 +15,34 @@ Esta situación expone a las empresas a sanciones legales y al deterioro de su i
 ## 2. Flujo del Sistema y Ciclo de Vida de PQRS
 
 ```mermaid
-graph LR
-    subgraph RADICACION["📝 1. Radicación Ciudadana"]
-        direction TB
-        E1["📥 PENDIENTE<br/><i>(Radicado PQRS-AAAA-MM-NNN generado)</i>"]
+graph TB
+    subgraph S1["📝 1. RADICACIÓN CIUDADANA"]
+        E1["📥 <b>PENDIENTE</b><br>Radicado único PQRS generado"]
     end
 
-    subgraph GESTION["⚙️ 2. Gestión Administrativa"]
-        direction TB
-        E2["🔍 EN PROCESO<br/><i>(Revisión técnica, análisis y trámite)</i>"]
+    subgraph S2["⚙️ 2. GESTIÓN ADMINISTRATIVA"]
+        E2["🔍 <b>EN PROCESO</b><br>Revisión técnica y análisis"]
     end
 
-    subgraph CIERRE["🏁 3. Resolución Formal"]
-        direction TB
-        E3["✅ RESUELTO<br/><i>(Respuesta emitida y notificada por correo)</i>"]
-        E4["❌ RECHAZADO<br/><i>(Improcedente / Incompleto con sustento legal)</i>"]
+    subgraph S3["🏁 3. RESOLUCIÓN FORMAL"]
+        E3["✅ <b>RESUELTO</b><br>Respuesta emitida y notificada"]
+        E4["❌ <b>RECHAZADO</b><br>Improcedente con sustento legal"]
     end
 
-    E1 -->|"Admin inicia gestión"| E2
-    E1 -->|"No cumple requisitos"| E4
-    E2 -->|"Emite respuesta oficial"| E3
-    E2 -->|"Sustentación jurídica"| E4
+    E1 -->|"Admin toma el caso"| E2
+    E1 -->|"Fuera de competencia"| E4
+    E2 -->|"Respuesta favorable"| E3
+    E2 -->|"Respuesta improcedente"| E4
+
+    style E1 fill:#1e293b,stroke:#38bdf8,stroke-width:2px,color:#ffffff
+    style E2 fill:#1e293b,stroke:#fbbf24,stroke-width:2px,color:#ffffff
+    style E3 fill:#1e293b,stroke:#22c55e,stroke-width:2px,color:#ffffff
+    style E4 fill:#1e293b,stroke:#ef4444,stroke-width:2px,color:#ffffff
+    style S1 fill:#0f172a,stroke:#334155,stroke-width:1px,color:#94a3b8
+    style S2 fill:#0f172a,stroke:#334155,stroke-width:1px,color:#94a3b8
+    style S3 fill:#0f172a,stroke:#334155,stroke-width:1px,color:#94a3b8
 ```
+
 
 
 | Estado | Historia de Usuario | Descripción del Flujo |
