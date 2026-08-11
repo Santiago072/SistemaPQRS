@@ -16,24 +16,17 @@ Esta situación expone a las empresas a sanciones legales y al deterioro de su i
 
 ```mermaid
 flowchart TD
-    subgraph S1["1. RADICACIÓN CIUDADANA"]
-        A["📥 PENDIENTE\n(Radicado generado)"]
-    end
+    A["📥 1. PENDIENTE<br/><b>(Radicado generado)</b>"]
+    B["🔍 2. EN PROCESO<br/><b>(Análisis y gestión)</b>"]
+    C["✅ 3. RESUELTO<br/><b>(Respuesta formal)</b>"]
+    D["❌ 4. RECHAZADO<br/><b>(Improcedente sustentado)</b>"]
 
-    subgraph S2["2. GESTIÓN ADMINISTRATIVA"]
-        B["🔍 EN PROCESO\n(Análisis y trámite)"]
-    end
-
-    subgraph S3["3. RESOLUCIÓN FINAL"]
-        C["✅ RESUELTO\n(Respuesta emitida)"]
-        D["❌ RECHAZADO\n(Improcedente sustentado)"]
-    end
-
-    A -->|"Admin toma el caso (HU-08)"| B
-    A -->|"Fuera de competencia (HU-08)"| D
-    B -->|"Respuesta favorable (HU-09)"| C
-    B -->|"Respuesta improcedente (HU-08)"| D
+    A -->|"Admin toma<br/>el caso"| B
+    A -->|"Fuera de<br/>competencia"| D
+    B -->|"Respuesta<br/>favorable"| C
+    B -->|"Respuesta<br/>improcedente"| D
 ```
+
 
 | Estado | Historia de Usuario | Descripción del Flujo |
 |---|---|---|
