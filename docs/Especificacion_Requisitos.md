@@ -15,61 +15,86 @@ Esta situación expone a las empresas a sanciones legales y al deterioro de su i
 ## 2. Flujo del Sistema y Ciclo de Vida de PQRS
 
 ```mermaid
-stateDiagram-v2
-    [*] --> PENDIENTE : Ciudadano radica solicitud\n(PQRS-AAAA-MM-NNN)
-    
-    PENDIENTE --> EN_PROCESO : Administrador inicia gestión\ny revisión técnica
-    
-    EN_PROCESO --> RESUELTO : Respuesta formal emitida\n(Notificación enviada al ciudadano)
-    EN_PROCESO --> RECHAZADO : Solicitud improcedente / incompleta\n(Sustentación jurídica enviada)
-    
-    PENDIENTE --> RECHAZADO : No cumple requisitos de ley
-    
-    RESUELTO --> [*] : Caso cerrado satisfactoriamente
-    RECHAZADO --> [*] : Caso archivado con registro
+graph LR
+    subgraph RADICACION["📝 1. Radicación Ciudadana"]
+        direction TB
+        E1["📥 PENDIENTE<br/><i>(Radicado PQRS-AAAA-MM-NNN generado)</i>"]
+    end
+
+    subgraph GESTION["⚙️ 2. Gestión Administrativa"]
+        direction TB
+        E2["🔍 EN PROCESO<br/><i>(Revisión técnica, análisis y trámite)</i>"]
+    end
+
+    subgraph CIERRE["🏁 3. Resolución Formal"]
+        direction TB
+        E3["✅ RESUELTO<br/><i>(Respuesta emitida y notificada por correo)</i>"]
+        E4["❌ RECHAZADO<br/><i>(Improcedente / Incompleto con sustento legal)</i>"]
+    end
+
+    E1 -->|"Admin inicia gestión"| E2
+    E1 -->|"No cumple requisitos"| E4
+    E2 -->|"Emite respuesta oficial"| E3
+    E2 -->|"Sustentación jurídica"| E4
 ```
 
-### 2.1 Diagrama Entidad-Relación (Modelo de Datos)
+---
+
+### 2.1 Diagrama Entidad-Relación (Modelo de Datos Completo)
 
 ```mermaid
 erDiagram
+    ADMINISTRADOR ||--o{ PQRS : "gestiona y responde"
     ADMINISTRADOR ||--o{ HISTORIAL_ACCION : "registra cambios"
-    ADMINISTRADOR ||--o{ PQRS : "responde y gestiona"
+    ADMINISTRADOR ||--o{ REPORTE : "genera bitácora"
     USUARIO ||--o{ PQRS : "radica solicitud"
-    CONFIGURACION_SISTEMA ||--|| PQRS : "aplica términos legales"
+    CONFIGURACION_SISTEMA ||--|| PQRS : "define términos legales"
     PQRS ||--o{ HISTORIAL_ACCION : "trazabilidad de auditoría"
     
     ADMINISTRADOR {
         int id PK
-        string nombre_usuario
-        string contrasena_hash
+        string nombre_usuario UK
+        string contrasena "Hash Bcrypt"
+        string nombre_completo
         string correo_electronico
-        string estado
-        string token_recuperacion
+        string rol "ADMIN"
+        string estado "activo, inactivo"
+        datetime ultimo_acceso
+        string token_recuperacion "64 hex chars"
         datetime token_expiracion
     }
 
     USUARIO {
         int id PK
-        string tipo_persona
+        string tipo_persona "Natural, Jurídica, Anónima"
         string nombre_completo
-        string razon_social
-        string numero_documento
+        string documento_identidad
+        string tipo_documento "CC, CE, NIT, PAS"
         string correo_electronico
         string telefono
+        string razon_social
+        string nit
+        string nombre_representante
+        string correo_corporativo
+        datetime fecha_registro
     }
 
     PQRS {
         int id PK
-        string codigo_radicado UK
-        string tipo_pqrs
+        string codigo_radicado UK "PQRS-AAAA-MM-NNN"
+        string tipo_solicitud "Petición, Queja, Reclamo, Sugerencia, Denuncia"
         string asunto
-        string descripcion
-        string archivo_adjunto
-        string estado
-        date fecha_radicacion
+        text descripcion
+        string archivo_adjunto "PDF, JPG, PNG"
+        string estado "PENDIENTE, EN_PROCESO, RESUELTO, RECHAZADO"
+        datetime fecha_radicacion
+        datetime fecha_actualizacion
         date fecha_vencimiento
-        string respuesta_admin
+        text respuesta_administrador
+        datetime fecha_respuesta
+        boolean desea_notificacion
+        int usuario_id FK
+        int administrador_id FK
     }
 
     CONFIGURACION_SISTEMA {
@@ -79,11 +104,40 @@ erDiagram
         int dias_vencimiento_reclamo
         int dias_vencimiento_sugerencia
         int dias_vencimiento_denuncia
+        string correo_notificaciones
         string nombre_empresa
+    }
+
+    HISTORIAL_ACCION {
+        int id PK
+        int pqrs_id FK
+        int administrador_id FK
+        string accion_realizada
+        string estado_anterior
+        string estado_nuevo
+        text descripcion
+        datetime fecha_hora
+    }
+
+    REPORTE {
+        int id PK
+        datetime fecha_generacion
+        string tipo_reporte
+        date fecha_inicio
+        date fecha_fin
+        int total_recibidas
+        int total_resueltas
+        int total_pendientes
+        int total_rechazadas
+        double tiempo_promedio_respuesta
+        double porcentaje_cumplimiento
+        string formato_exportacion "PDF, Excel"
+        int administrador_id FK
     }
 ```
 
 ---
+
 
 
 ## 3. Requisitos Funcionales (RF)
