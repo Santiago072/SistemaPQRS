@@ -15,16 +15,27 @@ Esta situación expone a las empresas a sanciones legales y al deterioro de su i
 ## 2. Flujo del Sistema y Ciclo de Vida de PQRS
 
 ```mermaid
-flowchart TD
-    A["📥 1. PENDIENTE<br/><b>(Radicado generado)</b>"]
-    B["🔍 2. EN PROCESO<br/><b>(Análisis y gestión)</b>"]
-    C["✅ 3. RESUELTO<br/><b>(Respuesta formal)</b>"]
-    D["❌ 4. RECHAZADO<br/><b>(Improcedente sustentado)</b>"]
+graph LR
+    subgraph RADICACION["📝 1. Radicación Ciudadana"]
+        direction TB
+        E1["📥 PENDIENTE<br/><i>(Radicado PQRS-AAAA-MM-NNN generado)</i>"]
+    end
 
-    A -->|"Admin toma<br/>el caso"| B
-    A -->|"Fuera de<br/>competencia"| D
-    B -->|"Respuesta<br/>favorable"| C
-    B -->|"Respuesta<br/>improcedente"| D
+    subgraph GESTION["⚙️ 2. Gestión Administrativa"]
+        direction TB
+        E2["🔍 EN PROCESO<br/><i>(Revisión técnica, análisis y trámite)</i>"]
+    end
+
+    subgraph CIERRE["🏁 3. Resolución Formal"]
+        direction TB
+        E3["✅ RESUELTO<br/><i>(Respuesta emitida y notificada por correo)</i>"]
+        E4["❌ RECHAZADO<br/><i>(Improcedente / Incompleto con sustento legal)</i>"]
+    end
+
+    E1 -->|"Admin inicia gestión"| E2
+    E1 -->|"No cumple requisitos"| E4
+    E2 -->|"Emite respuesta oficial"| E3
+    E2 -->|"Sustentación jurídica"| E4
 ```
 
 
